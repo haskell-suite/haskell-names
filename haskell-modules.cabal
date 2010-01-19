@@ -28,3 +28,4 @@ Library
   Other-modules:        Language.Haskell.Modules.Error
                         Language.Haskell.Modules.MonadModule
                         Language.Haskell.Modules.MonadModuleIO
+                        Language.Haskell.Modules.Resolve
