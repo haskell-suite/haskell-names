@@ -1,0 +1,30 @@
+Name:                   haskell-modules
+Version:                0.1
+License:                BSD3
+--License-File:           LICENSE
+Author:                 Lennart Augustsson
+Maintainer:             Lennart Augustsson <lennart@augustsson.net>
+Category:               Language
+Synopsis:               Resolving Haskell module dependencies.
+Description:            This is an addon to Haskell-Source with Extensions (HSE, haskell-src-exts).
+                        It handles additional tasks on top of parsing:
+                        .
+                        * Chasing module dependencies to find all used modules.
+                        .
+                        * Resolving all names in the modules and giving them fully qualified names.
+                        .
+                        * Using symbol fixities to do the final parsing.
+Stability:              Experimental
+Tested-with:            GHC==6.12.1
+Build-Type:             Simple
+Cabal-Version:          >= 1.2
+
+Library
+  Build-depends:        base >= 4 && < 5, haskell-src-exts >= 1.7 && < 1.8, mtl, filepath >= 1.1
+  Hs-source-dirs:       src
+
+  Exposed-modules:      Language.Haskell.Modules
+
+  Other-modules:        Language.Haskell.Modules.Error
+                        Language.Haskell.Modules.MonadModule
+                        Language.Haskell.Modules.MonadModuleIO
