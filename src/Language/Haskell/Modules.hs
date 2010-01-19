@@ -5,3 +5,4 @@ module Language.Haskell.Modules(
     ) where
 import Language.Haskell.Modules.Error
 import Language.Haskell.Modules.MonadModuleIO
+import Language.Haskell.Modules.Resolve

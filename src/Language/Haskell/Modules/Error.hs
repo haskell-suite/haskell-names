@@ -1,11 +1,18 @@
 {-# LANGUAGE ExistentialQuantification #-}
-module Language.Haskell.Modules.Error(Msg(..), MsgArg(..), prMsg, prSrcLoc, noSrcLoc) where
+module Language.Haskell.Modules.Error(Msg(..), MsgArg(..), MsgLevel(..), msgError, isError, prMsg, prSrcLoc, noSrcLoc) where
 import Data.List
 import Language.Haskell.Exts.Annotated
 
 -- | Message type.  Errors, warnings, etc.
 data Msg = Msg MsgLevel SrcLoc String [MsgArg]
     deriving (Show)
+
+isError :: Msg -> Bool
+isError (Msg MsgError _ _ _) = True
+isError _ = False
+
+msgError :: (SrcInfo l) => l -> String -> [MsgArg] -> Msg
+msgError l msg args = Msg MsgError (getPointLoc l) msg args
 
 -- | Types of messages.
 data MsgLevel = MsgError | MsgWarning | MsgInformation
