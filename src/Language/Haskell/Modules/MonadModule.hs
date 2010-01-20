@@ -1,4 +1,5 @@
-module Language.Haskell.Modules.MonadModule(MonadModule(..), ModuleContents(..), ValueName, TypeName) where
+{-# LANGUAGE StandaloneDeriving #-}
+module Language.Haskell.Modules.MonadModule(MonadModule(..), ModuleContents(..), ValueName, TypeName, ModuleSummary(..)) where
 import Language.Haskell.Exts.Annotated
 import Language.Haskell.Exts.Fixity(Fixity)
 
@@ -9,12 +10,18 @@ class (Monad m) => MonadModule m where
 -- Possible module contents.
 data ModuleContents
     = ModuleSource   { m_name :: FilePath, m_contents :: String }                  -- ^The module name in the store, and its contents.
-    | ModuleAbbrev   { m_values :: [ValueName],
-                       m_types :: [(TypeName, [ValueName])],
-                       m_fixities :: [(ValueName, Fixity)] }                       -- ^Abbreviated module information, e.g., from an interface file.
+    | ModuleAbbrev   { m_abbrev :: ModuleSummary }                                 -- ^Abbreviated module information, e.g., from an interface file.
     | ModuleNotFound { m_error :: String }                                         -- ^Module could not be located.
---    deriving (Show)
+    deriving (Show)
 
 type ValueName = String
 type TypeName = String
 
+data ModuleSummary = ModuleSummary {
+         m_values :: [ValueName],
+         m_types :: [(TypeName, [ValueName])],
+         m_fixities :: [(ValueName, Fixity)]
+    }
+    deriving (Show)
+
+deriving instance Show Fixity

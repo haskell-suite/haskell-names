@@ -30,3 +30,4 @@ Library
                         Language.Haskell.Modules.MonadModuleIO
                         Language.Haskell.Modules.Resolve
                         Language.Haskell.Modules.ResolveMonad
+                        Language.Haskell.Modules.SyntaxUtils
