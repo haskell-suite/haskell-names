@@ -9,13 +9,17 @@ class (Monad m) => MonadModule m where
 
 -- Possible module contents.
 data ModuleContents
-    = ModuleSource   { m_name :: FilePath, m_contents :: String }                  -- ^The module name in the store, and its contents.
-    | ModuleAbbrev   { m_abbrev :: ModuleSummary }                                 -- ^Abbreviated module information, e.g., from an interface file.
-    | ModuleNotFound { m_error :: String }                                         -- ^Module could not be located.
+    = ModuleSource   { m_extensions :: [Extension],
+                       m_name :: FilePath,
+                       m_contents :: String
+                     }                                         -- ^The module name in the store, and its contents.
+    | ModuleAbbrev   { m_abbrev :: ModuleSummary }             -- ^Abbreviated module information, e.g., from an interface file.
+    | ModuleNotFound { m_error :: String }                     -- ^Module could not be located.
+    | ModuleIgnore                                             -- ^Ignore processing ths module
     deriving (Show)
 
-type ValueName = String
-type TypeName = String
+type ValueName = String       -- ^ Fully qualified original name.
+type TypeName = String        -- ^ Fully qualified original name.
 
 data ModuleSummary = ModuleSummary {
          m_values :: [ValueName],

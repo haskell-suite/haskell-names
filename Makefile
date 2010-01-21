@@ -8,3 +8,6 @@ build:
 
 install:	config build
 	cabal install
+
+clean:
+	rm -rf dist
