@@ -22,6 +22,7 @@ type ValueName = String       -- ^ Fully qualified original name.
 type TypeName = String        -- ^ Fully qualified original name.
 
 data ModuleSummary = ModuleSummary {
+         m_moduleName :: String,
          m_values :: [ValueName],
          m_types :: [(TypeName, [ValueName])],
          m_fixities :: [(ValueName, Fixity)]

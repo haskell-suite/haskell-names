@@ -1,5 +1,5 @@
 {-# LANGUAGE ExistentialQuantification, FlexibleContexts #-}
-module Language.Haskell.Modules.Error(Msg(..), MsgArg(..), msgArg, MsgLevel(..), msgError, msgWarning, msgInfo, isError, prMsg, prSrcLoc, noSrcLoc, noSrcSpan) where
+module Language.Haskell.Modules.Error(Msg(..), MsgArg(..), msgArg, MsgLevel(..), msgError, msgWarning, msgInfo, isError, prMsg, prSrcLoc, noSrcLoc, noSrcSpan, unimplemented) where
 import Data.List
 import Language.Haskell.Exts.Annotated
 
@@ -55,3 +55,6 @@ emptySrcLoc = SrcLoc { srcFilename = "", srcLine = -2, srcColumn = -2 }
 
 noSrcSpan :: SrcSpan
 noSrcSpan = SrcSpan "" (-1) (-1) (-1) (-1)
+
+unimplemented :: String -> a
+unimplemented msg = error $ "Unimplemented: " ++ msg
