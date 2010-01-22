@@ -79,10 +79,12 @@ cpp exts fileName file =
         opts <- asks pCpphsOptions
         let file' = runCpphs opts fileName file
             file'' = unlines . map lineLINE . lines $ file'
-            lineLINE s | Just l <- stripPrefix "#line " s = "{-# LINE " ++ l ++ " #-}"
+            lineLINE s | Just l <- stripPrefix "#line " s = "{-# LINE " ++ hack l ++ " #-}"
                        | otherwise = s
 --        liftIO $ putStrLn $ "CPP " ++ fileName
 --        liftIO $ writeFile (fileName ++ ".xx") file''
         return file''
     else
         return file
+
+hack s = if last s == '"' then map (\ c -> if c == '\\' then '/' else c) s else "1 \"foo\""
