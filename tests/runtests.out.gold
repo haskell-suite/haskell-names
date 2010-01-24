@@ -1,0 +1,26 @@
+Err1.hs:4:1: Error: Parse error: ;
+
+
+Err2Imp.hs:1:1: Error: Module name does not agree with imported name:  Err2Import, Err2.hs:2:8 Err2Imp
+
+
+Err3.hs:2:8: Error: Module Err3Imp not found.
+
+
+
+Err4.hs:2:6: Error: Duplicate type definitions: Err4.hs:3:6 T
+
+
+Err5.hs:2:1: Error: Duplicate value definitions: Err5.hs:3:1 x
+
+
+Err6.hs:2:10: Error: Duplicate value definitions: Err6.hs:3:10 C
+
+
+
+
+Err8.hs:2:1: Error: Stray type signature:  x
+
+
+Err9.hs:2:7: Error: Stray infix declaration:  (&)
+

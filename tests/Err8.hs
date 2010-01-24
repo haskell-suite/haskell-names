@@ -1,0 +1,2 @@
+-- Stray signature
+x :: Int

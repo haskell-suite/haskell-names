@@ -1,0 +1,2 @@
+-- Stray infix declaration
+infix &
