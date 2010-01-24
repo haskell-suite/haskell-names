@@ -1,5 +1,5 @@
 {-# LANGUAGE ExistentialQuantification, FlexibleContexts #-}
-module Language.Haskell.Modules.Error(Msg(..), MsgArg(..), msgArg, MsgLevel(..), msgError, msgWarning, msgInfo, isError, prMsg, prSrcLoc, noSrcLoc, noSrcSpan, unimplemented) where
+module Language.Haskell.Modules.Error(Msg(..), MsgArg(..), msgArg, MsgLevel(..), msgError, msgWarning, msgInfo, isError, prMsg, prSrcLoc, noSrcLoc, noSrcSpan, unimplemented, internalError) where
 import Data.List
 import Language.Haskell.Exts.Annotated
 
@@ -58,3 +58,6 @@ noSrcSpan = SrcSpan "" (-1) (-1) (-1) (-1)
 
 unimplemented :: String -> a
 unimplemented msg = error $ "Unimplemented: " ++ msg
+
+internalError :: String -> a
+internalError msg = error $ "Internal error: " ++ msg

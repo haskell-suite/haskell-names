@@ -7,12 +7,12 @@ import Language.Haskell.Modules.SyntaxUtils(dropAnn, getModuleName, getImports)
 
 -- | Take a set of modules and return a list of sets, where each sets for
 -- a strongly connected component in the import graph.
--- Do not take imports using @SOURCE@ into account.
-groupModules :: ModuleSet -> [ModuleSet]
-groupModules lrs =
+-- The boolean determines if imports using @SOURCE@ are taken into account.
+groupModules :: Bool-> ModuleSet -> [ModuleSet]
+groupModules source lrs =
     let ls = [ l | Left l <- lrs ]
         rs = [ r | Right r <- lrs ]
-        g = [ (m, dropAnn $ getModuleName m, map (dropAnn . importModule) $ filter (not . importSrc) $ getImports m) | m <- rs ]
+        g = [ (m, dropAnn $ getModuleName m, map (dropAnn . importModule) $ filter ((source ||) . (not . importSrc)) $ getImports m) | m <- rs ]
         rs' = map (map Right) $ map flattenSCC $ stronglyConnComp g
         ls' = map ((:[]) . Left) ls
     in  ls' ++ rs'
