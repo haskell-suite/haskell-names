@@ -31,8 +31,8 @@ instance (SrcInfo l) => SrcInfo (Scoped l) where
     startLine = startLine . sloc
     startColumn = startColumn . sloc
 
-scopeAnalysis :: ModuleSet -> [Module (Scoped SrcSpan)]
-scopeAnalysis = concat . runS . mapM scope . groupModules True
+scopeAnalysis :: ModuleSet -> ([Msg], [Module (Scoped SrcSpan)])
+scopeAnalysis = (id *** concat) . runS . mapM scope . groupModules True
 
 scope :: ModuleSet -> S [Module (Scoped SrcSpan)]
 scope [Left s] = scopeSummary s
@@ -99,7 +99,7 @@ type ValueInfo l = (ModuleName l, Name l, ValueKind)
 data ValueKind = VNormal | VSelector | VMethod | VConstructor | VImported
     deriving (Show, Eq, Ord)
 
--- Add bound identifiers in a declaration to the symbol table.
+-- Extract names that get bound by a top level declaration.
 addDecl :: ModuleName SrcSpan -> Decl SrcSpan -> ([TypeInfo SrcSpan], [ValueInfo SrcSpan])
 addDecl m d@(ClassDecl _ _ _ _ mds) = 
                 let cs = getBound d

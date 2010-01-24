@@ -21,8 +21,10 @@ emptySState = SState {
 newtype S a = S (State SState a)
     deriving (Monad, MonadState SState)
 
-runS :: S a -> a
-runS (S m) = evalState m $ emptySState
+runS :: S a -> ([Msg], a)
+runS (S m) =
+    case runState m $ emptySState of
+    (x, s) -> (s_messages s, x)
 
 addSymbolList :: ModuleName () -> SymbolList -> S ()
 addSymbolList m l = modify $ \ s -> s { s_modules = M.insert m l (s_modules s) }

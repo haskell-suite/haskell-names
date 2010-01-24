@@ -17,6 +17,7 @@ Err5.hs:2:1: Error: Duplicate value definitions: Err5.hs:3:1 x
 Err6.hs:2:10: Error: Duplicate value definitions: Err6.hs:3:10 C
 
 
+Err7.hs:2:14: Error: Duplicate value definitions: Err7.hs:3:14 x
 
 
 Err8.hs:2:1: Error: Stray type signature:  x

@@ -114,7 +114,10 @@ instance (Data l) => GetBound (GadtDecl l) l where
 instance (Data l) => GetBound (ConDecl l) l where
     getBound (ConDecl _ n _) = [n]
     getBound (InfixConDecl _ _ n _) = [n]
-    getBound (RecDecl _ n _) = [n]
+    getBound (RecDecl _ n fs) = n : getBound fs
+
+instance (Data l) => GetBound (FieldDecl l) l where
+    getBound (FieldDecl _ ns _) = ns
 
 instance (Data l) => GetBound (ClassDecl l) l where
     getBound (ClsDecl _ d) = getBoundSign d
