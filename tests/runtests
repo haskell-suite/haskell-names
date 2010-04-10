@@ -1,2 +1,6 @@
-runhaskell Tester Err1.hs Err2.hs Err3.hs Err4.hs Err5.hs Err6.hs Err7.hs Err8.hs Err9.hs
+here=`dirname $0`
+out=runtests.out
+cd $here
+runhaskell -i../src Tester Err1.hs Err2.hs Err3.hs Err4.hs Err5.hs Err6.hs Err7.hs Err8.hs Err9.hs > $out
 
+diff $out.gold $out
