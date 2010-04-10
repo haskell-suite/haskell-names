@@ -77,8 +77,8 @@ cpp :: [Extension] -> FilePath -> String -> IOE String
 cpp exts fileName file =
     if CPP `elem` (exts ++ fromMaybe [] (readExtensions file)) then do
         opts <- asks pCpphsOptions
-        let file' = runCpphs opts fileName file
-            file'' = unlines . map lineLINE . lines $ file'
+        file' <- liftIO $ runCpphs opts fileName file
+        let file'' = unlines . map lineLINE . lines $ file'
             lineLINE s | Just l <- stripPrefix "#line " s = "{-# LINE " ++ hack l ++ " #-}"
                        | otherwise = s
 --        liftIO $ putStrLn $ "CPP " ++ fileName
@@ -87,4 +87,5 @@ cpp exts fileName file =
     else
         return file
 
+hack :: String -> String
 hack s = if last s == '"' then map (\ c -> if c == '\\' then '/' else c) s else "1 \"foo\""

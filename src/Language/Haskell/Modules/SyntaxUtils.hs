@@ -1,6 +1,7 @@
 {-# LANGUAGE MultiParamTypeClasses, FunctionalDependencies, FlexibleInstances, UndecidableInstances #-}
 module Language.Haskell.Modules.SyntaxUtils(
-    dropAnn, getModuleName, getImports, getExportSpecList, splitDeclHead, getDeclHeadName, getModuleDecls, isTypeDecl, GetBound(..), opName, isCon
+    dropAnn, getModuleName, getImports, getExportSpecList, splitDeclHead, getDeclHeadName, getModuleDecls,
+    isTypeDecl, GetBound(..), opName, isCon, nameToString
     ) where
 import Data.Char
 import Data.Data
@@ -37,6 +38,13 @@ getModuleHead (Module _ (Just mh) _ _ _) = mh
 getModuleHead (XmlHybrid _ (Just mh) _ _ _ _ _ _ _) = mh
 getModuleHead m = ModuleHead l (main_mod l) Nothing (Just (ExportSpecList l [EVar l (UnQual l (Ident l "main"))]))
   where l = ann m
+
+{-
+getImportDecls :: Module l -> [ImportDecl l]
+getImportDecls (Module _ _ _ is _) = is
+getImportDecls (XmlPage _ _ _ _ _ _ _) = []
+getImportDecls (XmlHybrid _ _ _ is _ _ _ _ _) = is
+-}
 
 getDeclHead :: Decl l -> Maybe (DeclHead l)
 getDeclHead (TypeDecl _ dhead _) = Just dhead
@@ -104,6 +112,8 @@ instance (Data l) => GetBound (Decl l) l where
     getBound (SpecSig{}) = []
     getBound (SpecInlineSig{}) = []
     getBound (InstSig{}) = []
+    getBound (AnnPragma{}) = []
+    getBound (InlineConlikeSig{}) = []
 
 instance (Data l) => GetBound (QualConDecl l) l where
     getBound (QualConDecl _ _ _ d) = getBound d
@@ -153,3 +163,7 @@ isCon :: Name l -> Bool
 isCon (Ident _ (c:_)) = isUpper c
 isCon (Symbol _ (':':_)) = True
 isCon _ = False
+
+nameToString :: Name l -> String
+nameToString (Ident _ s) = s
+nameToString (Symbol _ s) = s

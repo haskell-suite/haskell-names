@@ -24,9 +24,9 @@ type TypeName = String        -- ^ Fully qualified original name.
 data ModuleSummary = ModuleSummary {
          m_moduleName :: String,
          m_values :: [ValueName],
-         m_types :: [(TypeName, [ValueName])],
-         m_fixities :: [(ValueName, Fixity)]
+         m_types :: [(TypeName, [ValueName], Bool)],  -- Bool indicates if it's a class
+         m_fixities :: [Fixity]
     }
     deriving (Show)
 
-deriving instance Show Fixity
+--deriving instance Show Fixity
