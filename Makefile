@@ -9,5 +9,8 @@ build:
 install:	config build
 	cabal install
 
+test:
+	./tests/runtests
+
 clean:
 	rm -rf dist
