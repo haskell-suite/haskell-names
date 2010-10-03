@@ -1,7 +1,7 @@
 {-# LANGUAGE StandaloneDeriving #-}
 module Language.Haskell.Modules.MonadModule(MonadModule(..), ModuleContents(..), ValueName, TypeName, ModuleSummary(..)) where
 import Language.Haskell.Exts.Annotated
-import Language.Haskell.Exts.Fixity(Fixity)
+--import Language.Haskell.Exts.Fixity(Fixity)
 
 -- | The monad used to find a module given a module name.
 class (Monad m) => MonadModule m where
