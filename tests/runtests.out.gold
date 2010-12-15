@@ -4,23 +4,25 @@ Err2Imp.hs:1:1: Error: Module name does not agree with imported name:  Err2Impor
 
 Err3.hs:2:8: Error: Module Err3Imp not found.
 
-Err4.hs:2:6: Error: Duplicate type definitions: Err4.hs:3:6 T
-Err4.hs:6:6: Error: Duplicate type definitions: Err4.hs:7:7 C
+Err4.hs:2:6: Error: Duplicate type/class definitions: Err4.hs:3:6 T
+Err4.hs:6:6: Error: Duplicate type/class definitions: Err4.hs:7:7 C
 
 Err5.hs:2:1: Error: Duplicate value definitions: Err5.hs:3:1 x
 
 Err6.hs:2:10: Error: Duplicate value definitions: Err6.hs:3:10 C
 
-Err7.hs:5:14: Error: Duplicate value definitions: Err7.hs:5:24 y
 Err7.hs:2:14: Error: Duplicate value definitions: Err7.hs:3:14 x
+Err7.hs:5:14: Error: Duplicate value definitions: Err7.hs:5:24 y
+Err7.hs:8:15: Error: Duplicate value definitions: Err7.hs:8:33 a
+Err7.hs:11:5: Error: Duplicate value definitions: Err7.hs:12:5 m
 
 Err8.hs:2:1: Error: Stray type signature:  x
 
-Err9.hs:5:7: Error: Duplicate infix declarations: Err9.hs:6:7 ( # )
 Err9.hs:2:7: Error: Stray infix declaration:  (&)
+Err9.hs:5:7: Error: Duplicate infix declarations: Err9.hs:6:7 ( # )
 
-Err10.hs:7:17: Error: Module does not export type/class:  C1
-Err10.hs:6:19: Error: Module does not export value:  m2
-Err10.hs:3:22: Error: Module does not export value:  C3
 Err10.hs:2:17: Error: Module does not export value:  bar
+Err10.hs:3:22: Error: Module does not export value:  C3
+Err10.hs:6:19: Error: Module does not export value:  m2
+Err10.hs:7:17: Error: Module does not export type/class:  C1
 
