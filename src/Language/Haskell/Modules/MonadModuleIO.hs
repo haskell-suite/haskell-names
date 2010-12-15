@@ -1,6 +1,6 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving, PatternGuards #-}
 -- | A module for looking up a module in the file store in the standard way.
-module Language.Haskell.Modules.MonadModuleIO(IOE, PathOptions(..), pathFinder, defaultPathOptions) where
+module Language.Haskell.Modules.MonadModuleIO(IOE, Options(..), pathFinder, defaultOptions) where
 import Control.Monad.Reader
 import Data.List
 import Data.List.Split
@@ -9,33 +9,36 @@ import Language.Haskell.Exts.Annotated hiding (fileName, name)
 import Language.Preprocessor.Cpphs(CpphsOptions(..), defaultCpphsOptions, runCpphs)
 import System.FilePath
 
+import Language.Haskell.Modules.Flags
 import Language.Haskell.Modules.MonadModule
 
-newtype IOE a = IOE (ReaderT PathOptions IO a)
-    deriving (Monad, MonadReader PathOptions, MonadIO)
+newtype IOE a = IOE (ReaderT Options IO a)
+    deriving (Monad, MonadReader Options, MonadIO)
 
 -- | Options when doing simple path file lookup.
-data PathOptions = PathOptions {
+data Options = Options {
     pPath :: [FilePath],              -- ^directories to look in (default @[""]@)
     pSuffixes :: [String],            -- ^allowed suffixes (default @["hs", "lhs"]@)
     pIgnore :: [String],              -- ^modules to exclude from the lookup process (default @["Prelude"]@)
     pExtensions :: [Extension],       -- ^language extension always in effect (default @[]@)
-    pCpphsOptions :: CpphsOptions     -- ^options to cpphs (default @defaultCpphsOptions@)
+    pCpphsOptions :: CpphsOptions,    -- ^options to cpphs (default @defaultCpphsOptions@)
+    pFlags :: Flags                   -- ^compilation flags
     }
 
-defaultPathOptions :: PathOptions
-defaultPathOptions = PathOptions {
+defaultOptions :: Options
+defaultOptions = Options {
     pPath = [""],
     pSuffixes = ["hs", "lhs"],
     pIgnore = ["Prelude"],
     pExtensions = [],
-    pCpphsOptions = defaultCpphsOptions
+    pCpphsOptions = defaultCpphsOptions,
+    pFlags = defaultFlags
     }
 
 instance MonadModule IOE where
     getModule = getModuleIOE
 
-pathFinder :: PathOptions -> IOE a -> IO a
+pathFinder :: Options -> IOE a -> IO a
 pathFinder popt (IOE ioe) = runReaderT ioe popt
 
 getModuleIOE :: ModuleName l -> IOE ModuleContents

@@ -15,6 +15,7 @@ import qualified Language.Haskell.Exts.Syntax as S
 import Language.Haskell.Exts.Annotated hiding (fixities)
 
 import Language.Haskell.Modules.Error
+import Language.Haskell.Modules.Flags
 import Language.Haskell.Modules.MonadModule
 import Language.Haskell.Modules.Recursive
 import Language.Haskell.Modules.ResolveMonad(ModuleSet)
@@ -37,8 +38,8 @@ instance (SrcInfo l) => SrcInfo (Scoped l) where
     startLine = startLine . sLoc
     startColumn = startColumn . sLoc
 
-scopeAnalysis :: ModuleSet -> ([Msg], [Module (Scoped SrcSpan)])
-scopeAnalysis = (id *** concat) . runS . mapM scope . groupModules True
+scopeAnalysis :: Flags -> ModuleSet -> ([Msg], [Module (Scoped SrcSpan)])
+scopeAnalysis flags = (id *** concat) . runS flags . mapM scope . groupModules True
 
 scope :: ModuleSet -> S [Module (Scoped SrcSpan)]
 scope [Left s] = fmap return $ scopeSummary s
@@ -77,10 +78,12 @@ scopeModule m = do
 -----------------------------------------------------------------------------
 
 processImports :: (SrcInfo l) => l -> [ImportDecl l] -> S ()
-processImports l is = mapM_ processImport is'
-  where is' = if any ((=~= pm) . importModule) is then is else ip : is
+processImports l is = do
+    flgs <- getFlags
+    let is' = if any ((=~= pm) . importModule) is || not (f_usePrelude flgs) then is else ip : is
         ip = ImportDecl l pm False False Nothing Nothing Nothing
         pm = prelude_mod l
+    mapM_ processImport is'
 
 -- Import all identifiers and add them to the global symbol table.
 processImport :: (SrcInfo l) => ImportDecl l -> S ()
