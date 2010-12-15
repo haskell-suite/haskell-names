@@ -4,6 +4,7 @@ cd $here
 rm -f Tester.exe Tester.o Tester.hi
 ghc --make Tester -o Tester.exe && \
     ./Tester.exe Err1.hs Err2.hs Err3.hs Err4.hs Err5.hs Err6.hs Err7.hs Err8.hs Err9.hs \
+                 Err10.hs \
     > $out
 
 diff $out.gold $out
