@@ -15,11 +15,13 @@ test :: FilePath -> IO ()
 test fn = do
     f <- readFile fn
     (msgs, mdls) <- pathFinder defaultOptions $ resolveModuleSource fn f
-    putStrLn $ unlines $ map prMsg msgs
-    when (null msgs) $ do
+    if not (null msgs) then
+        putStrLn $ unlines $ map prMsg msgs
+     else do
         let flags = defaultFlags { f_usePrelude = False }
         let (msgs', mdls') = scopeAnalysis flags mdls
             msgs'' = getScopeErrors mdls'
-        putStrLn $ unlines $ map prMsg msgs'
-        putStrLn $ unlines $ map prMsg msgs''
---        mapM_ (putStrLn . prettyPrint) mdls'
+            pr [] = return ()
+            pr m = putStrLn . unlines . map prMsg $ m
+        pr msgs'
+        pr msgs''
