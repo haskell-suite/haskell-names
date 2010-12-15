@@ -6,7 +6,7 @@ config:
 build:
 	cabal build
 
-install:	config build
+install:
 	cabal install
 
 test:

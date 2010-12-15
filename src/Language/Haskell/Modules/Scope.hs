@@ -73,7 +73,7 @@ scopeModule m = do
     -- Remember module for future processing.
     addModuleSymbols mname =<< filterExports (getExportSpecList m) syms
 
-    return (error "scopeModule") -- [m']
+    return $ fmap None m
 
 -----------------------------------------------------------------------------
 
@@ -233,4 +233,4 @@ getTopDeclNames mdl ftbl d =
 -----------------------------------------------------------------------------
 
 getScopeErrors :: [Module (Scoped SrcSpan)] -> [Msg]
-getScopeErrors ms = [ serr (i :: Scoped SrcSpan) | i <- universeBi ms ]
+getScopeErrors ms = [ m | ScopeError _ m <- universeBi ms :: [Scoped SrcSpan] ]
