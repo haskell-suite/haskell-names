@@ -42,7 +42,7 @@ resolveModule mname = do
                     Just m -> do
                         let mname' = getModuleName m
                         unless (mname' =~= mname) $
-                            resMsg $ msgError (ann m) "Module name does not agree with imported name" [msgArg mname', MsgArg mname]
+                            resMsg $ msgError (ann m) "Module name does not agree with imported name" [msgArg mname', msgArgLoc mname]
             ModuleAbbrev ma           -> resAddModuleSummary ma
             ModuleNotFound msg        -> resMsg $ msgError (ann mname) msg []
             ModuleIgnore              -> resMsg $ msgInfo  (ann mname) "Ignored module " [msgArg mname]

@@ -1,7 +1,8 @@
 {-# LANGUAGE MultiParamTypeClasses, FunctionalDependencies, FlexibleInstances, UndecidableInstances #-}
 module Language.Haskell.Modules.SyntaxUtils(
-    dropAnn, getModuleName, getImports, getExportSpecList, splitDeclHead, getDeclHeadName, getModuleDecls,
-    isTypeDecl, GetBound(..), opName, isCon, nameToString
+    dropAnn, setAnn, getModuleName, getImports, getExportSpecList, splitDeclHead, getDeclHeadName, getModuleDecls,
+    isTypeDecl, GetBound(..), opName, isCon, nameToString, specialConToString,
+    qNameToName
     ) where
 import Data.Char
 import Data.Data
@@ -13,6 +14,9 @@ import Language.Haskell.Modules.Error
 
 dropAnn :: (Functor a) => a l -> a ()
 dropAnn = fmap (const ())
+
+setAnn :: (Functor a) => l' -> a l -> a l'
+setAnn l = fmap (const l)
 
 getModuleName :: Module l -> ModuleName l
 getModuleName (Module _ (Just (ModuleHead _ mn _ _)) _ _ _) = mn
@@ -38,6 +42,11 @@ getModuleHead (Module _ (Just mh) _ _ _) = mh
 getModuleHead (XmlHybrid _ (Just mh) _ _ _ _ _ _ _) = mh
 getModuleHead m = ModuleHead l (main_mod l) Nothing (Just (ExportSpecList l [EVar l (UnQual l (Ident l "main"))]))
   where l = ann m
+
+qNameToName :: QName l -> Name l
+qNameToName (UnQual _ n) = n
+qNameToName (Qual _ _ n) = n
+qNameToName (Special l s) = Ident l (specialConToString s)
 
 {-
 getImportDecls :: Module l -> [ImportDecl l]
@@ -135,6 +144,10 @@ instance (Data l) => GetBound (ClassDecl l) l where
     getBound (ClsTyFam{}) = []
     getBound (ClsTyDef{}) = []
 
+instance (Data l) => GetBound (Match l) l where
+    getBound (Match _ n _ _ _) = [n]
+    getBound (InfixMatch _ _ n _ _ _) = [n]
+
 getBoundSign :: Decl l -> [Name l]
 getBoundSign (TypeSig _ ns _) = ns
 getBoundSign _ = []
@@ -167,3 +180,13 @@ isCon _ = False
 nameToString :: Name l -> String
 nameToString (Ident _ s) = s
 nameToString (Symbol _ s) = s
+
+specialConToString :: SpecialCon l -> String
+specialConToString (UnitCon _)            = "()"
+specialConToString (ListCon _)            = "[]"
+specialConToString (FunCon _)             = "->"
+specialConToString (TupleCon _ Boxed n)   = replicate (n-1) ','
+specialConToString (TupleCon _ Unboxed n) = '#':replicate (n-1) ','
+specialConToString (Cons _)               = ":"
+specialConToString (UnboxedSingleCon _)   = "#"
+

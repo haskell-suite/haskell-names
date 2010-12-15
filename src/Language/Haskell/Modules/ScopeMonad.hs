@@ -1,41 +1,63 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
-module Language.Haskell.Modules.ScopeMonad(S, runS, scopeMsg, addSymbolList{-, addSymType, addSymValue-}) where
+module Language.Haskell.Modules.ScopeMonad(
+    S, runS, scopeMsg,
+    addModuleSymbols, getModuleSymbols,
+    addUnqualifiedSymbols, addQualifiedSymbols
+    ) where
 import Control.Monad.State.Strict
 import qualified Data.Map as M
 import Language.Haskell.Exts.Annotated
 
 import Language.Haskell.Modules.Error
 import Language.Haskell.Modules.SymbolTable
+import Language.Haskell.Modules.SyntaxUtils(dropAnn, qNameToName)
 
 data SState = SState {
-    s_modules   :: M.Map (ModuleName ()) SymbolList,
-    s_messages  :: [Msg]
+    -- Survives the entire scope checking.
+    s_modules   :: M.Map (ModuleName ()) Symbols,
+    s_messages  :: [Msg],
+
+    -- Local for a module group.
+    s_symtab    :: SymbolTable
     }
 
 emptySState :: SState
 emptySState = SState {
     s_modules = M.empty,
-    s_messages = []
+    s_messages = [],
+    s_symtab = symEmpty
     }
 
 newtype S a = S (State SState a)
-    deriving (Monad, MonadState SState)
+    deriving (Functor, Monad, MonadState SState)
 
 runS :: S a -> ([Msg], a)
 runS (S m) =
     case runState m $ emptySState of
     (x, s) -> (s_messages s, x)
 
-addSymbolList :: ModuleName () -> SymbolList -> S ()
-addSymbolList m l = modify $ \ s -> s { s_modules = M.insert m l (s_modules s) }
+addModuleSymbols :: ModuleName () -> Symbols -> S ()
+addModuleSymbols m l = modify $ \ s -> s { s_modules = M.insert m l (s_modules s) }
 
-{-
-addSymType :: ModuleName l -> Name l' -> [Name l''] -> S ()
-addSymType m n ps = undefined
-
-addSymValue :: ModuleName l -> Name l' -> S ()
-addSymValue m n = undefined
--}
+getModuleSymbols :: ModuleName () -> S Symbols
+getModuleSymbols m = do
+    sm <- gets s_modules
+    case M.lookup (dropAnn m) sm of
+        Nothing -> internalError $ "getModuleSymbols: " ++ prettyPrint m
+        Just s -> return s
 
 scopeMsg :: Msg -> S ()
 scopeMsg msg = modify $ \ s -> s { s_messages = msg : s_messages s }
+
+-----------------------------------------------------------------------------
+
+addUnqualifiedSymbols :: Symbols -> S ()
+addUnqualifiedSymbols = addSyms (UnQual undefined)
+
+addQualifiedSymbols :: ModuleName l -> Symbols -> S ()
+addQualifiedSymbols m = addSyms (Qual undefined $ fmap (const undefined) m)
+
+addSyms :: (Name SrcLoc -> QName SrcLoc) -> Symbols -> S ()
+addSyms q (vs, ts) = modify $ \ s -> s { s_symtab = foldr addt (foldr addv (s_symtab s) vs) ts }
+  where addt i = symTypeAdd  (q $ qNameToName $ st_origName i) i
+        addv i = symValueAdd (q $ qNameToName $ sv_origName i) i
