@@ -1,5 +1,7 @@
 {-# LANGUAGE FlexibleContexts, DeriveDataTypeable #-}
-module Language.Haskell.Modules.Error(Msg(..), MsgArg, msgArg, msgArgLoc, MsgLevel(..), msgError, msgWarning, msgInfo,
+module Language.Haskell.Modules.Error(Msg(..), msgLoc,
+                                      MsgArg, msgArg, msgArgLoc, MsgLevel(..),
+                                      msgError, msgWarning, msgInfo,
                                       isError, prMsg, prSrcLoc, noSrcLoc, noSrcSpan,
                                       unimplemented, internalError) where
 import Data.Data
@@ -13,6 +15,9 @@ data Msg = Msg MsgLevel SrcLoc String [MsgArg]
 isError :: Msg -> Bool
 isError (Msg MsgError _ _ _) = True
 isError _ = False
+
+msgLoc :: Msg -> SrcLoc
+msgLoc (Msg _ l _ _) = l
 
 msgError :: (SrcInfo l) => l -> String -> [MsgArg] -> Msg
 msgError l msg args = Msg MsgError (getPointLoc l) msg args

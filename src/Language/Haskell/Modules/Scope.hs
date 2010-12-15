@@ -39,7 +39,7 @@ instance (SrcInfo l) => SrcInfo (Scoped l) where
     startColumn = startColumn . sLoc
 
 scopeAnalysis :: Flags -> ModuleSet -> ([Msg], [Module (Scoped SrcSpan)])
-scopeAnalysis flags = (id *** concat) . runS flags . mapM scope . groupModules True
+scopeAnalysis flags = (sortBy (compare `on` msgLoc) *** concat) . runS flags . mapM scope . groupModules True
 
 scope :: ModuleSet -> S [Module (Scoped SrcSpan)]
 scope [Left s] = fmap return $ scopeSummary s
@@ -61,7 +61,7 @@ scopeModule m = do
         sigs = [ n | TypeSig _ ns _ <- decls, n <- ns ]
         fixes = [ opName o | InfixDecl _ _ _ ops <- decls, o <- ops ]
         ans = tns ++ vns
-    dupCheck "type definition" tns                       -- Check for duplicate types/classes
+    dupCheck "type/class definition" tns                 -- Check for duplicate types/classes
     dupCheck "value definition" vns                      -- Check for duplicate values
     strayCheck "type signature" vns' sigs                -- Check for stray type signatures
     dupCheck "type signature" sigs                       -- Check for duplicate type signatures
@@ -191,21 +191,23 @@ getTopDeclNames mdl ftbl d =
     DataDecl _ _ _ dh _ _ ->
         let dn = hname dh
             dq = qname dn
-            cs = getBound d
+            (cs, fs) = partition isCon $ getBound d
+            as = cs ++ nub fs  -- Ignore multiple selectors for now
         in    Right (SymData        { st_origName = dq,       st_fixity = fixity dn }) :
             [ if isCon cn then
               Left  (SymConstructor { sv_origName = qname cn, sv_fixity = fixity cn, sv_typeName = dropAnn dq }) else
               Left  (SymSelector    { sv_origName = qname cn, sv_fixity = fixity cn, sv_typeName = dropAnn dq })
-            | cn <- cs ]
+            | cn <- as ]
     GDataDecl _ _ _ dh _ _ _ ->
         let dn = hname dh
             cq = qname dn
-            cs = getBound d
+            (cs, fs) = partition isCon $ getBound d
+            as = cs ++ nub fs  -- Ignore multiple selectors for now
         in    Right (SymData        { st_origName = cq,       st_fixity = fixity dn }) :
             [ if isCon cn then
               Left  (SymConstructor { sv_origName = qname cn, sv_fixity = fixity cn, sv_typeName = dropAnn cq }) else
               Left  (SymSelector    { sv_origName = qname cn, sv_fixity = fixity cn, sv_typeName = dropAnn cq })
-            | cn <- cs ]
+            | cn <- as ]
     ClassDecl _ _ _ _ mds ->
         let ms = getBound d
             cn = getDeclHeadName d
