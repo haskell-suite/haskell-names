@@ -109,7 +109,7 @@ filterValues (Just (ImportSpecList _ hide ss)) vs = do
         impValues = S.fromList $ map dropAnn ns
         impTypes = S.fromList [ dropAnn n | IThingAll _ n <- ss ]
         vns = S.fromList $ map (dropAnn . qNameToName . sv_origName) vs
-        chk n | not (S.member (dropAnn n) vns) = scopeMsg $ msgError (getPointLoc $ ann n) "Module does not export value " [msgArg n]
+        chk n | not (S.member (dropAnn n) vns) = scopeMsg $ msgError (getPointLoc $ ann n) "Module does not export value" [msgArg n]
         chk _ = return ()
         found = (`S.member` impValues) . dropAnn . qNameToName . sv_origName
         foundT = (== Just True) . fmap ((`S.member` impTypes) . qNameToName) . sv_parent
@@ -125,7 +125,7 @@ filterTypes (Just (ImportSpecList _ hide ss)) ts = do
         impTypes = S.fromList $ map dropAnn ns
         found = (`S.member` impTypes) . dropAnn . qNameToName . st_origName
         tns = S.fromList $ map (dropAnn . qNameToName . st_origName) ts
-        chk n | not (S.member (dropAnn n) tns) = scopeMsg $ msgError (getPointLoc $ ann n) "Module does not export type/class " [msgArg n]
+        chk n | not (S.member (dropAnn n) tns) = scopeMsg $ msgError (getPointLoc $ ann n) "Module does not export type/class" [msgArg n]
         chk _ = return ()
     mapM_ chk ns
     return $ filter ((/= hide) . found) ts
