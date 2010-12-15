@@ -29,9 +29,9 @@ Err9.hs:2:7: Error: Stray infix declaration:  (&)
 
 
 
-Err10.hs:7:17: Error: Module does not export type/class :  C1
-Err10.hs:6:19: Error: Module does not export value :  m2
-Err10.hs:3:22: Error: Module does not export value :  C3
-Err10.hs:2:17: Error: Module does not export value :  bar
+Err10.hs:7:17: Error: Module does not export type/class:  C1
+Err10.hs:6:19: Error: Module does not export value:  m2
+Err10.hs:3:22: Error: Module does not export value:  C3
+Err10.hs:2:17: Error: Module does not export value:  bar
 
 
