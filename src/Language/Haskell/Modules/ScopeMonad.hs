@@ -1,10 +1,11 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 module Language.Haskell.Modules.ScopeMonad(
     S, runS, scopeMsg,
-    getFlags,
+    getFlags, getSymbolTable,
     addModuleSymbols, getModuleSymbols,
     addUnqualifiedSymbols, addQualifiedSymbols
     ) where
+import Control.Applicative
 import Control.Monad.State.Strict
 import qualified Data.Map as M
 import Language.Haskell.Exts.Annotated
@@ -35,6 +36,10 @@ emptySState = SState {
 newtype S a = S (State SState a)
     deriving (Functor, Monad, MonadState SState)
 
+instance Applicative S where
+    pure = return
+    f <*> a = do f' <- f; a' <- a; return (f' a')
+
 runS :: Flags -> S a -> ([Msg], a)
 runS flags (S m) =
     case runState m $ emptySState { s_flags = flags } of
@@ -42,6 +47,12 @@ runS flags (S m) =
 
 getFlags :: S Flags
 getFlags = gets s_flags
+
+getSymbolTable :: S SymbolTable
+getSymbolTable = do
+    st <- gets s_symtab
+    modify $ \ s -> s { s_symtab = symEmpty }
+    return st
 
 addModuleSymbols :: ModuleName () -> Symbols -> S ()
 addModuleSymbols m l = modify $ \ s -> s { s_modules = M.insert m l (s_modules s) }

@@ -2,7 +2,7 @@
 module Language.Haskell.Modules.SyntaxUtils(
     dropAnn, setAnn, getModuleName, getImports, getExportSpecList, splitDeclHead, getDeclHeadName, getModuleDecls,
     isTypeDecl, GetBound(..), opName, isCon, nameToString, specialConToString,
-    qNameToName
+    qNameToName, unCName,
     ) where
 import Data.Char
 import Data.Data
@@ -190,3 +190,6 @@ specialConToString (TupleCon _ Unboxed n) = '#':replicate (n-1) ','
 specialConToString (Cons _)               = ":"
 specialConToString (UnboxedSingleCon _)   = "#"
 
+unCName :: CName l -> Name l
+unCName (VarName _ n) = n
+unCName (ConName _ n) = n
