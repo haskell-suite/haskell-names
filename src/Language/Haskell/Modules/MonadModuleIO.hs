@@ -2,6 +2,7 @@
 -- | A module for looking up a module in the file store in the standard way.
 module Language.Haskell.Modules.MonadModuleIO(IOE, Options(..), pathFinder, defaultOptions) where
 import Control.Monad.Reader
+import Control.Exception
 import Data.List
 import Data.List.Split
 import Data.Maybe
@@ -74,7 +75,7 @@ pickFirst (io:ios) = do
         _       -> return mx
 
 maybeRead :: FilePath -> IO (Maybe String)
-maybeRead f = liftM Just (readFile f) `catch` \ _ -> return Nothing
+maybeRead f = liftM Just (readFile f) `catch` ((\ _ -> return Nothing) :: IOException -> IO (Maybe String))
 
 cpp :: [Extension] -> FilePath -> String -> IOE String
 cpp exts fileName file =
