@@ -385,6 +385,13 @@ instance ScopeCheck Decl where
                                      where (st', ps') = scopePats st ps
                                            (st'', mb') = maybe (st', Nothing) (scopeBinds st') mb
 -}
+    scope st (PatBind l pat@PVar{} mbT rhs mbBinds) =
+      PatBind
+        (none l)
+        (fmap binder pat)
+        (fmap (scopeType st) mbT)
+        (scope st rhs)
+        (fmap (scope st) mbBinds)
     scope st (ForImp l cc ms mn n t) = ForImp (none l) (noScope cc) (fmap noScope ms) mn (fmap binder n) (scopeType st t)
     scope st (ForExp l cc    mn n t) = ForExp (none l) (noScope cc)                   mn (scopeVar st n) (scopeType st t)
     scope _ d = unimplemented $ "scope: " ++ take 30 (prettyPrint d)
