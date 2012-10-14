@@ -563,3 +563,6 @@ instance ScopeCheck QOp where
 
 instance ScopeCheck Alt
 instance ScopeCheck FieldUpdate
+
+instance ScopeCheck Binds where
+  scope st (BDecls l decls) = BDecls (none l) $ map (scope st) decls
