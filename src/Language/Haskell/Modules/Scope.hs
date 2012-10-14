@@ -2,6 +2,8 @@
 module Language.Haskell.Modules.Scope(
     scopeAnalysis,
     Scoped(..), getOriginalName,
+    scopeModule,
+    runS,
     getScopeErrors) where
 
 -- TODO
