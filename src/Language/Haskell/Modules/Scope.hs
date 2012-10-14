@@ -118,15 +118,18 @@ processImports l is = do
 processImport :: (SrcInfo l) => ImportDecl l -> S ()
 processImport i = do
     let im = importModule i
-    (vs, ts) <- getModuleSymbols $ dropAnn im
-    let mdl = fromMaybe im $ importAs i
-        spec = importSpecs i
-    vs' <- filterValues spec vs
-    ts' <- filterTypes spec ts
-    let syms = (vs', ts')
-    when (not $ importQualified i) $
-        addUnqualifiedSymbols syms
-    addQualifiedSymbols mdl syms
+    mbSyms <- getModuleSymbols $ dropAnn im
+    case mbSyms of
+      Nothing -> return () -- FIXME: issue a warning
+      Just (vs, ts) -> do
+        let mdl = fromMaybe im $ importAs i
+            spec = importSpecs i
+        vs' <- filterValues spec vs
+        ts' <- filterTypes spec ts
+        let syms = (vs', ts')
+        when (not $ importQualified i) $
+            addUnqualifiedSymbols syms
+        addQualifiedSymbols mdl syms
 
 filterValues :: (SrcInfo l) => Maybe (ImportSpecList l) -> SymValueInfos -> S SymValueInfos
 filterValues Nothing vs = return vs

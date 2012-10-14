@@ -57,12 +57,10 @@ getSymbolTable = do
 addModuleSymbols :: ModuleName () -> Symbols -> S ()
 addModuleSymbols m l = modify $ \ s -> s { s_modules = M.insert m l (s_modules s) }
 
-getModuleSymbols :: ModuleName () -> S Symbols
+getModuleSymbols :: ModuleName () -> S (Maybe Symbols)
 getModuleSymbols m = do
     sm <- gets s_modules
-    case M.lookup (dropAnn m) sm of
-        Nothing -> internalError $ "getModuleSymbols: " ++ prettyPrint m
-        Just s -> return s
+    return $ M.lookup (dropAnn m) sm
 
 scopeMsg :: Msg -> S ()
 scopeMsg msg = modify $ \ s -> s { s_messages = msg : s_messages s }
