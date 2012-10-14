@@ -33,7 +33,7 @@ makeParseMode = ParseMode {
      parseFilename = "?"
    , extensions = []
    , ignoreLanguagePragmas = False
-   , fixities = []
+   , fixities = Nothing
    , ignoreLinePragmas = False
    }
 
