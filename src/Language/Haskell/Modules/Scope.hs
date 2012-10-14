@@ -320,7 +320,7 @@ scopeVar st n =
 
 instance ScopeCheck Module where
     scope st (Module l mh os is ds) = Module (none l) (fmap (scope st) mh) (fmap (scope st) os) (fmap (scope st) is) (fmap (scope st) ds)
-    scope _ m = unimplemented $ "scope: " ++ take 20 (prettyPrint m)
+    scope _ m = unimplemented $ "scope: " ++ take 30 (prettyPrint m)
 
 instance ScopeCheck ModuleHead where
     scope st (ModuleHead l n mw me) = ModuleHead (none l) (noScope n) (fmap noScope mw) (fmap (scope st) me)
@@ -385,7 +385,7 @@ instance ScopeCheck Decl where
 -}
     scope st (ForImp l cc ms mn n t) = ForImp (none l) (noScope cc) (fmap noScope ms) mn (fmap binder n) (scopeType st t)
     scope st (ForExp l cc    mn n t) = ForExp (none l) (noScope cc)                   mn (scopeVar st n) (scopeType st t)
-    scope _ d = unimplemented $ "scope: " ++ take 20 (prettyPrint d)
+    scope _ d = unimplemented $ "scope: " ++ take 30 (prettyPrint d)
 
 scopeMaybeContext :: SymbolTable -> Maybe (Context SrcSpan) -> (SymbolTable, Maybe (Context (Scoped SrcSpan)))
 scopeMaybeContext st mc = (st, fmap (scope st) mc)
@@ -464,7 +464,7 @@ instance ScopeCheck Pat where
     scope  _ (PVar l n) = PVar (none l) (fmap binder n)
     scope st (PLit l k) = PLit (none l) (scope st k)
     scope st (PNeg l p) = PNeg (none l) (scope st p)
-    scope st (PNPlusK l n i) = PNPlusK (none l) (fmap binder n) i
+    scope  _ (PNPlusK l n i) = PNPlusK (none l) (fmap binder n) i
     scope st (PInfixApp l p1 n p2) = PInfixApp (none l) (scope st p1) (scopeVal st n) (scope st p2)
     scope st (PApp l n ps) = PApp (none l) (scopeVal st n) (fmap (scope st) ps)
     scope st (PTuple l ps) = PTuple (none l) (fmap (scope st) ps)
@@ -472,7 +472,7 @@ instance ScopeCheck Pat where
     scope st (PParen l p) = PParen (none l) (scope st p)
     -- PRec
     scope st (PAsPat l n p) = PAsPat (none l) (fmap binder n) (scope st p)
-    scope st (PWildCard l) = PWildCard (none l)
+    scope  _ (PWildCard l) = PWildCard (none l)
     scope st (PIrrPat l p) = PIrrPat (none l) (scope st p)
     scope st (PatTypeSig l p t) = PatTypeSig (none l) (scope st p) (scopeType st t)
     -- PViewPat
@@ -504,4 +504,53 @@ scopeStmts st (s:ss) = (st'', s':ss') where (st', s') = scopeStmt st s; (st'', s
 scopeStmt :: SymbolTable -> Stmt SrcSpan -> (SymbolTable, Stmt (Scoped SrcSpan))
 scopeStmt = unimplemented "scopeStmt"
 
-instance ScopeCheck Exp
+instance ScopeCheck Exp where
+    scope st (Var l n) = Var (none l) (scopeVal st n)
+    -- IPVar
+    scope st (Con l n) = Con (none l) (scopeVal st n)
+    scope st (Lit l i) = Lit (none l) (scope st i)
+    scope st (InfixApp l e1 o e2) = InfixApp (none l) (scope st e1) (scope st o) (scope st e2)
+    scope st (App l e1 e2) = App (none l) (scope st e1) (scope st e2)
+    scope st (NegApp l e) = NegApp (none l) (scope st e)
+    scope st (Lambda l ps e) = Lambda (none l) ps' (scope st' e) where (st', ps') = scopePats st ps
+    scope st (Let l b e) = Let (none l) b' (scope st' e) where (st', b') = scopeBinds st b
+    scope st (If l e1 e2 e3) = If (none l) (scope st e1) (scope st e2) (scope st e3)
+    scope st (Case l e as) = Case (none l) (scope st e) (fmap (scope st) as)
+    scope st (Do l ss) = Do (none l) ss' where (_, ss') = scopeStmts st ss
+    -- MDo
+    scope st (Tuple l es) = Tuple (none l) (fmap (scope st) es)
+    scope st (TupleSection l es) = TupleSection (none l) (fmap (fmap (scope st)) es)
+    scope st (List l es) = List (none l) (fmap (scope st) es)
+    scope st (Paren l e) = Paren (none l) (scope st e)
+    scope st (LeftSection l e o) = LeftSection (none l) (scope st e) (scope st o)
+    scope st (RightSection l o e) = RightSection (none l) (scope st o) (scope st e)
+    scope st (RecConstr l n fs) = RecConstr (none l) (scopeVal st n) (fmap (scope st) fs)
+    scope st (RecUpdate l e fs) = RecUpdate (none l) (scope st e) (fmap (scope st) fs)
+    scope st (EnumFrom l e) = EnumFrom (none l) (scope st e)
+    scope st (EnumFromTo l e1 e2) = EnumFromTo (none l) (scope st e1) (scope st e2)
+    scope st (EnumFromThen l e1 e2) = EnumFromThen (none l) (scope st e1) (scope st e2)
+    scope st (EnumFromThenTo l e1 e2 e3) = EnumFromThenTo (none l) (scope st e1) (scope st e2) (scope st e3)
+    scope st (ListComp l e ss) = ListComp (none l) (scope st' e) ss' where (st', ss') = scopeQualStmts st ss
+    -- ParComp
+    scope st (ExpTypeSig l e t) = ExpTypeSig (none l) (scope st e) (scopeType st t)
+    -- VarQuote
+    -- TypQuote
+    -- BracketExp
+    -- SpliceExp
+    -- QuasiQuote
+    -- XTag
+    -- XETag
+    -- XPcdata
+    -- XExpTag
+    -- ... XXX pragmas, arrows
+    scope _ e = unimplemented $ "scope: " ++ take 30 (prettyPrint e)
+
+scopeQualStmts :: SymbolTable -> [QualStmt SrcSpan] -> (SymbolTable, [QualStmt (Scoped SrcSpan)])
+scopeQualStmts = unimplemented "scopeQualStmts"
+
+instance ScopeCheck QOp where
+    scope st (QVarOp l n) = QVarOp (none l) (scopeVal st n)
+    scope st (QConOp l n) = QConOp (none l) (scopeVal st n)
+
+instance ScopeCheck Alt
+instance ScopeCheck FieldUpdate
