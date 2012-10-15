@@ -524,7 +524,13 @@ scopeStmts :: [Stmt SrcSpan] -> State SymbolTable [Stmt (Scoped SrcSpan)]
 scopeStmts = mapM scopeStmt
 
 scopeStmt :: Stmt SrcSpan -> State SymbolTable (Stmt (Scoped SrcSpan))
-scopeStmt = unimplemented "scopeStmt"
+scopeStmt (Generator l pat expr) = do
+  pat' <- scopePat pat
+  expr' <- scopeM expr
+  return $ Generator (none l) pat' expr'
+scopeStmt (Qualifier l expr) = Qualifier (none l) <$> scopeM expr
+scopeStmt (LetStmt l bnds) = undefined
+scopeStmt RecStmt {} = unimplemented "scope: RecStmt"
 
 instance ScopeCheck Exp where
     scope st (Var l n) = Var (none l) (scopeVal st n)
