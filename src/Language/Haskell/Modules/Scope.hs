@@ -495,7 +495,7 @@ instance ScopeCheck Pat where
     scope  _ (PWildCard l) = PWildCard (none l)
     scope st (PIrrPat l p) = PIrrPat (none l) (scope st p)
     scope st (PatTypeSig l p t) = PatTypeSig (none l) (scope st p) (scopeType st t)
-    -- PViewPat
+    scope st (PViewPat l expr pat) = PViewPat (none l) (scope st expr) (scope st pat)
     -- PRPat
     -- PXTag
     -- PXETag
