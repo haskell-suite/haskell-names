@@ -12,16 +12,17 @@ module Language.Haskell.Modules.Scope(
 --  need better getBound for wildcard patterns
 --  resolve operators after scope check
 
---import Control.Applicative
+import Control.Applicative
 import Control.Arrow((***))
 import Control.Monad
+import Control.Monad.State
 import Data.Data
 import Data.Either
 import Data.Function
 import Data.Generics.PlateData
 import Data.List
 import Data.Maybe
---import Data.Traversable(mapM)
+import Data.Traversable (traverse)
 import qualified Data.Set as S
 
 --import qualified Language.Haskell.Exts.Fixity as F
@@ -268,6 +269,9 @@ getScopeErrors ms = [ m | ScopeError _ m <- universeBi ms :: [Scoped SrcSpan] ]
 class {-(Annotated a) => -} ScopeCheck a where
     scope :: SymbolTable -> a SrcSpan -> a (Scoped SrcSpan)
 
+scopeM :: ScopeCheck a => a SrcSpan -> State SymbolTable (a (Scoped SrcSpan))
+scopeM x = scope <$> get <*> pure x
+
 none :: l -> Scoped l
 none = None
 
@@ -346,10 +350,12 @@ instance ScopeCheck ModulePragma where
 instance ScopeCheck ImportDecl where
     scope _ = noScope  -- No interesting things to scope check here, but could do it if it's ever needed.
 
-scopeDeclHead :: SymbolTable -> DeclHead SrcSpan -> (SymbolTable, DeclHead (Scoped SrcSpan))
-scopeDeclHead st (DHead l n tvs) = (addTyVarBinds tvs st, DHead (none l) (fmap binder n) (fmap (scope st) tvs))
-scopeDeclHead st (DHInfix l tv1 n tv2) = (addTyVarBinds [tv1, tv2] st, DHInfix (none l) (scope st tv1) (fmap binder n) (scope st tv2))
-scopeDeclHead st (DHParen l dh) = (st', DHParen (none l) dh') where (st', dh') = scopeDeclHead st dh
+scopeDeclHead :: DeclHead SrcSpan -> State SymbolTable (DeclHead (Scoped SrcSpan))
+scopeDeclHead (DHead l n tvs) =
+  state $ \st -> (DHead (none l) (fmap binder n) (fmap (scope st) tvs), addTyVarBinds tvs st)
+scopeDeclHead (DHInfix l tv1 n tv2) =
+  state $ \st -> (DHInfix (none l) (scope st tv1) (fmap binder n) (scope st tv2), addTyVarBinds [tv1, tv2] st)
+scopeDeclHead (DHParen l dh) = DHParen (none l) <$> scopeDeclHead dh
 
 addTyVarBinds :: [TyVarBind SrcSpan] -> SymbolTable -> SymbolTable
 addTyVarBinds _tvs st = st -- XXX
@@ -365,11 +371,14 @@ instance ScopeCheck Kind where
     scope _ k = noScope k
 
 instance ScopeCheck Decl where
-    scope st (TypeDecl l dh t) = TypeDecl (none l) dh' (scope st' t) where (st', dh') = scopeDeclHead st dh
+    scope st (TypeDecl l dh t) =
+      flip evalState st $ TypeDecl (none l) <$> scopeDeclHead dh <*> scopeM t
     -- TypeFamDecl
-    scope st (DataDecl l dn mc dh cs md) = DataDecl (none l) (noScope dn) mc' dh' (fmap (scope st'') cs) (fmap (scope st'') md)
-                                           where (st', dh') = scopeDeclHead st dh
-                                                 (st'', mc') = scopeMaybeContext st' mc
+    scope st (DataDecl l dn mc dh cs md) = flip evalState st $ do
+      dh' <- scopeDeclHead dh
+      mc' <- scopeMaybeContext mc
+      DataDecl (none l) (noScope dn) mc' dh' <$> traverse scopeM cs <*> traverse scopeM md
+
     -- GDataDecl
     -- DataFamDecl
     -- TypeInsDecl
@@ -399,8 +408,8 @@ instance ScopeCheck Decl where
     scope st (ForExp l cc    mn n t) = ForExp (none l) (noScope cc)                   mn (scopeVar st n) (scopeType st t)
     scope _ d = unimplemented $ "scope: " ++ take 30 (prettyPrint d)
 
-scopeMaybeContext :: SymbolTable -> Maybe (Context SrcSpan) -> (SymbolTable, Maybe (Context (Scoped SrcSpan)))
-scopeMaybeContext st mc = (st, fmap (scope st) mc)
+scopeMaybeContext :: Maybe (Context SrcSpan) -> State SymbolTable (Maybe (Context (Scoped SrcSpan)))
+scopeMaybeContext mc = state $ \st -> (fmap (scope st) mc, st)
 
 instance ScopeCheck QualConDecl where
     scope st (QualConDecl l mtvs mc cd) = QualConDecl (none l) (fmap (fmap (scope st)) mtvs) (fmap (scope st') mc) (scope st' cd)
@@ -457,19 +466,21 @@ instance ScopeCheck InstHead where
     scope st (IHParen l i) = IHParen (none l) (scope st i)
 
 instance ScopeCheck Match where
-    scope st (Match l n ps rhs mb) = Match (none l) (fmap binder n) ps' (scope st'' rhs) mb'
-                                     where (st', ps') = scopePats st ps
-                                           (st'', mb') = maybe (st', Nothing) ((id *** Just) . scopeBinds st') mb
+    scope st (Match l n ps rhs mb) = flip evalState st $ do
+      ps' <- scopePats ps
+      mb' <- traverse scopeBinds mb
+      rhs' <- scopeM rhs
+      return $ Match (none l) (fmap binder n) ps' rhs' mb'
     scope st (InfixMatch l p n ps rhs mb) = InfixMatch l' p' n' ps' rhs' mb'
       where Match l' n' (p':ps') rhs' mb' = scope st $ Match l n (p:ps) rhs mb
 
-scopePats :: SymbolTable -> [Pat SrcSpan] -> (SymbolTable, [Pat (Scoped SrcSpan)])
-scopePats st ps = (addVars (getBound ps) st, fmap (scope st) ps)
+scopePats :: [Pat SrcSpan] -> State SymbolTable [Pat (Scoped SrcSpan)]
+scopePats ps = state $ \st -> (fmap (scope st) ps, addVars (getBound ps) st)
 
-scopePat :: SymbolTable -> Pat SrcSpan -> (SymbolTable, Pat (Scoped SrcSpan))
-scopePat st p = (addVars (getBound p) st, scope st p)
+scopePat :: Pat SrcSpan -> State SymbolTable (Pat (Scoped SrcSpan))
+scopePat p = state $ \st -> (scope st p, addVars (getBound p) st)
 
-scopeBinds :: SymbolTable -> Binds SrcSpan -> (SymbolTable, Binds (Scoped SrcSpan))
+scopeBinds :: Binds SrcSpan -> State SymbolTable (Binds (Scoped SrcSpan))
 scopeBinds = unimplemented "scopeBinds"
 
 instance ScopeCheck Pat where
@@ -507,13 +518,12 @@ instance ScopeCheck Rhs where
     scope st (GuardedRhss l gs) = GuardedRhss (none l) (fmap (scope st) gs)
 
 instance ScopeCheck GuardedRhs where
-    scope st (GuardedRhs l ss e) = GuardedRhs (none l) ss' (scope st' e) where (st', ss') = scopeStmts st ss
+    scope st (GuardedRhs l ss e) = flip evalState st $ GuardedRhs (none l) <$> scopeStmts ss <*> scopeM e
 
-scopeStmts :: SymbolTable -> [Stmt SrcSpan] -> (SymbolTable, [Stmt (Scoped SrcSpan)])
-scopeStmts st [] = (st, [])
-scopeStmts st (s:ss) = (st'', s':ss') where (st', s') = scopeStmt st s; (st'', ss') = scopeStmts st' ss
+scopeStmts :: [Stmt SrcSpan] -> State SymbolTable [Stmt (Scoped SrcSpan)]
+scopeStmts = mapM scopeStmt
 
-scopeStmt :: SymbolTable -> Stmt SrcSpan -> (SymbolTable, Stmt (Scoped SrcSpan))
+scopeStmt :: Stmt SrcSpan -> State SymbolTable (Stmt (Scoped SrcSpan))
 scopeStmt = unimplemented "scopeStmt"
 
 instance ScopeCheck Exp where
@@ -524,11 +534,11 @@ instance ScopeCheck Exp where
     scope st (InfixApp l e1 o e2) = InfixApp (none l) (scope st e1) (scope st o) (scope st e2)
     scope st (App l e1 e2) = App (none l) (scope st e1) (scope st e2)
     scope st (NegApp l e) = NegApp (none l) (scope st e)
-    scope st (Lambda l ps e) = Lambda (none l) ps' (scope st' e) where (st', ps') = scopePats st ps
-    scope st (Let l b e) = Let (none l) b' (scope st' e) where (st', b') = scopeBinds st b
+    scope st (Lambda l ps e) = flip evalState st $ Lambda (none l) <$> scopePats ps <*> scopeM e
+    scope st (Let l b e) = flip evalState st $ Let (none l) <$> scopeBinds b <*> scopeM e
     scope st (If l e1 e2 e3) = If (none l) (scope st e1) (scope st e2) (scope st e3)
     scope st (Case l e as) = Case (none l) (scope st e) (fmap (scope st) as)
-    scope st (Do l ss) = Do (none l) ss' where (_, ss') = scopeStmts st ss
+    scope st (Do l ss) = flip evalState st $ Do (none l) <$> scopeStmts ss
     -- MDo
     scope st (Tuple l es) = Tuple (none l) (fmap (scope st) es)
     scope st (TupleSection l es) = TupleSection (none l) (fmap (fmap (scope st)) es)
@@ -542,7 +552,9 @@ instance ScopeCheck Exp where
     scope st (EnumFromTo l e1 e2) = EnumFromTo (none l) (scope st e1) (scope st e2)
     scope st (EnumFromThen l e1 e2) = EnumFromThen (none l) (scope st e1) (scope st e2)
     scope st (EnumFromThenTo l e1 e2 e3) = EnumFromThenTo (none l) (scope st e1) (scope st e2) (scope st e3)
-    scope st (ListComp l e ss) = ListComp (none l) (scope st' e) ss' where (st', ss') = scopeQualStmts st ss
+    scope st (ListComp l e ss) = flip evalState st $ do
+      ss' <- scopeQualStmts ss
+      ListComp (none l) <$> scopeM e <*> pure ss'
     -- ParComp
     scope st (ExpTypeSig l e t) = ExpTypeSig (none l) (scope st e) (scopeType st t)
     -- VarQuote
@@ -557,7 +569,7 @@ instance ScopeCheck Exp where
     -- ... XXX pragmas, arrows
     scope _ e = unimplemented $ "scope: " ++ take 30 (prettyPrint e)
 
-scopeQualStmts :: SymbolTable -> [QualStmt SrcSpan] -> (SymbolTable, [QualStmt (Scoped SrcSpan)])
+scopeQualStmts :: [QualStmt SrcSpan] -> State SymbolTable [QualStmt (Scoped SrcSpan)]
 scopeQualStmts = unimplemented "scopeQualStmts"
 
 instance ScopeCheck QOp where
