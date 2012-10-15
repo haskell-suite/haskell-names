@@ -475,7 +475,10 @@ scopePat :: Pat SrcSpan -> State SymbolTable (Pat (Scoped SrcSpan))
 scopePat p = state $ \st -> (scope st p, addVars (getBound p) st)
 
 scopeBinds :: Binds SrcSpan -> State SymbolTable (Binds (Scoped SrcSpan))
-scopeBinds = unimplemented "scopeBinds"
+scopeBinds (BDecls l ds) = do
+  modify $ addVars $ getBound ds
+  BDecls (none l) <$> mapM scopeM ds
+scopeBinds IPBinds {} = unimplemented "scope: IPBinds"
 
 instance ScopeCheck Pat where
     scope  _ (PVar l n) = PVar (none l) (fmap binder n)
@@ -580,4 +583,4 @@ instance ScopeCheck Alt
 instance ScopeCheck FieldUpdate
 
 instance ScopeCheck Binds where
-  scope st (BDecls l decls) = BDecls (none l) $ map (scope st) decls
+  scope st bnds = evalState (scopeBinds bnds) st
