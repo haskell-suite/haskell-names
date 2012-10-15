@@ -361,7 +361,11 @@ addTyVarBinds :: [TyVarBind SrcSpan] -> SymbolTable -> SymbolTable
 addTyVarBinds _tvs st = st -- XXX
 
 addVars :: [Name SrcSpan] -> SymbolTable -> SymbolTable
-addVars _vs st = st -- XXX
+addVars vs st = foldl' (\st v -> addVar v st) st vs
+  where
+  addVar v st =
+    let qv = UnQual (ann v) v
+    in symValueAdd qv (SymValue (getPointLoc <$> qv) Nothing) st
 
 instance ScopeCheck TyVarBind where
     scope st (KindedVar l n k) = KindedVar (none l) (fmap binder n) (scope st k)
