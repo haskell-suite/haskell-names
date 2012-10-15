@@ -580,7 +580,10 @@ instance ScopeCheck QOp where
     scope st (QConOp l n) = QConOp (none l) (scopeVal st n)
 
 instance ScopeCheck Alt
-instance ScopeCheck FieldUpdate
+instance ScopeCheck FieldUpdate where
+  scope st (FieldUpdate l field expr) =
+    FieldUpdate (none l) (scopeVal st field) (scope st expr)
+  scope _ _ = unimplemented "scope: FieldUpdate"
 
 instance ScopeCheck Binds where
   scope st bnds = evalState (scopeBinds bnds) st
