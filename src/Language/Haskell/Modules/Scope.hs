@@ -391,12 +391,6 @@ instance ScopeCheck Decl where
     -- SpliceDecl
     scope st (TypeSig l ns t) = TypeSig (none l) (fmap (scopeVar st) ns) (scopeType st t)  -- XXX this checks for stray sigs
     scope st (FunBind l ms) = FunBind (none l) (fmap (scope st) ms)
-{-
-    scope st (PatBind l p mt rhs mb) = PatBind l 
-    scope st (Match l n ps rhs mb) = Match (none l) (fmap binder n) ps' (scope st'' rhs) mb'
-                                     where (st', ps') = scopePats st ps
-                                           (st'', mb') = maybe (st', Nothing) (scopeBinds st') mb
--}
     scope st (PatBind l pat@PVar{} mbT rhs mbBinds) =
       PatBind
         (none l)
