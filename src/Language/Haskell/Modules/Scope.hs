@@ -560,11 +560,12 @@ instance ScopeCheckR GuardedRhs where
 
 instance ScopeCheckM Stmt where
     scopeM (Generator l pat expr) = do
-      pat' <- scopePat pat
+      -- NB: expr can't reference vars bound by pat
       expr' <- scopeR expr
+      pat' <- scopePat pat
       return $ Generator (none l) pat' expr'
     scopeM (Qualifier l expr) = Qualifier (none l) <$> scopeR expr
-    scopeM (LetStmt l bnds) = undefined
+    scopeM (LetStmt l bnds) = LetStmt (none l) <$> scopeM bnds
     scopeM RecStmt {} = unimplemented "scope: RecStmt"
 
 instance ScopeCheckR Exp where
