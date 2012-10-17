@@ -1,4 +1,4 @@
-{-# LANGUAGE PatternGuards, DeriveDataTypeable #-}
+{-# LANGUAGE PatternGuards, DeriveDataTypeable, GeneralizedNewtypeDeriving #-}
 module Language.Haskell.Modules.Scope(
     scopeAnalysis,
     Scoped(..), getOriginalName,
@@ -12,17 +12,19 @@ module Language.Haskell.Modules.Scope(
 --  need better getBound for wildcard patterns
 --  resolve operators after scope check
 
+import Prelude hiding (mapM)
 import Control.Applicative
 import Control.Arrow((***))
-import Control.Monad
-import Control.Monad.State
+import Control.Monad hiding (mapM)
+import Control.Monad.State hiding (mapM,get,modify)
+import qualified Control.Monad.State as State
 import Data.Data
 import Data.Either
 import Data.Function
 import Data.Generics.PlateData
 import Data.List
 import Data.Maybe
-import Data.Traversable (traverse)
+import Data.Traversable (mapM)
 import qualified Data.Set as S
 
 --import qualified Language.Haskell.Exts.Fixity as F
@@ -96,7 +98,7 @@ scopeModule m = do
     addQualifiedSymbols mname syms
 
     st <- getSymbolTable
-    let m' = scope st m
+    let m' = evalState (runScopeM $ scopeR m) st
 
     -- Remember module for future processing.
     addModuleSymbols mname =<< filterExports (getExportSpecList m') syms
@@ -175,7 +177,7 @@ defaultPrecedence :: Int
 defaultPrecedence = 9
 
 dupCheck :: (SrcInfo l) => String -> [Name l] -> S ()
-dupCheck msg = mapM_ report . filter ((> 1) . length) . groupBy ((==) `on` dropAnn) . sortBy (compare `on` dropAnn) 
+dupCheck msg = mapM_ report . filter ((> 1) . length) . groupBy ((==) `on` dropAnn) . sortBy (compare `on` dropAnn)
   where report (n:ns) = scopeMsg $ msgError (getPointLoc $ ann n) ("Duplicate " ++ msg ++ "s") $ map msgArgLoc ns
         report [] = internalError "dupCheck"
 
@@ -266,11 +268,37 @@ getScopeErrors ms = [ m | ScopeError _ m <- universeBi ms :: [Scoped SrcSpan] ]
 
 -----------------------------------------------------------------------------
 
-class {-(Annotated a) => -} ScopeCheck a where
-    scope :: SymbolTable -> a SrcSpan -> a (Scoped SrcSpan)
+-- | Used as a phantom type
+data Modify = Modify
 
-scopeM :: ScopeCheck a => a SrcSpan -> State SymbolTable (a (Scoped SrcSpan))
-scopeM x = scope <$> get <*> pure x
+-- | The phantom type @i@ can either be left polymoprhic (which means that
+-- the monadic action just reads, but does not modify, the symbol table) or
+-- instantiated with 'Modify', which means that the action modifies the symbol
+-- table.
+newtype ScopeM i a = ScopeM { runScopeM :: State SymbolTable a }
+    deriving (Functor, Applicative, Monad)
+
+get :: ScopeM i SymbolTable
+get = ScopeM State.get
+
+modify :: (SymbolTable -> SymbolTable) -> ScopeM Modify ()
+modify f = ScopeM $ State.modify f
+
+-- We have two different classes, ScopeCheckM and ScopeCheckR, to avoid
+-- accidentally using scopeR where scopeM is intended (and thus losing scope
+-- changes).
+
+class ScopeCheckM a where
+    -- | 'scopeM' may modify the symbol table if the node introduces any bindings
+    scopeM :: a SrcSpan -> ScopeM Modify (a (Scoped SrcSpan))
+
+class ScopeCheckR a where
+    -- | 'scopeR' never modifies the symbol table
+    scopeR :: a SrcSpan -> ScopeM i (a (Scoped SrcSpan))
+
+-- | Delimit the scope of changes that are introduced by the action
+delimit :: ScopeM i1 a -> ScopeM i2 a
+delimit (ScopeM a) = ScopeM $ do st <- State.get; r <- a; State.put st; return r
 
 none :: l -> Scoped l
 none = None
@@ -281,8 +309,8 @@ binder = Binder
 noScope :: (Annotated a) => a l -> a (Scoped l)
 noScope = fmap None
 
-scopeX :: (SymTypeInfo -> Maybe String) -> String -> SymbolTable -> QName SrcSpan -> QName (Scoped SrcSpan)
-scopeX ok w st qn =
+scopeX :: (SymTypeInfo -> Maybe String) -> String -> QName SrcSpan -> ScopeM i (QName (Scoped SrcSpan))
+scopeX ok w qn = flip liftM get $ \st ->
     let f l = case symTypeLookup qn st of
               Nothing -> ScopeError l $ msgError (ann qn) ("Undefined " ++ w ++ " identifier") [msgArg qn]
               Just i -> case ok i of
@@ -290,21 +318,21 @@ scopeX ok w st qn =
                         Just s -> ScopeError l $ msgError (ann qn) s [msgArg qn]
     in  fmap f qn
 
-scopeTyCls :: SymbolTable -> QName SrcSpan -> QName (Scoped SrcSpan)
+scopeTyCls :: QName SrcSpan -> ScopeM i (QName (Scoped SrcSpan))
 scopeTyCls = scopeX (const Nothing) "type/class"
 
-scopeCls :: SymbolTable -> QName SrcSpan -> QName (Scoped SrcSpan)
+scopeCls :: QName SrcSpan -> ScopeM i (QName (Scoped SrcSpan))
 scopeCls = scopeX cls "class"
   where cls SymClass{} = Nothing
         cls _ = Just "Type used as a class"
 
-scopeTy :: SymbolTable -> QName SrcSpan -> QName (Scoped SrcSpan)
+scopeTy :: QName SrcSpan -> ScopeM i (QName (Scoped SrcSpan))
 scopeTy = scopeX cls "type"
   where cls SymClass{} = Just "Class used as a type"
         cls _ = Nothing
 
-scopeTyVar :: SymbolTable -> Name SrcSpan -> Name (Scoped SrcSpan)
-scopeTyVar st n = fixup $ scopeX cls "type variable" st (UnQual (ann n) n)
+scopeTyVar :: Name SrcSpan -> ScopeM i (Name (Scoped SrcSpan))
+scopeTyVar n = fixup <$> scopeX cls "type variable" (UnQual (ann n) n)
   where cls SymClass{} = Just "Class used as a type"
         cls _ = Nothing
         fixup = fmap lcl . qNameToName
@@ -312,53 +340,59 @@ scopeTyVar st n = fixup $ scopeX cls "type variable" st (UnQual (ann n) n)
         lcl l = l
 
 -- XXX Handle local symbols
-scopeVal :: SymbolTable -> QName SrcSpan -> QName (Scoped SrcSpan)
-scopeVal st qn =
+scopeVal :: QName SrcSpan -> ScopeM i (QName (Scoped SrcSpan))
+scopeVal qn = flip liftM get $ \st ->
     let f l = case symValueLookup qn st of
               Nothing -> ScopeError l $ msgError (ann qn) "Undefined value identifier" [msgArg qn]
               Just i  -> Global l (sv_origName i)
     in  fmap f qn
 
 --- XXX
-scopeVar :: SymbolTable -> Name SrcSpan -> Name (Scoped SrcSpan)
-scopeVar st n =
+scopeVar :: Name SrcSpan -> ScopeM i (Name (Scoped SrcSpan))
+scopeVar n = flip liftM get $ \st ->
     let f l = case symValueLookup (UnQual (ann n) n) st of
               Nothing -> ScopeError l $ msgError (ann n) "Undefined value identifier" [msgArg n]
               Just i  -> Local l (ann $ sv_origName i)
     in  fmap f n
 
-instance ScopeCheck Module where
-    scope st (Module l mh os is ds) = Module (none l) (fmap (scope st) mh) (fmap (scope st) os) (fmap (scope st) is) (fmap (scope st) ds)
-    scope _ m = unimplemented $ "scope: " ++ take 30 (prettyPrint m)
+instance ScopeCheckR Module where
+    scopeR (Module l mh os is ds) =
+        Module (none l) <$>
+            mapM scopeR mh <*>
+            mapM scopeR os <*>
+            mapM scopeR is <*>
+            mapM scopeR ds
+    scopeR m = unimplemented $ "scope: " ++ take 30 (prettyPrint m)
 
-instance ScopeCheck ModuleHead where
-    scope st (ModuleHead l n mw me) = ModuleHead (none l) (noScope n) (fmap noScope mw) (fmap (scope st) me)
+instance ScopeCheckR ModuleHead where
+    scopeR (ModuleHead l n mw me) =
+        ModuleHead (none l) (noScope n) (fmap noScope mw) <$> mapM scopeR me
 
-instance ScopeCheck ExportSpecList where
-    scope st (ExportSpecList l es) = ExportSpecList (none l) (fmap (scope st) es)
+instance ScopeCheckR ExportSpecList where
+    scopeR (ExportSpecList l es) = ExportSpecList (none l) <$> mapM scopeR es
 
-instance ScopeCheck ExportSpec where
-    scope st (EVar l qn) = EVar (none l) (scopeVal st qn)
-    scope st (EAbs l qn) = EAbs (none l) (scopeTyCls st qn)
-    scope st (EThingAll l qn) = EThingAll (none l) (scopeTyCls st qn)
-    scope _st (EThingWith _l _qn _cns) = unimplemented "EThingWith"  -- check that cns are exportable
-    scope _ e@EModuleContents{} = noScope e
+instance ScopeCheckR ExportSpec where
+    scopeR (EVar l qn) = EVar (none l) <$> scopeVal qn
+    scopeR (EAbs l qn) = EAbs (none l) <$> scopeTyCls qn
+    scopeR (EThingAll l qn) = EThingAll (none l) <$> scopeTyCls qn
+    scopeR (EThingWith _l _qn _cns) = unimplemented "EThingWith"  -- check that cns are exportable
+    scopeR e@EModuleContents{} = return $ noScope e
 
-instance ScopeCheck ModulePragma where
-    scope _ = noScope
+instance ScopeCheckR ModulePragma where
+    scopeR = return . noScope
 
-instance ScopeCheck ImportDecl where
-    scope _ = noScope  -- No interesting things to scope check here, but could do it if it's ever needed.
+instance ScopeCheckR ImportDecl where
+    scopeR = return . noScope  -- No interesting things to scope check here, but could do it if it's ever needed.
 
-scopeDeclHead :: DeclHead SrcSpan -> State SymbolTable (DeclHead (Scoped SrcSpan))
-scopeDeclHead (DHead l n tvs) =
-  state $ \st -> (DHead (none l) (fmap binder n) (fmap (scope st) tvs), addTyVarBinds tvs st)
-scopeDeclHead (DHInfix l tv1 n tv2) =
-  state $ \st -> (DHInfix (none l) (scope st tv1) (fmap binder n) (scope st tv2), addTyVarBinds [tv1, tv2] st)
-scopeDeclHead (DHParen l dh) = DHParen (none l) <$> scopeDeclHead dh
+instance ScopeCheckM DeclHead where
+    scopeM (DHead l n tvs) =
+        DHead (none l) (fmap binder n) <$> mapM scopeM tvs
+    scopeM (DHInfix l tv1 n tv2) =
+        DHInfix (none l) <$> scopeM tv1 <*> pure (fmap binder n) <*> scopeM tv2
+    scopeM (DHParen l dh) = DHParen (none l) <$> scopeM dh
 
-addTyVarBinds :: [TyVarBind SrcSpan] -> SymbolTable -> SymbolTable
-addTyVarBinds _tvs st = st -- XXX
+addTyVarBind :: TyVarBind SrcSpan -> ScopeM Modify ()
+addTyVarBind _tvs = return () -- XXX
 
 addVars :: [Name SrcSpan] -> SymbolTable -> SymbolTable
 addVars vs st = foldl' (\st v -> addVar v st) st vs
@@ -367,139 +401,141 @@ addVars vs st = foldl' (\st v -> addVar v st) st vs
     let qv = UnQual (ann v) v
     in symValueAdd qv (SymValue (getPointLoc <$> qv) Nothing) st
 
-instance ScopeCheck TyVarBind where
-    scope st (KindedVar l n k) = KindedVar (none l) (fmap binder n) (scope st k)
-    scope  _ (UnkindedVar l n) = UnkindedVar (none l) (fmap binder n)
+instance ScopeCheckM TyVarBind where
+    scopeM b@(KindedVar l n k) =
+        KindedVar (none l) (fmap binder n) <$> scopeR k <* addTyVarBind b
+    scopeM b@(UnkindedVar l n) =
+        UnkindedVar (none l) (fmap binder n) <$ addTyVarBind b
 
-instance ScopeCheck Kind where
-    scope _ k = noScope k
+instance ScopeCheckR Kind where
+    scopeR = return . noScope
 
-instance ScopeCheck Decl where
-    scope st (TypeDecl l dh t) =
-      flip evalState st $ TypeDecl (none l) <$> scopeDeclHead dh <*> scopeM t
+instance ScopeCheckR Decl where
+    scopeR (TypeDecl l dh t) =
+      delimit $ TypeDecl (none l) <$> scopeM dh <*> scopeR t
     -- TypeFamDecl
-    scope st (DataDecl l dn mc dh cs md) = flip evalState st $ do
-      dh' <- scopeDeclHead dh
-      mc' <- scopeMaybeContext mc
-      DataDecl (none l) (noScope dn) mc' dh' <$> traverse scopeM cs <*> traverse scopeM md
+    scopeR (DataDecl l dn mc dh cs md) = delimit $ do
+      dh' <- scopeM dh
+      mc' <- mapM scopeR mc
+      DataDecl (none l) (noScope dn) mc' dh' <$> mapM scopeR cs <*> mapM scopeR md
 
     -- GDataDecl
     -- DataFamDecl
     -- TypeInsDecl
     -- DataInsDecl
     -- GDataInsDecl
-    scope _st (ClassDecl _l _mc _dh _fds _mds) = unimplemented "ClassDecl"
-    scope st (DerivDecl l mc ih) = DerivDecl (none l) (fmap (scope st) mc) (scope st ih)  -- XXX implicit tyvars
-    scope  _ (InfixDecl l a i ops) = InfixDecl (none l) (noScope a) i (fmap noScope ops)  -- XXX check infix scope here?
-    scope st (DefaultDecl l ts) = DefaultDecl (none l) (fmap (scopeType st) ts)
+    scopeR (ClassDecl _l _mc _dh _fds _mds) = unimplemented "ClassDecl"
+    scopeR (DerivDecl l mc ih) = DerivDecl (none l) <$> mapM scopeR mc <*> scopeR ih  -- XXX implicit tyvars
+    scopeR (InfixDecl l a i ops) = return $ InfixDecl (none l) (noScope a) i (fmap noScope ops)  -- XXX check infix scope here?
+    scopeR (DefaultDecl l ts) = DefaultDecl (none l) <$> mapM scopeR ts
     -- SpliceDecl
-    scope st (TypeSig l ns t) = TypeSig (none l) (fmap (scopeVar st) ns) (scopeType st t)  -- XXX this checks for stray sigs
-    scope st (FunBind l ms) = FunBind (none l) (fmap (scope st) ms)
-    scope st (PatBind l pat mbT rhs mbBinds) =
-      PatBind
-        (none l)
-        (scope st pat)
-        (fmap (scopeType st) mbT)
-        (scope st rhs)
-        (fmap (scope st) mbBinds)
-    scope st (ForImp l cc ms mn n t) = ForImp (none l) (noScope cc) (fmap noScope ms) mn (fmap binder n) (scopeType st t)
-    scope st (ForExp l cc    mn n t) = ForExp (none l) (noScope cc)                   mn (scopeVar st n) (scopeType st t)
-    scope _ d = unimplemented $ "scope: " ++ take 30 (prettyPrint d)
+    scopeR (TypeSig l ns t) = delimit $
+        TypeSig (none l) <$> mapM scopeVar ns <*> scopeR t  -- XXX this checks for stray sigs
+    scopeR (FunBind l ms) = FunBind (none l) <$> mapM scopeR ms
+    scopeR (PatBind l pat mbT rhs mbBinds) = delimit $ do
+        pat' <- scopePat pat
+        mbT' <- mapM scopeR mbT
+        mbBinds' <- mapM scopeM mbBinds
+        PatBind (none l) pat' mbT' <$> scopeR rhs <*> pure mbBinds'
+    scopeR (ForImp l cc ms mn n t) = ForImp (none l) (noScope cc) (fmap noScope ms) mn (fmap binder n) <$> scopeR t
+    scopeR (ForExp l cc    mn n t) = ForExp (none l) (noScope cc) mn <$> scopeVar n <*> scopeR t
+    scopeR d = unimplemented $ "scope: " ++ take 30 (prettyPrint d)
 
-scopeMaybeContext :: Maybe (Context SrcSpan) -> State SymbolTable (Maybe (Context (Scoped SrcSpan)))
-scopeMaybeContext mc = state $ \st -> (fmap (scope st) mc, st)
+instance ScopeCheckR QualConDecl where
+    scopeR (QualConDecl l mtvs mc cd) = delimit $
+        QualConDecl (none l) <$> (mapM (mapM scopeM) mtvs) <*> (mapM scopeR mc) <*> (scopeR cd)
 
-instance ScopeCheck QualConDecl where
-    scope st (QualConDecl l mtvs mc cd) = QualConDecl (none l) (fmap (fmap (scope st)) mtvs) (fmap (scope st') mc) (scope st' cd)
-                                          where st' = maybe st (flip addTyVarBinds st) mtvs
+instance ScopeCheckR ConDecl where
+    scopeR (ConDecl l n ts) = ConDecl (none l) (fmap binder n) <$> mapM scopeR ts
+    scopeR (InfixConDecl l t1 n t2) =
+        InfixConDecl (none l) <$> scopeR t1 <*> pure (fmap binder n) <*> scopeR t2
+    scopeR (RecDecl l n fs) = RecDecl (none l) (fmap binder n) <$> mapM scopeR fs
 
-instance ScopeCheck ConDecl where
-    scope st (ConDecl l n ts) = ConDecl (none l) (fmap binder n) (fmap (scope st) ts)
-    scope st (InfixConDecl l t1 n t2) = InfixConDecl (none l) (scope st t1) (fmap binder n) (scope st t2)
-    scope st (RecDecl l n fs) = RecDecl (none l) (fmap binder n) (fmap (scope st) fs)
+instance ScopeCheckR BangType where
+    scopeR (BangedTy l t) = BangedTy (none l) <$> scopeR t
+    scopeR (UnBangedTy l t) = UnBangedTy (none l) <$> scopeR t
+    scopeR (UnpackedTy l t) = UnpackedTy (none l) <$> scopeR t
 
-instance ScopeCheck BangType where
-    scope st (BangedTy l t) = BangedTy (none l) (scope st t)
-    scope st (UnBangedTy l t) = UnBangedTy (none l) (scope st t)
-    scope st (UnpackedTy l t) = UnpackedTy (none l) (scope st t)
+instance ScopeCheckR FieldDecl where
+    scopeR (FieldDecl l ns t) =
+        FieldDecl (none l) (fmap (fmap binder) ns) <$> scopeR t
 
-instance ScopeCheck FieldDecl where
-    scope st (FieldDecl l ns t) = FieldDecl (none l) (fmap (fmap binder) ns) (scope st t)
+instance ScopeCheckR Deriving where
+    scopeR (Deriving l ih) = Deriving (none l) <$> mapM scopeR ih
 
-instance ScopeCheck Deriving where
-    scope st (Deriving l ih) = Deriving (none l) (fmap (scope st) ih)
+instance ScopeCheckR Context where
+    scopeR (CxSingle l a) = CxSingle (none l) <$> scopeR a
+    scopeR (CxTuple l as) = CxTuple (none l) <$> mapM scopeR as
+    scopeR (CxParen l c) = CxParen (none l) <$> scopeR c
+    scopeR (CxEmpty l) = return $ CxEmpty (none l)
 
-instance ScopeCheck Context where
-    scope st (CxSingle l a) = CxSingle (none l) (scope st a)
-    scope st (CxTuple l as) = CxTuple (none l) (fmap (scope st) as)
-    scope st (CxParen l c) = CxParen (none l) (scope st c)
-    scope  _ (CxEmpty l) = CxEmpty (none l)
+instance ScopeCheckR Asst where
+    scopeR (ClassA l n ts) = ClassA (none l) <$> scopeCls n <*> mapM scopeR ts
+    scopeR (InfixA l t1 n t2) = InfixA (none l) <$> scopeR t1 <*> scopeCls n <*> scopeR t2
+    scopeR (IParam l n t) = IParam (none l) (fmap binder n) <$> scopeR t -- XXX not handled really
+    scopeR (EqualP l t1 t2) = EqualP (none l) <$> scopeR t1 <*> scopeR t2
 
-instance ScopeCheck Asst where
-    scope st (ClassA l n ts) = ClassA (none l) (scopeCls st n) (fmap (scope st) ts)
-    scope st (InfixA l t1 n t2) = InfixA (none l) (scope st t1) (scopeCls st n) (scope st t2)
-    scope st (IParam l n t) = IParam (none l) (fmap binder n) (scope st t) -- XXX not handled really
-    scope st (EqualP l t1 t2) = EqualP (none l) (scope st t1) (scope st t2)
+-- To support ScopedTypeVariables, we need to change this to ScopeCheckM.
+-- There are other complexities as well...
+instance ScopeCheckR Type where
+    scopeR (TyForall l mtvs mc t) =
+        delimit $ TyForall (none l) <$> mapM (mapM scopeM) mtvs <*> mapM scopeR mc <*> scopeR t
+    scopeR (TyFun l t1 t2) = TyFun (none l) <$> scopeR t1 <*> scopeR t2
+    scopeR (TyTuple l b ts) = TyTuple (none l) b <$> mapM scopeR ts
+    scopeR (TyList l t) = TyList (none l) <$> scopeR t
+    scopeR (TyApp l t1 t2) = TyApp (none l) <$> scopeR t1 <*> scopeR t2
+    scopeR (TyVar l n) = TyVar (none l) <$> scopeTyVar n
+    scopeR (TyCon l n) = TyCon (none l) <$> scopeTy n
+    scopeR (TyParen l t) = TyParen (none l) <$> scopeR t
+    scopeR (TyInfix l t1 n t2) =
+        TyInfix (none l) <$> scopeR t1 <*> scopeTy n <*> scopeR t2
+    scopeR (TyKind l t k) = TyKind (none l) <$> scopeR t <*> scopeR k
 
-instance ScopeCheck Type where
-    scope st (TyForall l mtvs mc t) = TyForall (none l) (fmap (fmap (scope st)) mtvs) (fmap (scope st') mc) (scope st' t)
-                                      where st' = maybe st (flip addTyVarBinds st) mtvs
-    scope st (TyFun l t1 t2) = TyFun (none l) (scope st t1) (scope st t2)
-    scope st (TyTuple l b ts) = TyTuple (none l) b (fmap (scope st) ts)
-    scope st (TyList l t) = TyList (none l) (scope st t)
-    scope st (TyApp l t1 t2) = TyApp (none l) (scope st t1) (scope st t2)
-    scope st (TyVar l n) = TyVar (none l) (scopeTyVar st n)
-    scope st (TyCon l n) = TyCon (none l) (scopeTy st n)
-    scope st (TyParen l t) = TyParen (none l) (scope st t)
-    scope st (TyInfix l t1 n t2) = TyInfix (none l) (scope st t1) (scopeTy st n) (scope st t2)
-    scope st (TyKind l t k) = TyKind (none l) (scope st t) (scope st k)
+instance ScopeCheckR InstHead where
+    scopeR (IHead l n ts) = IHead (none l) <$> scopeCls n <*> mapM scopeR ts
+    scopeR (IHInfix l t1 n t2) = IHInfix (none l) <$> scopeR t1 <*> scopeCls n <*> scopeR t2
+    scopeR (IHParen l i) = IHParen (none l) <$> scopeR i
 
--- XXX bind any free tyvars tyvars
-scopeType :: SymbolTable -> Type SrcSpan -> Type (Scoped SrcSpan)
-scopeType st t = scope st t
+instance ScopeCheckR Match where
+    scopeR (Match l n ps rhs mb) = delimit $ do
+        ps' <- scopePats ps
+        mb' <- mapM scopeM mb
+        rhs' <- scopeR rhs
+        return $ Match (none l) (fmap binder n) ps' rhs' mb'
+    scopeR (InfixMatch l p n ps rhs mb) = do
+        Match l' n' (p':ps') rhs' mb' <- scopeR $ Match l n (p:ps) rhs mb
+        return $ InfixMatch l' p' n' ps' rhs' mb'
 
-instance ScopeCheck InstHead where
-    scope st (IHead l n ts) = IHead (none l) (scopeCls st n) (fmap (scope st) ts)
-    scope st (IHInfix l t1 n t2) = IHInfix (none l) (scope st t1) (scopeCls st n) (scope st t2)
-    scope st (IHParen l i) = IHParen (none l) (scope st i)
-
-instance ScopeCheck Match where
-    scope st (Match l n ps rhs mb) = flip evalState st $ do
-      ps' <- scopePats ps
-      mb' <- traverse scopeBinds mb
-      rhs' <- scopeM rhs
-      return $ Match (none l) (fmap binder n) ps' rhs' mb'
-    scope st (InfixMatch l p n ps rhs mb) = InfixMatch l' p' n' ps' rhs' mb'
-      where Match l' n' (p':ps') rhs' mb' = scope st $ Match l n (p:ps) rhs mb
-
-scopePats :: [Pat SrcSpan] -> State SymbolTable [Pat (Scoped SrcSpan)]
-scopePats ps = state $ \st -> (fmap (scope st) ps, addVars (getBound ps) st)
-
-scopePat :: Pat SrcSpan -> State SymbolTable (Pat (Scoped SrcSpan))
-scopePat p = state $ \st -> (scope st p, addVars (getBound p) st)
-
-scopeBinds :: Binds SrcSpan -> State SymbolTable (Binds (Scoped SrcSpan))
-scopeBinds (BDecls l ds) = do
-  modify $ addVars $ getBound ds
-  BDecls (none l) <$> mapM scopeM ds
-scopeBinds IPBinds {} = unimplemented "scope: IPBinds"
-
-instance ScopeCheck Pat where
-    scope  _ (PVar l n) = PVar (none l) (fmap binder n)
-    scope st (PLit l k) = PLit (none l) (scope st k)
-    scope st (PNeg l p) = PNeg (none l) (scope st p)
-    scope  _ (PNPlusK l n i) = PNPlusK (none l) (fmap binder n) i
-    scope st (PInfixApp l p1 n p2) = PInfixApp (none l) (scope st p1) (scopeVal st n) (scope st p2)
-    scope st (PApp l n ps) = PApp (none l) (scopeVal st n) (fmap (scope st) ps)
-    scope st (PTuple l ps) = PTuple (none l) (fmap (scope st) ps)
-    scope st (PList l ps) = PList (none l) (fmap (scope st) ps)
-    scope st (PParen l p) = PParen (none l) (scope st p)
+-- Often there are many patterns which should bring variables in scope
+-- simultaneously (atomically).
+--
+-- Thus, we make scopePat a separate function (rather than a method of
+-- ScopeCheckM instance for Pat) to make scope-checking of patterns explicit.
+--
+-- It's then possible to grep for scopePat and make sure that we don't use it with
+-- mapM anywhere.
+scopePat  ::  Pat SrcSpan ->  ScopeM Modify (Pat (Scoped SrcSpan))
+scopePats :: [Pat SrcSpan] -> ScopeM Modify [Pat (Scoped SrcSpan)]
+(scopePat, scopePats) =
+    (\p ->       scopePatR p  <* modify (addVars $ getBound p ),
+     \ps -> mapM scopePatR ps <* modify (addVars $ getBound ps))
+    where
+    scopePatR :: Pat SrcSpan -> ScopeM i (Pat (Scoped SrcSpan))
+    scopePatR (PVar l n) = return $ PVar (none l) (fmap binder n)
+    scopePatR (PLit l k) = PLit (none l) <$> scopeR k
+    scopePatR (PNeg l p) = PNeg (none l) <$> scopePatR p
+    scopePatR (PNPlusK l n i) = return $ PNPlusK (none l) (fmap binder n) i
+    scopePatR (PInfixApp l p1 n p2) = PInfixApp (none l) <$> scopePatR p1 <*> scopeVal n <*> scopePatR p2
+    scopePatR (PApp l n ps) = PApp (none l) <$> scopeVal n <*> mapM scopePatR ps
+    scopePatR (PTuple l ps) = PTuple (none l) <$> mapM scopePatR ps
+    scopePatR (PList l ps) = PList (none l) <$> mapM scopePatR ps
+    scopePatR (PParen l p) = PParen (none l) <$> scopePatR p
     -- PRec
-    scope st (PAsPat l n p) = PAsPat (none l) (fmap binder n) (scope st p)
-    scope  _ (PWildCard l) = PWildCard (none l)
-    scope st (PIrrPat l p) = PIrrPat (none l) (scope st p)
-    scope st (PatTypeSig l p t) = PatTypeSig (none l) (scope st p) (scopeType st t)
-    scope st (PViewPat l expr pat) = PViewPat (none l) (scope st expr) (scope st pat)
+    scopePatR (PAsPat l n p) = PAsPat (none l) (fmap binder n) <$> scopePatR p
+    scopePatR (PWildCard l) = return $ PWildCard (none l)
+    scopePatR (PIrrPat l p) = PIrrPat (none l) <$> scopePatR p
+    scopePatR (PatTypeSig l p t) = PatTypeSig (none l) <$> scopePatR p <*> scopeR t
+    scopePatR (PViewPat l expr pat) = PViewPat (none l) <$> scopeR expr <*> scopePatR pat
     -- PRPat
     -- PXTag
     -- PXETag
@@ -508,62 +544,60 @@ instance ScopeCheck Pat where
     -- PXRPats
     -- PExplTypeArg
     -- PQuasiQuote
-    scope st (PBangPat l p) = PBangPat (none l) (scope st p)
-    scope _ p = unimplemented $ "scope: " ++ take 30 (prettyPrint p)
+    scopePatR (PBangPat l p) = PBangPat (none l) <$> scopePatR p
+    scopePatR p = unimplemented $ "scope: " ++ take 30 (prettyPrint p)
 
-instance ScopeCheck Literal where
-    scope _ = noScope
+instance ScopeCheckR Literal where
+    scopeR = return . noScope
 
-instance ScopeCheck Rhs where
-    scope st (UnGuardedRhs l e) = UnGuardedRhs (none l) (scope st e)
-    scope st (GuardedRhss l gs) = GuardedRhss (none l) (fmap (scope st) gs)
+instance ScopeCheckR Rhs where
+    scopeR (UnGuardedRhs l e) = UnGuardedRhs (none l) <$> scopeR e
+    scopeR (GuardedRhss l gs) = GuardedRhss (none l) <$> mapM scopeR gs
 
-instance ScopeCheck GuardedRhs where
-    scope st (GuardedRhs l ss e) = flip evalState st $ GuardedRhs (none l) <$> scopeStmts ss <*> scopeM e
+instance ScopeCheckR GuardedRhs where
+    scopeR (GuardedRhs l ss e) = delimit $
+        GuardedRhs (none l) <$> mapM scopeM ss <*> scopeR e
 
-scopeStmts :: [Stmt SrcSpan] -> State SymbolTable [Stmt (Scoped SrcSpan)]
-scopeStmts = mapM scopeStmt
+instance ScopeCheckM Stmt where
+    scopeM (Generator l pat expr) = do
+      pat' <- scopePat pat
+      expr' <- scopeR expr
+      return $ Generator (none l) pat' expr'
+    scopeM (Qualifier l expr) = Qualifier (none l) <$> scopeR expr
+    scopeM (LetStmt l bnds) = undefined
+    scopeM RecStmt {} = unimplemented "scope: RecStmt"
 
-scopeStmt :: Stmt SrcSpan -> State SymbolTable (Stmt (Scoped SrcSpan))
-scopeStmt (Generator l pat expr) = do
-  pat' <- scopePat pat
-  expr' <- scopeM expr
-  return $ Generator (none l) pat' expr'
-scopeStmt (Qualifier l expr) = Qualifier (none l) <$> scopeM expr
-scopeStmt (LetStmt l bnds) = undefined
-scopeStmt RecStmt {} = unimplemented "scope: RecStmt"
-
-instance ScopeCheck Exp where
-    scope st (Var l n) = Var (none l) (scopeVal st n)
+instance ScopeCheckR Exp where
+    scopeR (Var l n) = Var (none l) <$> scopeVal n
     -- IPVar
-    scope st (Con l n) = Con (none l) (scopeVal st n)
-    scope st (Lit l i) = Lit (none l) (scope st i)
-    scope st (InfixApp l e1 o e2) = InfixApp (none l) (scope st e1) (scope st o) (scope st e2)
-    scope st (App l e1 e2) = App (none l) (scope st e1) (scope st e2)
-    scope st (NegApp l e) = NegApp (none l) (scope st e)
-    scope st (Lambda l ps e) = flip evalState st $ Lambda (none l) <$> scopePats ps <*> scopeM e
-    scope st (Let l b e) = flip evalState st $ Let (none l) <$> scopeBinds b <*> scopeM e
-    scope st (If l e1 e2 e3) = If (none l) (scope st e1) (scope st e2) (scope st e3)
-    scope st (Case l e as) = Case (none l) (scope st e) (fmap (scope st) as)
-    scope st (Do l ss) = flip evalState st $ Do (none l) <$> scopeStmts ss
+    scopeR (Con l n) = Con (none l) <$> scopeVal n
+    scopeR (Lit l i) = Lit (none l) <$> scopeR i
+    scopeR (InfixApp l e1 o e2) = InfixApp (none l) <$> scopeR e1 <*> scopeR o <*> scopeR e2
+    scopeR (App l e1 e2) = App (none l) <$> scopeR e1 <*> scopeR e2
+    scopeR (NegApp l e) = NegApp (none l) <$> scopeR e
+    scopeR (Lambda l ps e) = delimit $ Lambda (none l) <$> scopePats ps <*> scopeR e
+    scopeR (Let l b e) = delimit $ Let (none l) <$> scopeM b <*> scopeR e
+    scopeR (If l e1 e2 e3) = If (none l) <$> scopeR e1 <*> scopeR e2 <*> scopeR e3
+    scopeR (Case l e as) = Case (none l) <$> scopeR e <*> mapM scopeR as
+    scopeR (Do l ss) = delimit $ Do (none l) <$> mapM scopeM ss
     -- MDo
-    scope st (Tuple l es) = Tuple (none l) (fmap (scope st) es)
-    scope st (TupleSection l es) = TupleSection (none l) (fmap (fmap (scope st)) es)
-    scope st (List l es) = List (none l) (fmap (scope st) es)
-    scope st (Paren l e) = Paren (none l) (scope st e)
-    scope st (LeftSection l e o) = LeftSection (none l) (scope st e) (scope st o)
-    scope st (RightSection l o e) = RightSection (none l) (scope st o) (scope st e)
-    scope st (RecConstr l n fs) = RecConstr (none l) (scopeVal st n) (fmap (scope st) fs)
-    scope st (RecUpdate l e fs) = RecUpdate (none l) (scope st e) (fmap (scope st) fs)
-    scope st (EnumFrom l e) = EnumFrom (none l) (scope st e)
-    scope st (EnumFromTo l e1 e2) = EnumFromTo (none l) (scope st e1) (scope st e2)
-    scope st (EnumFromThen l e1 e2) = EnumFromThen (none l) (scope st e1) (scope st e2)
-    scope st (EnumFromThenTo l e1 e2 e3) = EnumFromThenTo (none l) (scope st e1) (scope st e2) (scope st e3)
-    scope st (ListComp l e ss) = flip evalState st $ do
+    scopeR (Tuple l es) = Tuple (none l) <$> mapM scopeR es
+    scopeR (TupleSection l es) = TupleSection (none l) <$> mapM (mapM scopeR) es
+    scopeR (List l es) = List (none l) <$> mapM scopeR es
+    scopeR (Paren l e) = Paren (none l) <$> scopeR e
+    scopeR (LeftSection l e o) = LeftSection (none l) <$> scopeR e <*> scopeR o
+    scopeR (RightSection l o e) = RightSection (none l) <$> scopeR o <*> scopeR e
+    scopeR (RecConstr l n fs) = RecConstr (none l) <$> scopeVal n <*> mapM scopeR fs
+    scopeR (RecUpdate l e fs) = RecUpdate (none l) <$> scopeR e <*> mapM scopeR fs
+    scopeR (EnumFrom l e) = EnumFrom (none l) <$> scopeR e
+    scopeR (EnumFromTo l e1 e2) = EnumFromTo (none l) <$> scopeR e1 <*> scopeR e2
+    scopeR (EnumFromThen l e1 e2) = EnumFromThen (none l) <$> scopeR e1 <*> scopeR e2
+    scopeR (EnumFromThenTo l e1 e2 e3) = EnumFromThenTo (none l) <$> scopeR e1 <*> scopeR e2 <*> scopeR e3
+    scopeR (ListComp l e ss) = delimit $ do
       ss' <- scopeQualStmts ss
-      ListComp (none l) <$> scopeM e <*> pure ss'
+      ListComp (none l) <$> scopeR e <*> pure ss'
     -- ParComp
-    scope st (ExpTypeSig l e t) = ExpTypeSig (none l) (scope st e) (scopeType st t)
+    scopeR (ExpTypeSig l e t) = ExpTypeSig (none l) <$> scopeR e <*> scopeR t
     -- VarQuote
     -- TypQuote
     -- BracketExp
@@ -574,20 +608,23 @@ instance ScopeCheck Exp where
     -- XPcdata
     -- XExpTag
     -- ... XXX pragmas, arrows
-    scope _ e = unimplemented $ "scope: " ++ take 30 (prettyPrint e)
+    scopeR e = unimplemented $ "scope: " ++ take 30 (prettyPrint e)
 
-scopeQualStmts :: [QualStmt SrcSpan] -> State SymbolTable [QualStmt (Scoped SrcSpan)]
+scopeQualStmts :: [QualStmt SrcSpan] -> ScopeM Modify [QualStmt (Scoped SrcSpan)]
 scopeQualStmts = unimplemented "scopeQualStmts"
 
-instance ScopeCheck QOp where
-    scope st (QVarOp l n) = QVarOp (none l) (scopeVal st n)
-    scope st (QConOp l n) = QConOp (none l) (scopeVal st n)
+instance ScopeCheckR QOp where
+    scopeR (QVarOp l n) = QVarOp (none l) <$> scopeVal n
+    scopeR (QConOp l n) = QConOp (none l) <$> scopeVal n
 
-instance ScopeCheck Alt
-instance ScopeCheck FieldUpdate where
-  scope st (FieldUpdate l field expr) =
-    FieldUpdate (none l) (scopeVal st field) (scope st expr)
-  scope _ _ = unimplemented "scope: FieldUpdate"
+instance ScopeCheckR Alt
+instance ScopeCheckR FieldUpdate where
+    scopeR (FieldUpdate l field expr) =
+        FieldUpdate (none l) <$> scopeVal field <*> scopeR expr
+    scopeR _ = unimplemented "scope: FieldUpdate"
 
-instance ScopeCheck Binds where
-  scope st bnds = evalState (scopeBinds bnds) st
+instance ScopeCheckM Binds where
+    scopeM (BDecls l ds) = do
+      modify $ addVars $ getBound ds
+      BDecls (none l) <$> mapM scopeR ds
+    scopeM IPBinds {} = unimplemented "scope: IPBinds"
