@@ -618,7 +618,21 @@ instance ScopeCheckR QOp where
     scopeR (QVarOp l n) = QVarOp (none l) <$> scopeVal n
     scopeR (QConOp l n) = QConOp (none l) <$> scopeVal n
 
-instance ScopeCheckR Alt
+instance ScopeCheckR Alt where
+    scopeR (Alt l pat alts mbBinds) = delimit $ do
+        pat' <- scopePat pat
+        mbBinds' <- mapM scopeM mbBinds
+        alts' <- scopeR alts
+        return $ Alt (none l) pat' alts' mbBinds'
+
+instance ScopeCheckR GuardedAlts where
+    scopeR (UnGuardedAlt l expr) = UnGuardedAlt (none l) <$> scopeR expr
+    scopeR (GuardedAlts l alts) = GuardedAlts (none l) <$> mapM scopeR alts
+
+instance ScopeCheckR GuardedAlt where
+    scopeR (GuardedAlt l stmts expr) = delimit $
+        GuardedAlt (none l) <$> mapM scopeM stmts <*> scopeR expr
+
 instance ScopeCheckR FieldUpdate where
     scopeR (FieldUpdate l field expr) =
         FieldUpdate (none l) <$> scopeVal field <*> scopeR expr
