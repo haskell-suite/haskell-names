@@ -339,12 +339,18 @@ scopeTyVar n = fixup <$> scopeX cls "type variable" (UnQual (ann n) n)
         lcl (Global l qn) = Local l (ann qn)
         lcl l = l
 
--- XXX Handle local symbols
+-- This decides whether the name is local or global based on whether sv_origName
+-- is qualified. Not sure if this is sound (or is a good approach anyway).
+-- Perhaps we'd rather keep an explicit flag in SymValue constructor?
 scopeVal :: QName SrcSpan -> ScopeM i (QName (Scoped SrcSpan))
 scopeVal qn = flip liftM get $ \st ->
     let f l = case symValueLookup qn st of
               Nothing -> ScopeError l $ msgError (ann qn) "Undefined value identifier" [msgArg qn]
-              Just i  -> Global l (sv_origName i)
+              Just i  ->
+                  case sv_origName i of
+                      n@Qual {} -> Global l n
+                      UnQual def _ -> Local l def
+                      n -> error $ "scopeVal: " ++ show n
     in  fmap f qn
 
 --- XXX
