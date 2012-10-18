@@ -587,7 +587,9 @@ instance ScopeCheckR Exp where
     scopeR (If l e1 e2 e3) = If (none l) <$> scopeR e1 <*> scopeR e2 <*> scopeR e3
     scopeR (Case l e as) = Case (none l) <$> scopeR e <*> mapM scopeR as
     scopeR (Do l ss) = delimit $ Do (none l) <$> mapM scopeM ss
-    -- MDo
+    scopeR (MDo l ss) = delimit $ MDo (none l) <$> (introduceAllBindings *> mapM scopeM ss)
+        where
+        introduceAllBindings = sequence [ modify $ addVars $ getBound pat | Generator _ pat _ <- ss ]
     scopeR (Tuple l es) = Tuple (none l) <$> mapM scopeR es
     scopeR (TupleSection l es) = TupleSection (none l) <$> mapM (mapM scopeR) es
     scopeR (List l es) = List (none l) <$> mapM scopeR es
