@@ -2,7 +2,7 @@
 module Language.Haskell.Modules.ScopeMonad(
     S, runS, scopeMsg,
     getFlags, getSymbolTable,
-    addModuleSymbols, getModuleSymbols,
+    addModuleSymbols, getModuleSymbols, getModules,
     addUnqualifiedSymbols, addQualifiedSymbols
     ) where
 import Control.Applicative
@@ -61,6 +61,9 @@ getModuleSymbols :: ModuleName () -> S (Maybe Symbols)
 getModuleSymbols m = do
     sm <- gets s_modules
     return $ M.lookup (dropAnn m) sm
+
+getModules :: S (M.Map (ModuleName ()) Symbols)
+getModules = gets s_modules
 
 scopeMsg :: Msg -> S ()
 scopeMsg msg = modify $ \ s -> s { s_messages = msg : s_messages s }

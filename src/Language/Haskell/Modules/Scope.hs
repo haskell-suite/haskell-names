@@ -3,6 +3,7 @@ module Language.Haskell.Modules.Scope(
     scopeAnalysis,
     Scoped(..), getOriginalName,
     scopeModule,
+    getModules,
     runS,
     getScopeErrors) where
 
