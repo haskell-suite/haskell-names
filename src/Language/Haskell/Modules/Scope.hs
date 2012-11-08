@@ -99,9 +99,13 @@ scopeModule m = do
 
     st <- getSymbolTable
     let m' = evalState (runScopeM $ scopeR m) st
+        -- NB: this is not the same as calling getExportSpecList on m',
+        -- because if the module doesn't have a module head, the scope
+        -- annotations will be wrong.
+        exportList = evalState (runScopeM $ mapM scopeR $ getExportSpecList m) st
 
     -- Remember module for future processing.
-    addModuleSymbols mname =<< filterExports (getExportSpecList m') syms
+    addModuleSymbols mname =<< filterExports exportList syms
 
     --- XXX Clear symbol table
 
