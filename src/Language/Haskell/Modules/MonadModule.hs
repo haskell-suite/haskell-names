@@ -1,7 +1,7 @@
 {-# LANGUAGE StandaloneDeriving #-}
 module Language.Haskell.Modules.MonadModule(
     MonadModule(..), ModuleContents(..),
-    ModuleNameS, ValueName, TypeName, ModuleSummary(..), OrigName(..), WithOrigName
+    ModuleNameS, ValueName, TypeName, ModuleSummary(..), ClassOrType(..), OrigName(..), WithOrigName
     ) where
 import Language.Haskell.Exts.Annotated
 --import Language.Haskell.Exts.Fixity(Fixity)
@@ -21,17 +21,20 @@ data ModuleContents
     | ModuleIgnore                                             -- ^Ignore processing this module
     deriving (Show)
 
-data OrigName l = OrigName l ModuleNameS String -- ^ location, module name, entity name
-    deriving (Show)
-type WithOrigName a = (a, OrigName SrcLoc)
+data OrigName = OrigName ModuleNameS String -- ^ module name, entity name
+    deriving (Eq, Ord, Show)
+type WithOrigName a = (a, OrigName) -- this is unused ATM
 type ModuleNameS = String
-type ValueName = String       -- ^ Fully qualified original name.
-type TypeName = String        -- ^ Fully qualified original name.
+type ValueName = OrigName       -- ^ Fully qualified original name.
+type TypeName = OrigName        -- ^ Fully qualified original name.
+
+data ClassOrType = Class | Type
+    deriving (Eq,Ord,Show)
 
 data ModuleSummary = ModuleSummary {
-         m_moduleName :: ModuleName SrcLoc,
-         m_values     :: [WithOrigName ValueName],  -- not including constructors and selectors
-         m_types      :: [(WithOrigName TypeName, [WithOrigName ValueName], Bool)],  -- Bool indicates if it's a class
+         m_moduleName :: ModuleNameS,
+         m_values     :: [ValueName],  -- not including constructors and selectors
+         m_types      :: [(TypeName, [ValueName], ClassOrType)],
          m_fixities   :: [Fixity]
     }
     deriving (Show)
