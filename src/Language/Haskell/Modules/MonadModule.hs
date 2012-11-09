@@ -1,7 +1,7 @@
 {-# LANGUAGE StandaloneDeriving #-}
 module Language.Haskell.Modules.MonadModule(
     MonadModule(..), ModuleContents(..),
-    ModuleNameS, ValueName, TypeName, ModuleSummary(..), ClassOrType(..), OrigName(..), WithOrigName
+    ModuleNameS, ValueName, TypeName, ModuleSummary(..), ClassOrType(..), OrigName(..)
     ) where
 import Language.Haskell.Exts.Annotated
 --import Language.Haskell.Exts.Fixity(Fixity)
@@ -23,7 +23,6 @@ data ModuleContents
 
 data OrigName = OrigName ModuleNameS String -- ^ module name, entity name
     deriving (Eq, Ord, Show)
-type WithOrigName a = (a, OrigName) -- this is unused ATM
 type ModuleNameS = String
 type ValueName = OrigName       -- ^ Fully qualified original name.
 type TypeName = OrigName        -- ^ Fully qualified original name.
