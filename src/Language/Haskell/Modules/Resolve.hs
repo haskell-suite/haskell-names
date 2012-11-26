@@ -1,4 +1,3 @@
-{-# LANGUAGE RelaxedPolyRec #-}
 module Language.Haskell.Modules.Resolve(ModuleSet, ModuleSummary(..), resolveModuleSource, resolveModuleName) where
 import Control.Monad
 import Control.Monad.Trans
