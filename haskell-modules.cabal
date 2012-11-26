@@ -40,5 +40,5 @@ Library
                         Language.Haskell.Modules.SymbolTable
                         Language.Haskell.Modules.SyntaxUtils
 Executable gen-iface
-  Build-depends:        base, containers, haskell-src-exts, haskell-modules
+  Build-depends:        base, containers, haskell-src-exts, haskell-modules, haskell-packages
   Main-is: gen-iface.hs
