@@ -37,7 +37,7 @@ main =
 
 compile buildDir files = do
   moduleSet <- forM files $ \file ->
-    return . Right . fmap srcInfoSpan =<< fromParseResult =<< parseFile file
+    return . fmap srcInfoSpan =<< fromParseResult =<< parseFile file
   let (msgs, scopedModules) = scopeAnalysis defaultFlags moduleSet
       errs = filter isError msgs
   when (not $ null errs) $

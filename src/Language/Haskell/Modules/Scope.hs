@@ -34,9 +34,8 @@ import Language.Haskell.Exts.Annotated hiding (fixities)
 
 import Language.Haskell.Modules.Error
 import Language.Haskell.Modules.Flags
-import Language.Haskell.Modules.MonadModule
+import Language.Haskell.Modules.ModuleSummary
 import Language.Haskell.Modules.Recursive
-import Language.Haskell.Modules.ResolveMonad(ModuleSet)
 import Language.Haskell.Modules.ScopeMonad
 import Language.Haskell.Modules.SymbolTable
 import Language.Haskell.Modules.SyntaxUtils
@@ -63,16 +62,13 @@ getOriginalName x =
     Global { sOrginalName = n } -> Just n
     _ -> Nothing
 
-scopeAnalysis :: Flags -> ModuleSet -> ([Msg], [Module (Scoped SrcSpan)])
+scopeAnalysis :: Flags -> [Module SrcSpan] -> ([Msg], [Module (Scoped SrcSpan)])
 scopeAnalysis flags = (sortBy (compare `on` msgLoc) *** concat) . runS flags . mapM scopeGroup . groupModules True
 
-scopeGroup :: ModuleSet -> S [Module (Scoped SrcSpan)]
-scopeGroup [Left s] = fmap return $ scopeSummary s
-scopeGroup [Right m] = fmap return $ scopeModule m
+--scopeGroup :: ModuleSet -> S [Module (Scoped SrcSpan)]
+scopeGroup :: [Module SrcSpan] -> S [Module (Scoped SrcSpan)]
+scopeGroup [m] = fmap return $ scopeModule m
 scopeGroup _ = unimplemented "mutually recursive modules"
-
-scopeSummary :: ModuleSummary -> S (Module (Scoped SrcSpan))
-scopeSummary = unimplemented "scopeSummary"
 
 scopeModule :: Module SrcSpan -> S (Module (Scoped SrcSpan))
 scopeModule m = do

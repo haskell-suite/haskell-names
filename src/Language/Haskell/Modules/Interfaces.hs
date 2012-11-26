@@ -1,7 +1,7 @@
 {-# OPTIONS_GHC -fno-warn-orphans -fno-warn-name-shadowing #-}
 module Language.Haskell.Modules.Interfaces where
 
-import Language.Haskell.Modules.MonadModule
+import Language.Haskell.Modules.ModuleSummary
 import Language.Haskell.Modules.SymbolTable
 import Language.Haskell.Exts.Annotated
 import qualified Data.ByteString.Lazy as BS
