@@ -26,7 +26,6 @@ Library
 
   Exposed-modules:      Language.Haskell.Modules
                         Language.Haskell.Modules.Flags
-                        Language.Haskell.Modules.Options
                         Language.Haskell.Modules.Interfaces
 
   Other-modules:        Language.Haskell.Modules.Error
