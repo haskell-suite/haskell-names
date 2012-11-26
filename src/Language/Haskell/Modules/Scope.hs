@@ -387,7 +387,7 @@ instance ScopeCheckR ExportSpec where
     scopeR (EAbs l qn) = EAbs (none l) <$> scopeTyCls qn
     scopeR (EThingAll l qn) = EThingAll (none l) <$> scopeTyCls qn
     scopeR (EThingWith l qn cns) = -- FIXME check that cns are exportable
-      EThingWith <$> scopeTyCls qn <*> mapM scopeVal cns
+      EThingWith (none l) <$> scopeTyCls qn <*> pure (map (fmap none) cns)
     scopeR e@EModuleContents{} = return $ noScope e
 
 instance ScopeCheckR ModulePragma where
