@@ -31,8 +31,6 @@ Library
   Other-modules:        Language.Haskell.Modules.Error
                         Language.Haskell.Modules.ModuleSummary
                         Language.Haskell.Modules.Recursive
-                        Language.Haskell.Modules.Resolve
-                        Language.Haskell.Modules.ResolveMonad
                         Language.Haskell.Modules.Scope
                         Language.Haskell.Modules.ScopeMonad
                         Language.Haskell.Modules.SymbolTable
