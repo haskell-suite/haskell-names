@@ -29,8 +29,7 @@ Library
                         Language.Haskell.Modules.Interfaces
 
   Other-modules:        Language.Haskell.Modules.Error
-                        Language.Haskell.Modules.MonadModule
-                        Language.Haskell.Modules.MonadModuleIO
+                        Language.Haskell.Modules.ModuleSummary
                         Language.Haskell.Modules.Recursive
                         Language.Haskell.Modules.Resolve
                         Language.Haskell.Modules.ResolveMonad
