@@ -62,15 +62,23 @@ getOriginalName x =
     Global { sOrginalName = n } -> Just n
     _ -> Nothing
 
-scopeAnalysis :: Flags -> [Module SrcSpan] -> ([Msg], [Module (Scoped SrcSpan)])
-scopeAnalysis flags = (sortBy (compare `on` msgLoc) *** concat) . runS flags . mapM scopeGroup . groupModules True
+scopeAnalysis
+  :: Monad m
+  => (ModuleName () -> m ModuleSummary)
+  -> Flags
+  -> [Module SrcSpan]
+  -> m ([Msg], [Module (Scoped SrcSpan)])
+scopeAnalysis getModInfo flags =
+  liftM (sortBy (compare `on` msgLoc) *** concat) .
+  runS getModInfo flags .
+  mapM scopeGroup .
+  groupModules True
 
---scopeGroup :: ModuleSet -> S [Module (Scoped SrcSpan)]
-scopeGroup :: [Module SrcSpan] -> S [Module (Scoped SrcSpan)]
-scopeGroup [m] = fmap return $ scopeModule m
+scopeGroup :: Monad m => [Module SrcSpan] -> S m [Module (Scoped SrcSpan)]
+scopeGroup [m] = liftM return $ scopeModule m
 scopeGroup _ = unimplemented "mutually recursive modules"
 
-scopeModule :: Module SrcSpan -> S (Module (Scoped SrcSpan))
+scopeModule :: Monad m => Module SrcSpan -> S m (Module (Scoped SrcSpan))
 scopeModule m = do
     let mname = dropAnn $ getModuleName m
         decls = getModuleDecls m
@@ -110,7 +118,7 @@ scopeModule m = do
 
 -----------------------------------------------------------------------------
 
-processImports :: (SrcInfo l) => l -> [ImportDecl l] -> S ()
+processImports :: Monad m => (SrcInfo l) => l -> [ImportDecl l] -> S m ()
 processImports l is = do
     flgs <- getFlags
     let is' = if any ((=~= pm) . importModule) is || not (f_usePrelude flgs) then is else ip : is
@@ -119,7 +127,7 @@ processImports l is = do
     mapM_ processImport is'
 
 -- Import all identifiers and add them to the global symbol table.
-processImport :: (SrcInfo l) => ImportDecl l -> S ()
+processImport :: Monad m => (SrcInfo l) => ImportDecl l -> S m ()
 processImport i = do
     let im = importModule i
     mbSyms <- getModuleSymbols $ dropAnn im
@@ -135,7 +143,9 @@ processImport i = do
             addUnqualifiedSymbols syms
         addQualifiedSymbols mdl syms
 
-filterValues :: (SrcInfo l) => Maybe (ImportSpecList l) -> SymValueInfos -> S SymValueInfos
+filterValues
+  :: (SrcInfo l, Monad m)
+  => Maybe (ImportSpecList l) -> SymValueInfos -> S m SymValueInfos
 filterValues Nothing vs = return vs
 filterValues (Just (ImportSpecList _ hide ss)) vs = do
     let ns = [ n | IVar _ n <- ss ] ++
@@ -150,7 +160,9 @@ filterValues (Just (ImportSpecList _ hide ss)) vs = do
     mapM_ chk ns
     return $ filter (\ i -> (found i || foundT i) /= hide) vs
 
-filterTypes :: (SrcInfo l) => Maybe (ImportSpecList l) -> SymTypeInfos -> S SymTypeInfos
+filterTypes
+  :: (SrcInfo l, Monad m)
+  => Maybe (ImportSpecList l) -> SymTypeInfos -> S m SymTypeInfos
 filterTypes Nothing ts = return ts
 filterTypes (Just (ImportSpecList _ hide ss)) ts = do
     let ns = [ n | IThingAll _ n <- ss ] ++
@@ -177,17 +189,23 @@ getFixities decls = [ (dropAnn $ opName o, (getAssoc a, fromMaybe defaultPrecede
 defaultPrecedence :: Int
 defaultPrecedence = 9
 
-dupCheck :: (SrcInfo l) => String -> [Name l] -> S ()
+dupCheck
+  :: (SrcInfo l, Monad m)
+  => String -> [Name l] -> S m ()
 dupCheck msg = mapM_ report . filter ((> 1) . length) . groupBy ((==) `on` dropAnn) . sortBy (compare `on` dropAnn)
   where report (n:ns) = scopeMsg $ msgError (getPointLoc $ ann n) ("Duplicate " ++ msg ++ "s") $ map msgArgLoc ns
         report [] = internalError "dupCheck"
 
-strayCheck :: (SrcInfo l') => String -> [Name l] -> [Name l'] -> S ()
+strayCheck
+  :: (SrcInfo l', Monad m)
+  => String -> [Name l] -> [Name l'] -> S m ()
 strayCheck msg as = mapM_ check1
   where s = S.fromList $ map dropAnn as
         check1 n = unless (dropAnn n `S.member` s) $ scopeMsg $ msgError (getPointLoc $ ann n) ("Stray " ++ msg) [msgArg n]
 
-filterExports :: Maybe (ExportSpecList (Scoped l)) -> Symbols-> S Symbols
+filterExports
+  :: Monad m
+  => Maybe (ExportSpecList (Scoped l)) -> Symbols-> S m Symbols
 filterExports Nothing l = return l
 filterExports (Just (ExportSpecList _ specs)) (vs, ts) = return (filter expValue vs, filter expType ts)
   where expValue (SymConstructor { sv_typeName  = qn }) | qn `S.member` allTys = True
