@@ -27,9 +27,9 @@ Library
   Exposed-modules:      Language.Haskell.Modules
                         Language.Haskell.Modules.Flags
                         Language.Haskell.Modules.Interfaces
+                        Language.Haskell.Modules.ModuleSummary
 
   Other-modules:        Language.Haskell.Modules.Error
-                        Language.Haskell.Modules.ModuleSummary
                         Language.Haskell.Modules.Recursive
                         Language.Haskell.Modules.Scope
                         Language.Haskell.Modules.ScopeMonad
