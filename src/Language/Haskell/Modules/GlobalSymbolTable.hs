@@ -1,6 +1,10 @@
 -- | This module is designed to be imported qualified.
 module Language.Haskell.Modules.GlobalSymbolTable
   ( Table
+  , GName
+  , OrigName
+  , ASymValueInfo
+  , ASymTypeInfo
   , empty
   , lookupValue
   , addValue
