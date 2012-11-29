@@ -16,11 +16,10 @@ import qualified Data.Set as Set
 import Data.List
 import Control.Exception
 
+import Language.Haskell.Modules.Types
 import Language.Haskell.Modules.SymbolInfo
 import Language.Haskell.Modules.SyntaxUtils(nameToString, specialConToString)
 
-type NameS = String
-type ModuleNameS = String
 -- | Possibly qualified name. If the name is not qualified,
 -- 'ModuleNameS' is the empty string.
 data GName = GName ModuleNameS NameS

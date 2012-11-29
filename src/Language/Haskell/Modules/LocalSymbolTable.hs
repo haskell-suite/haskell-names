@@ -9,9 +9,10 @@ module Language.Haskell.Modules.LocalSymbolTable
 import qualified Data.Map as Map
 import Language.Haskell.Exts.Annotated
 import Language.Haskell.Modules.SyntaxUtils
+import Language.Haskell.Modules.Types
 
 -- | Local symbol table — contains locally bound names
-newtype Table = Table (Map.Map String SrcLoc)
+newtype Table = Table (Map.Map NameS SrcLoc)
 
 addValue :: SrcInfo l => Name l -> Table -> Table
 addValue n (Table vs) =
