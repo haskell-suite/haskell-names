@@ -273,7 +273,7 @@ getTopDeclNames mdl ftbl d =
     PatBind _ p _ _ _ ->
             [ Left  (SymValue       { sv_origName = qname vn, sv_fixity = fixity vn }) | vn <- getBound p ]
     ForImp _ _ _ _ fn _ ->
-            [ Left  (SymForeign     { sv_origName = qname fn, sv_fixity = fixity fn }) ]
+            [ Left  (SymValue       { sv_origName = qname fn, sv_fixity = fixity fn }) ]
     _ ->    []
   where ModuleName _ smdl = mdl
         qname n = setAnn (getPointLoc $ ann n) $ Qual undefined (ModuleName undefined smdl) n

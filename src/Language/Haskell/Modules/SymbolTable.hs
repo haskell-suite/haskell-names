@@ -47,7 +47,6 @@ data SymValueInfo
     = SymValue       { sv_origName :: QName SrcLoc, sv_fixity :: Maybe SymFixity }
     | SymMethod      { sv_origName :: QName SrcLoc, sv_fixity :: Maybe SymFixity, sv_className :: QName () }
     | SymSelector    { sv_origName :: QName SrcLoc, sv_fixity :: Maybe SymFixity, sv_typeName :: QName () }
-    | SymForeign     { sv_origName :: QName SrcLoc, sv_fixity :: Maybe SymFixity }
     | SymConstructor { sv_origName :: QName SrcLoc, sv_fixity :: Maybe SymFixity, sv_typeName :: QName () }
     | SymVClash      { sv_origName :: QName SrcLoc, sv_fixity :: Maybe SymFixity, sv_clash :: [QName SrcLoc] }
     deriving (Eq, Show)
@@ -162,7 +161,6 @@ symbolsToSumary (ModuleName _ n, (vs, ts)) =
         SymValue n _         -> value n
         SymMethod n _ cls    -> ty cls n Class
         SymSelector n _ t    -> ty t n Type
-        SymForeign n _       -> value n
         SymConstructor n _ t -> ty t n Type
         SymVClash {}         -> error "Clash"
 
