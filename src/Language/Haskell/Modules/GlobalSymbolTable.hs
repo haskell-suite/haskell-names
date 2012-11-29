@@ -1,13 +1,11 @@
-module Language.Haskell.Modules.GlobalSymbolTable (
-  GST,
-  symEmpty,
-  symShow,
-  SymFixity,
-  sv_parent,
-  symValueLookup,
-  symValueAdd,
-  symTypeLookup,
-  symTypeAdd,
+-- | This module is designed to be imported qualified.
+module Language.Haskell.Modules.GlobalSymbolTable
+  ( Table
+  , empty
+  , lookupValue
+  , addValue
+  , lookupType
+  , addType
   ) where
 
 import Language.Haskell.Exts.Annotated
@@ -38,7 +36,7 @@ type ASymValueInfo n = Either [SymValueInfo n] (SymValueInfo n)
 type ASymTypeInfo n = Either [SymTypeInfo n] (SymTypeInfo n)
 
 -- | Global symbol table — contains global names
-data GST = GST (Map.Map GName (ASymValueInfo OrigName)) (Map.Map GName (ASymTypeInfo OrigName))
+data Table = Table (Map.Map GName (ASymValueInfo OrigName)) (Map.Map GName (ASymTypeInfo OrigName))
     deriving (Show)
 
 toGName :: QName l -> GName
@@ -46,24 +44,20 @@ toGName (UnQual _ n) = GName "" (nameToString n)
 toGName (Qual _ (ModuleName _ m) n) = GName m (nameToString n)
 toGName (Special _ s) = error "toGName: Special"
 
-symEmpty :: GST
-symEmpty = GST Map.empty Map.empty
+empty :: Table
+empty = Table Map.empty Map.empty
 
-symValueLookup :: QName l -> GST -> Maybe (ASymValueInfo GName)
-symValueLookup qn (GST vs _) = Map.lookup (toGName qn) vs
+lookupValue :: QName l -> Table -> Maybe (ASymValueInfo GName)
+lookupValue qn (Table vs _) = Map.lookup (toGName qn) vs
 
-symValueAdd :: QName l -> SymValueInfo OrigName -> GST -> GST
-symValueAdd qn i (GST vs ts) = GST (Map.insertWith combineSyms (toGName qn) (Right i) vs) ts
+addValue :: QName l -> SymValueInfo OrigName -> Table -> Table
+addValue qn i (Table vs ts) = Table (Map.insertWith combineSyms (toGName qn) (Right i) vs) ts
 
-symTypeLookup :: QName l -> GST -> Maybe (ASymTypeInfo GName)
-symTypeLookup qn (GST _ ts) = Map.lookup (toGName qn) ts
+lookupType :: QName l -> Table -> Maybe (ASymTypeInfo GName)
+lookupType qn (Table _ ts) = Map.lookup (toGName qn) ts
 
-symTypeAdd :: QName l -> SymTypeInfo OrigName -> GST -> GST
-symTypeAdd qn i (GST vs ts) = GST vs (Map.insertWith combineSyms (toGName qn) (Right i) ts)
-
-symShow :: GST -> String
-symShow (GST vs ts) = unlines $ map (\ (i, _si) -> show i) (Map.toList vs)
-                           ++ map (\ (i, _si) -> show i) (Map.toList ts)
+addType :: QName l -> SymTypeInfo OrigName -> Table -> Table
+addType qn i (Table vs ts) = Table vs (Map.insertWith combineSyms (toGName qn) (Right i) ts)
 
 combineSyms :: Eq i => Either [i] i -> Either [i] i -> Either [i] i
 combineSyms (Right s1) (Right s2)
