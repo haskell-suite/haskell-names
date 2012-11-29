@@ -35,6 +35,7 @@ Library
                         Language.Haskell.Modules.ScopeMonad
                         Language.Haskell.Modules.SymbolTable
                         Language.Haskell.Modules.SyntaxUtils
+                        Language.Haskell.Modules.InternalsDocs
 Executable gen-iface
   Build-depends:        base, containers, haskell-src-exts, haskell-modules, haskell-packages, filepath, mtl
   Main-is: gen-iface.hs
