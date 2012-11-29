@@ -50,7 +50,7 @@ toGName (Special _ s) = error "toGName: Special"
 empty :: Table
 empty = Table Map.empty Map.empty
 
-lookupValue :: QName l -> Table -> Maybe (ASymValueInfo GName)
+lookupValue :: QName l -> Table -> Maybe (ASymValueInfo OrigName)
 lookupValue qn (Table vs _) = Map.lookup (toGName qn) vs
 
 addValue :: QName l -> SymValueInfo OrigName -> Table -> Table
