@@ -1,4 +1,11 @@
-module Language.Haskell.Modules.ModuleSummary where
+module Language.Haskell.Modules.ModuleSummary
+  ( OrigName(..)
+  , ModuleNameS
+  , ValueName
+  , TypeName
+  , ClassOrType(..)
+  , ModuleSummary(..)
+  ) where
 
 import Language.Haskell.Exts.Annotated
 
