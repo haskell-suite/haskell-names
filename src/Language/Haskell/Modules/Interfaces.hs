@@ -1,6 +1,11 @@
+-- | Reading 'ModuleSummary' from and writing to interface files
 {-# LANGUAGE DeriveDataTypeable, OverloadedStrings #-}
 {-# OPTIONS_GHC -fno-warn-orphans -fno-warn-name-shadowing #-}
-module Language.Haskell.Modules.Interfaces where
+module Language.Haskell.Modules.Interfaces
+  ( readInterface
+  , writeInterface
+  , IfaceException(..)
+  ) where
 
 import Language.Haskell.Modules.ModuleSummary
 import Language.Haskell.Modules.SymbolTable
