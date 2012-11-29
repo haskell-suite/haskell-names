@@ -5,6 +5,10 @@ module Language.Haskell.Modules.ScopeCheckMonad
   , ScopeCheckR(..)
   , ScopeCheckM(..)
   , delimit
+  , lookupValue
+  , lookupType
+  , addVar
+  , addVars
   )
   where
 
@@ -63,5 +67,8 @@ lookupType
 lookupType qn = ScopeM $
     Global.lookupType qn <$> ask
 
-addValue :: SrcInfo l => Name l -> ScopeM Modify ()
-addValue n = ScopeM $ modify $ Local.addValue n
+addVar :: SrcInfo l => Name l -> ScopeM Modify ()
+addVar n = ScopeM $ modify $ Local.addValue n
+
+addVars :: SrcInfo l => [Name l] -> ScopeM Modify ()
+addVars = mapM_ addVar
