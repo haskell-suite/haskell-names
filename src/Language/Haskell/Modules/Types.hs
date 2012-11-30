@@ -47,6 +47,7 @@ data Scoped l
     = GlobalValue { sLoc :: l, sVInfo :: SymValueInfo OrigName }
     | GlobalType  { sLoc :: l, sTInfo :: SymTypeInfo  OrigName }
     | LocalValue  { sLoc :: l, sDefLoc :: SrcLoc }
+    | TypeVar     { sLoc :: l, sDefLoc :: SrcLoc }
     | Binder     { sLoc :: l }
     | None       { sLoc :: l }
     | ScopeError { sLoc :: l, serr :: Msg }
