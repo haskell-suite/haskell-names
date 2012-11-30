@@ -20,7 +20,6 @@ import Control.Monad.State
 import Control.Monad.Reader
 import Language.Haskell.Exts.Annotated
 import Language.Haskell.Modules.Types
-import Language.Haskell.Modules.SymbolInfo
 import qualified Language.Haskell.Modules.GlobalSymbolTable as Global
 import qualified Language.Haskell.Modules.LocalSymbolTable  as Local
 

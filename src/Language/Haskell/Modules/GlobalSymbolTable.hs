@@ -21,7 +21,6 @@ import Data.List
 import Control.Exception
 
 import Language.Haskell.Modules.Types
-import Language.Haskell.Modules.SymbolInfo
 import Language.Haskell.Modules.SyntaxUtils(nameToString, specialConToString)
 
 -- | Possibly ambiguous value symbol
