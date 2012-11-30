@@ -24,14 +24,6 @@ import Language.Haskell.Modules.Types
 import Language.Haskell.Modules.SymbolInfo
 import Language.Haskell.Modules.SyntaxUtils(nameToString, specialConToString)
 
--- | Possibly qualified name. If the name is not qualified,
--- 'ModuleNameS' is the empty string.
-data GName = GName ModuleNameS NameS
-  deriving (Eq, Ord, Show)
--- | Qualified name, where 'ModuleNameS' points to the module where the
--- name was originally defined. The module part is never empty.
-type OrigName = GName
-
 -- | Possibly ambiguous value symbol
 type ASymValueInfo n = Either [SymValueInfo n] (SymValueInfo n)
 

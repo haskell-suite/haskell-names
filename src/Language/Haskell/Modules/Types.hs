@@ -9,6 +9,14 @@ import Data.Data
 type NameS = String
 type ModuleNameS = String
 
+-- | Possibly qualified name. If the name is not qualified,
+-- 'ModuleNameS' is the empty string.
+data GName = GName ModuleNameS NameS
+  deriving (Eq, Ord, Show)
+-- | Qualified name, where 'ModuleNameS' points to the module where the
+-- name was originally defined. The module part is never empty.
+type OrigName = GName
+
 data Scoped l
     = Global     { sLoc :: l, sOrginalName :: QName SrcLoc }
     | Local      { sLoc :: l, sDefLoc :: SrcLoc }
