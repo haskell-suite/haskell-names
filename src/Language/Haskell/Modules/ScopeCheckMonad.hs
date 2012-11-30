@@ -67,8 +67,7 @@ lookupValue qn = ScopeM $
 lookupType
   :: QName l
   -> ScopeM i (Maybe (Global.ASymTypeInfo Global.OrigName))
-lookupType qn = ScopeM $
-    Global.lookupType qn <$> ask
+lookupType qn = ScopeM $ Global.lookupType qn <$> ask
 
 addVar :: SrcInfo l => Name l -> ScopeM Modify ()
 addVar n = ScopeM $ modify $ Local.addValue n
