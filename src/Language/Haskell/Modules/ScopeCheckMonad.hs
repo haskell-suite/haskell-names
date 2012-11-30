@@ -6,6 +6,8 @@ module Language.Haskell.Modules.ScopeCheckMonad
   , ScopeCheckM(..)
   , delimit
   , VName(..)
+  , Global.ASymTypeInfo
+  , Global.ASymValueInfo
   , lookupValue
   , lookupType
   , addVar
