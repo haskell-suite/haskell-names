@@ -44,8 +44,9 @@ data GName = GName ModuleNameS NameS
 type OrigName = GName
 
 data Scoped l
-    = Global     { sLoc :: l, sOrginalName :: OrigName }
-    | Local      { sLoc :: l, sDefLoc :: SrcLoc }
+    = GlobalValue { sLoc :: l, sVInfo :: SymValueInfo OrigName }
+    | GlobalType  { sLoc :: l, sTInfo :: SymTypeInfo  OrigName }
+    | LocalValue  { sLoc :: l, sDefLoc :: SrcLoc }
     | Binder     { sLoc :: l }
     | None       { sLoc :: l }
     | ScopeError { sLoc :: l, serr :: Msg }
