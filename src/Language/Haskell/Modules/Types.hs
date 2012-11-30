@@ -12,13 +12,13 @@ type ModuleNameS = String
 -- | Possibly qualified name. If the name is not qualified,
 -- 'ModuleNameS' is the empty string.
 data GName = GName ModuleNameS NameS
-  deriving (Eq, Ord, Show)
+  deriving (Eq, Ord, Show, Data, Typeable)
 -- | Qualified name, where 'ModuleNameS' points to the module where the
 -- name was originally defined. The module part is never empty.
 type OrigName = GName
 
 data Scoped l
-    = Global     { sLoc :: l, sOrginalName :: QName SrcLoc }
+    = Global     { sLoc :: l, sOrginalName :: OrigName }
     | Local      { sLoc :: l, sDefLoc :: SrcLoc }
     | Binder     { sLoc :: l }
     | None       { sLoc :: l }
