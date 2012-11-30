@@ -5,6 +5,7 @@ module Language.Haskell.Modules.ScopeCheckMonad
   , ScopeCheckR(..)
   , ScopeCheckM(..)
   , delimit
+  , VName(..)
   , lookupValue
   , lookupType
   , addVar
