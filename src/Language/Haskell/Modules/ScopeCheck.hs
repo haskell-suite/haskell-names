@@ -1,14 +1,15 @@
 module Language.Haskell.Modules.ScopeCheck where
 
+import Prelude hiding (mapM)
 import Control.Applicative
-import Data.List
+import Data.List hiding (mapM)
+import Data.Traversable (mapM)
 
 import Language.Haskell.Exts.Annotated
 
 import Language.Haskell.Modules.Types
 import Language.Haskell.Modules.Error
 import Language.Haskell.Modules.SyntaxUtils
-import Language.Haskell.Modules.SymbolInfo
 import Language.Haskell.Modules.ScopeCheckMonad
 
 none :: l -> Scoped l
@@ -20,17 +21,23 @@ binder = Binder
 noScope :: (Annotated a) => a l -> a (Scoped l)
 noScope = fmap None
 
-scopeX :: (SymTypeInfo -> Maybe String) -> String -> QName SrcSpan -> ScopeM i (QName (Scoped SrcSpan))
-scopeX ok w qn = mapM f qn
-  where
-  f l = do
-    r <- lookupType qn
-    case r of
-      Nothing -> ScopeError l $ msgError (ann qn) ("Undefined " ++ w ++ " identifier") [msgArg qn]
-      Just i ->
-        case ok i of
-          Nothing -> Global l (st_origName i)
-          Just s -> ScopeError l $ msgError (ann qn) s [msgArg qn]
+scopeX
+  :: SrcInfo a
+  => (SymTypeInfo OrigName -> Maybe String)
+  -> [Char] -> QName a -> ScopeM i (QName (Scoped a))
+scopeX ok w qn = do
+  r <- lookupType qn
+  let
+    f l =
+      case r of
+        Nothing -> ScopeError l $ msgError (ann qn) ("Undefined " ++ w ++ " identifier") [msgArg qn]
+        Just (Left ts) ->
+          ScopeError l $ msgError (ann qn) "Ambiguous occurrence" []
+        Just (Right i) ->
+          case ok i of
+            Nothing -> GlobalType l i
+            Just s -> ScopeError l $ msgError (ann qn) s [msgArg qn]
+  return $ fmap f qn
 
 scopeTyCls :: QName SrcSpan -> ScopeM i (QName (Scoped SrcSpan))
 scopeTyCls = scopeX (const Nothing) "type/class"
@@ -46,33 +53,28 @@ scopeTy = scopeX cls "type"
         cls _ = Nothing
 
 scopeTyVar :: Name SrcSpan -> ScopeM i (Name (Scoped SrcSpan))
-scopeTyVar n = fixup <$> scopeX cls "type variable" (UnQual (ann n) n)
-  where cls SymClass{} = Just "Class used as a type"
-        cls _ = Nothing
-        fixup = fmap lcl . qNameToName
-        lcl (Global l qn) = Local l (ann qn)
-        lcl l = l
+scopeTyVar n = return $ fmap (\l -> TypeVar l (getPointLoc l)) n -- FIXME
 
 scopeVal :: QName SrcSpan -> ScopeM i (QName (Scoped SrcSpan))
-scopeVal qn = mapM f qn
-  where
-  f l = do
-    r <- lookupValue qn
-    case r of
-      Nothing -> ScopeError l $ msgError (ann qn) "Undefined value identifier" [msgArg qn]
-      Just (GlobalVName  ->
-        case sv_origName i of
-          n@Qual {} -> Global l n
-          UnQual def _ -> Local l def
-          n -> error $ "scopeVal: " ++ show n
+scopeVal qn = do
+  r <- lookupValue qn
+  let
+    f l =
+      case r of
+        Nothing -> ScopeError l $ msgError (ann qn) "Undefined value identifier" [msgArg qn]
+        Just (LocalVName loc) -> LocalValue l loc
+        Just (GlobalVName (Right info)) -> GlobalValue l info
+        Just (GlobalVName (Left infos)) ->
+          ScopeError l $ msgError (ann qn) "Ambiguous occurrence" []
 
---- XXX
+  return $ fmap f qn
+
 scopeVar :: Name SrcSpan -> ScopeM i (Name (Scoped SrcSpan))
-scopeVar n = flip liftM get $ \st ->
-    let f l = case symValueLookup (UnQual (ann n) n) st of
-              Nothing -> ScopeError l $ msgError (ann n) "Undefined value identifier" [msgArg n]
-              Just i  -> Local l (ann $ sv_origName i)
-    in  fmap f n
+scopeVar n = do
+  sqn <- scopeVal (UnQual (ann n) n)
+  case sqn of
+    UnQual _ sn -> return sn
+    _ -> error "scopeVar"
 
 instance ScopeCheckR Module where
     scopeR (Module l mh os is ds) =
@@ -230,8 +232,8 @@ instance ScopeCheckR Match where
 scopePat  ::  Pat SrcSpan ->  ScopeM Modify (Pat (Scoped SrcSpan))
 scopePats :: [Pat SrcSpan] -> ScopeM Modify [Pat (Scoped SrcSpan)]
 (scopePat, scopePats) =
-    (\p ->       scopePatR p  <* addVars $ getBound p,
-     \ps -> mapM scopePatR ps <* addVars $ getBound ps)
+    (\p ->       scopePatR p  <* addVars (getBound p),
+     \ps -> mapM scopePatR ps <* addVars (getBound ps))
     where
     scopePatR :: Pat SrcSpan -> ScopeM i (Pat (Scoped SrcSpan))
     scopePatR (PVar l n) = return $ PVar (none l) (fmap binder n)
