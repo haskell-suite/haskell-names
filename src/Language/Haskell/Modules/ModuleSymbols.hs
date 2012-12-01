@@ -49,8 +49,6 @@ getTopDeclSymbols mdl d =
             [ Right (SymTypeFam     { st_origName = qname dn, st_fixity = Nothing }) | ClsTyFam   _   dh _ <- cdecls, let dn = hname dh ] ++
             [ Right (SymDataFam     { st_origName = qname tn, st_fixity = Nothing }) | ClsDataFam _ _ dh _ <- cdecls, let tn = hname dh ] ++
             [ Left  (SymMethod      { sv_origName = qname mn, sv_fixity = Nothing, sv_className = cq }) | mn <- ms ]
---    TypeSig _ ns _ ->
---            [ Left  (SymValue       { sv_origName = qname vn, sv_fixity = Nothing } | vn <- ns ]
     FunBind _ ms ->
         let vn : _ = getBound ms
         in  [ Left  (SymValue       { sv_origName = qname vn, sv_fixity = Nothing }) ]
