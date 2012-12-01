@@ -2,10 +2,19 @@ module Language.Haskell.Modules.ModuleSymbols where
 
 import Data.List
 import Data.Maybe
+import Data.Either
+import Data.Data
 import Language.Haskell.Exts.Annotated
 
 import Language.Haskell.Modules.Types
 import Language.Haskell.Modules.SyntaxUtils
+
+moduleSymbols :: (Eq l, Data l) => Module l -> Symbols GName
+moduleSymbols m =
+  partitionEithers $
+    concatMap
+      (getTopDeclSymbols $ getModuleName m)
+      (getModuleDecls m)
 
 -- Extract names that get bound by a top level declaration.
 getTopDeclSymbols
