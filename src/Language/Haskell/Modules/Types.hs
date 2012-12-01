@@ -32,6 +32,9 @@ data SymTypeInfo name
     deriving (Eq, Show, Data, Typeable)
 
 type SymTypeInfos n = [SymTypeInfo n]
+
+type Symbols n = ([SymValueInfo n], [SymTypeInfo n])
+
 type NameS = String
 type ModuleNameS = String
 
