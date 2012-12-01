@@ -9,8 +9,9 @@ import Language.Haskell.Modules.SyntaxUtils
 
 -- Extract names that get bound by a top level declaration.
 getTopDeclSymbols
-  :: ModuleName l
-  -> Decl SrcSpan
+  :: (Eq l, Data l)
+  => ModuleName l
+  -> Decl l
   -> [Either (SymValueInfo GName) (SymTypeInfo GName)]
 getTopDeclSymbols mdl d =
   case d of
