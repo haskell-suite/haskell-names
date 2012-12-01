@@ -11,7 +11,7 @@ import Language.Haskell.Modules.SyntaxUtils
 getTopDeclSymbols
   :: ModuleName l
   -> Decl SrcSpan
-  -> [Either (SymValueInfo (QName SrcLoc)) (SymTypeInfo (QName SrcLoc))]
+  -> [Either (SymValueInfo GName) (SymTypeInfo GName)]
 getTopDeclSymbols mdl d =
   case d of
     TypeDecl _ dh _ ->
@@ -60,5 +60,5 @@ getTopDeclSymbols mdl d =
             [ Left  (SymValue       { sv_origName = qname fn, sv_fixity = Nothing }) ]
     _ ->    []
   where ModuleName _ smdl = mdl
-        qname n = setAnn (getPointLoc $ ann n) $ Qual undefined (ModuleName undefined smdl) n
+        qname = GName smdl . nameToString
         hname = fst . splitDeclHead
