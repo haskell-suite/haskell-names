@@ -51,9 +51,9 @@ data Scoped l
     | GlobalType  { sLoc :: l, sTInfo :: SymTypeInfo  OrigName }
     | LocalValue  { sLoc :: l, sDefLoc :: SrcLoc }
     | TypeVar     { sLoc :: l, sDefLoc :: SrcLoc }
-    | Binder     { sLoc :: l }
-    | None       { sLoc :: l }
-    | ScopeError { sLoc :: l, serr :: Msg }
+    | Binder      { sLoc :: l }
+    | None        { sLoc :: l }
+    | ScopeError  { sLoc :: l, serr :: Msg }
     deriving (Show, Typeable, Data)
 
 instance (SrcInfo l) => SrcInfo (Scoped l) where
