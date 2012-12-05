@@ -10,8 +10,6 @@ import Data.Maybe
 import Data.Generics.PlateData
 import Language.Haskell.Exts.Annotated
 
-import Language.Haskell.Modules.Error
-
 dropAnn :: (Functor a) => a l -> a ()
 dropAnn = fmap (const ())
 
@@ -70,7 +68,7 @@ splitDeclHead (DHInfix _ v1 n v2) = (n, [v1, v2])
 splitDeclHead (DHParen _ dhead) = splitDeclHead dhead
 
 getDeclHeadName :: Decl l -> Name l
-getDeclHeadName = fst . splitDeclHead . fromMaybe (internalError "getDeclHeadName") . getDeclHead
+getDeclHeadName = fst . splitDeclHead . fromMaybe (error "getDeclHeadName") . getDeclHead
 
 ----------------------------------------------------
 
@@ -108,7 +106,7 @@ instance (Data l) => GetBound (Decl l) l where
     getBound (DefaultDecl{}) = []
     getBound (SpliceDecl{}) = []
     getBound (TypeSig{}) = []
-    getBound (FunBind _ []) = internalError "getBound: FunBind []"
+    getBound (FunBind _ []) = error "getBound: FunBind []"
     getBound (FunBind _ (Match _ n _ _ _ : _)) = [n]
     getBound (FunBind _ (InfixMatch _ _ n _ _ _ : _)) = [n]
     getBound (PatBind _ p _ _ _) = getBound p

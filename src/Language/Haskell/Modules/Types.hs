@@ -2,7 +2,7 @@
 module Language.Haskell.Modules.Types where
 
 import Language.Haskell.Exts.Annotated
-import Language.Haskell.Modules.Error
+import Language.Haskell.Exts.Annotated
 import Data.Typeable
 import Data.Data
 
@@ -53,12 +53,19 @@ data Scoped l
     | TypeVar     { sLoc :: l, sDefLoc :: SrcLoc }
     | Binder      { sLoc :: l }
     | None        { sLoc :: l }
-    | ScopeError  { sLoc :: l, serr :: Msg }
+    | ScopeError  { sLoc :: l, serr :: Error l }
     deriving (Show, Typeable, Data)
 
+data Error l
+  = ENotInScope (QName l) -- FIXME annotate with namespace (types/values)
+  | EAmbiguous (QName l) [OrigName]
+  | ETypeAsClass (QName l)
+  | EClassAsType (QName l)
+  deriving (Data, Typeable, Show) -- FIXME write custom Show
+
 instance (SrcInfo l) => SrcInfo (Scoped l) where
-    toSrcInfo _l1 _ss _l2 = unimplemented "toSrcInfo Scoped"
-    fromSrcInfo _si = unimplemented "fromSrcInfo Scoped"
+    toSrcInfo l1 ss l2 = None $ toSrcInfo l1 ss l2
+    fromSrcInfo = None . fromSrcInfo
     getPointLoc = getPointLoc . sLoc
     fileName = fileName . sLoc
     startLine = startLine . sLoc

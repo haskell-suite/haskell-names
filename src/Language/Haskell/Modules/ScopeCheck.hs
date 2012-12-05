@@ -8,7 +8,6 @@ import Data.Traversable (mapM)
 import Language.Haskell.Exts.Annotated
 
 import Language.Haskell.Modules.Types
-import Language.Haskell.Modules.Error
 import Language.Haskell.Modules.SyntaxUtils
 import Language.Haskell.Modules.ScopeCheckMonad
 
@@ -23,34 +22,34 @@ noScope = fmap None
 
 scopeX
   :: SrcInfo a
-  => (SymTypeInfo OrigName -> Maybe String)
-  -> [Char] -> QName a -> ScopeM i (QName (Scoped a))
-scopeX ok w qn = do
+  => (SymTypeInfo OrigName -> QName a -> Maybe (Error a))
+  -> QName a -> ScopeM i (QName (Scoped a))
+scopeX ok qn = do
   r <- lookupType qn
   let
     f l =
       case r of
-        Nothing -> ScopeError l $ msgError (ann qn) ("Undefined " ++ w ++ " identifier") [msgArg qn]
+        Nothing -> ScopeError l $ ENotInScope qn
         Just (Left ts) ->
-          ScopeError l $ msgError (ann qn) "Ambiguous occurrence" []
+          ScopeError l $ EAmbiguous qn (map st_origName ts)
         Just (Right i) ->
-          case ok i of
+          case ok i qn of
             Nothing -> GlobalType l i
-            Just s -> ScopeError l $ msgError (ann qn) s [msgArg qn]
+            Just e -> ScopeError l e
   return $ fmap f qn
 
 scopeTyCls :: QName SrcSpan -> ScopeM i (QName (Scoped SrcSpan))
-scopeTyCls = scopeX (const Nothing) "type/class"
+scopeTyCls = scopeX (\_ _ -> Nothing)
 
 scopeCls :: QName SrcSpan -> ScopeM i (QName (Scoped SrcSpan))
-scopeCls = scopeX cls "class"
-  where cls SymClass{} = Nothing
-        cls _ = Just "Type used as a class"
+scopeCls = scopeX cls
+  where cls SymClass{} _ = Nothing
+        cls _ qn = Just $ ETypeAsClass qn
 
 scopeTy :: QName SrcSpan -> ScopeM i (QName (Scoped SrcSpan))
-scopeTy = scopeX cls "type"
-  where cls SymClass{} = Just "Class used as a type"
-        cls _ = Nothing
+scopeTy = scopeX cls
+  where cls SymClass{} qn = Just $ EClassAsType qn
+        cls _ _ = Nothing
 
 scopeTyVar :: Name SrcSpan -> ScopeM i (Name (Scoped SrcSpan))
 scopeTyVar n = return $ fmap (\l -> TypeVar l (getPointLoc l)) n -- FIXME
@@ -61,11 +60,11 @@ scopeVal qn = do
   let
     f l =
       case r of
-        Nothing -> ScopeError l $ msgError (ann qn) "Undefined value identifier" [msgArg qn]
+        Nothing -> ScopeError l $ ENotInScope qn
         Just (LocalVName loc) -> LocalValue l loc
         Just (GlobalVName (Right info)) -> GlobalValue l info
         Just (GlobalVName (Left infos)) ->
-          ScopeError l $ msgError (ann qn) "Ambiguous occurrence" []
+          ScopeError l $ EAmbiguous qn (map sv_origName infos)
 
   return $ fmap f qn
 
@@ -360,3 +359,6 @@ instance ScopeCheckM Binds where
       addVars $ getBound ds
       BDecls (none l) <$> mapM scopeR ds
     scopeM IPBinds {} = unimplemented "scope: IPBinds"
+
+unimplemented :: String -> a
+unimplemented s = error $ "Unimplemented: " ++ s

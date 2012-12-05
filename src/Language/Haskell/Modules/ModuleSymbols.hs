@@ -8,7 +8,6 @@ import qualified Data.Set as Set
 import Language.Haskell.Exts.Annotated
 
 import Language.Haskell.Modules.Types
-import Language.Haskell.Modules.Error
 import Language.Haskell.Modules.SyntaxUtils
 
 moduleSymbols :: (Eq l, Data l) => Module l -> Symbols GName
