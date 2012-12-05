@@ -2,8 +2,8 @@ Name:                   haskell-modules
 Version:                0.1
 License:                BSD3
 --License-File:           LICENSE
-Author:                 Lennart Augustsson
-Maintainer:             Lennart Augustsson <lennart@augustsson.net>
+Author:                 Roman Cheplyaka, Lennart Augustsson
+Maintainer:             Roman Cheplyaka <roma@ro-che.info>
 Category:               Language
 Synopsis:               Resolving Haskell module dependencies.
 Description:            This is an addon to Haskell-Source with Extensions (HSE, haskell-src-exts).
