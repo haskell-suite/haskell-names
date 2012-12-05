@@ -26,16 +26,11 @@ Library
 
   Exposed-modules:      Language.Haskell.Modules
                         Language.Haskell.Modules.Flags
-                        Language.Haskell.Modules.Interfaces
-                        Language.Haskell.Modules.ModuleSummary
 
   Other-modules:        Language.Haskell.Modules.Error
                         Language.Haskell.Modules.Recursive
-                        Language.Haskell.Modules.Scope
-                        Language.Haskell.Modules.ScopeMonad
-                        Language.Haskell.Modules.SymbolTable
+                        Language.Haskell.Modules.ScopeCheckMonad
                         Language.Haskell.Modules.SyntaxUtils
-                        Language.Haskell.Modules.InternalsDocs
 Executable gen-iface
   Build-depends:        base, containers, haskell-src-exts, haskell-modules, haskell-packages, filepath, mtl
   Main-is: gen-iface.hs
