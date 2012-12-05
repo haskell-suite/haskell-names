@@ -63,6 +63,8 @@ data Error l
   | EAmbiguous (QName l) [OrigName]
   | ETypeAsClass (QName l)
   | EClassAsType (QName l)
+  | ENotExported (Name l) (ModuleName l)
+  | EInternal String
   deriving (Data, Typeable, Show) -- FIXME write custom Show
 
 instance (SrcInfo l) => SrcInfo (Scoped l) where
