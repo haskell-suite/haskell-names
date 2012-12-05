@@ -52,6 +52,8 @@ data Scoped l
     | LocalValue  { sLoc :: l, sDefLoc :: SrcLoc }
     | TypeVar     { sLoc :: l, sDefLoc :: SrcLoc }
     | Binder      { sLoc :: l }
+    | Import      { sLoc :: l, importSymbols :: Symbols OrigName }
+    | Export      { sLoc :: l, exportSymbols :: Symbols OrigName }
     | None        { sLoc :: l }
     | ScopeError  { sLoc :: l, serr :: Error l }
     deriving (Show, Typeable, Data)
