@@ -33,6 +33,17 @@ type ASymTypeInfo n = Either [SymTypeInfo n] (SymTypeInfo n)
 data Table = Table (Map.Map GName (ASymValueInfo OrigName)) (Map.Map GName (ASymTypeInfo OrigName))
     deriving (Show)
 
+instance Monoid Table where
+  mempty = empty
+  mappend (Table vs1 ts1) (Table vs2 ts2) =
+    Table (j vs1 vs2) (j ts1 ts2)
+    where
+      j :: (Eq i, Ord k)
+        => Map.Map k (Either [i] i)
+        -> Map.Map k (Either [i] i)
+        -> Map.Map k (Either [i] i)
+      j = Map.unionWith combineSyms
+
 toGName :: QName l -> GName
 toGName (UnQual _ n) = GName "" (nameToString n)
 toGName (Qual _ (ModuleName _ m) n) = GName m (nameToString n)
