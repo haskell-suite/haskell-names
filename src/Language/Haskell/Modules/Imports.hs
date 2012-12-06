@@ -24,7 +24,7 @@ resolveImportSpec mod isHiding (vs,ts) spec =
           [info | info <- vs, not (isConstructor info), sv_origName info ~~ n]
       in
         checkUnique
-          (ENotExported n mod)
+          (ENotExported Nothing n mod)
           (matches, [])
           matches
           spec
@@ -34,11 +34,16 @@ resolveImportSpec mod isHiding (vs,ts) spec =
         matches = [info | info <- ts, st_origName info ~~ n]
       in
         checkUnique
-          (ENotExported n mod)
+          (ENotExported Nothing n mod)
           ([], matches)
           matches
           spec
 
+    -- FIXME
+    -- What about things like:
+    -- head(..)
+    -- String(..)
+    -- ?
     IThingAll l n ->
       let
         matches = [info | info <- ts, st_origName info ~~ n]
@@ -49,7 +54,7 @@ resolveImportSpec mod isHiding (vs,ts) spec =
                , n' == st_origName n ]
         n' =
           checkUnique
-            (ENotExported n mod)
+            (ENotExported Nothing n mod)
             ([], matches)
             matches
             n
@@ -68,11 +73,12 @@ resolveImportSpec mod isHiding (vs,ts) spec =
                , n' == st_origName n ]
         n' =
           checkUnique
-            (ENotExported n mod)
+            (ENotExported Nothing n mod)
             ([], matches)
             matches
             n
-        cns' = map resolveCName cns
+        typeName = st_origName $ head matches -- should be safe
+        cns' = map (resolveCName mod (n,typeName) (vs,ts)) cns
         ann2err :: Annotated a => a (Scoped l) -> Either (Error l) ()
         ann2err a = case ann a of ScopeError _ e -> Left e; _ -> return ()
       in
@@ -89,8 +95,28 @@ resolveImportSpec mod isHiding (vs,ts) spec =
     isConstructor SymConstructor {} = True
     isConstructor _ = False
 
-resolveCName :: CName l -> CName (Scoped l)
-resolveCName = undefined
+resolveCName
+  :: ModuleName l
+  -> (Name l, OrigName)
+  -> Symbols OrigName
+  -> CName l
+  -> CName (Scoped l)
+resolveCName mod (pname, parent) (vs, ts) cn =
+  let
+    matches =
+      [ info
+      | info <- vs
+      , let GName _ name = sv_origName info
+      , nameToString (unCName cn) == name
+      , Just p <- return $ sv_parent info
+      , p == parent
+      ]
+  in
+    checkUnique
+      (ENotExported (Just pname) (unCName cn) mod)
+      (matches, [])
+      matches
+      cn
 
 scopeError :: Functor f => Error l -> f l -> f (Scoped l)
 scopeError e f = (\l -> ScopeError l e) <$> f

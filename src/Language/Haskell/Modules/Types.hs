@@ -63,7 +63,10 @@ data Error l
   | EAmbiguous (QName l) [OrigName]
   | ETypeAsClass (QName l)
   | EClassAsType (QName l)
-  | ENotExported (Name l) (ModuleName l)
+  | ENotExported
+      (Maybe (Name l)) -- optional parent, e.g. Bool in Bool(Right)
+      (Name l)         -- the name which is not exported
+      (ModuleName l)
   | EInternal String
   deriving (Data, Typeable, Show) -- FIXME write custom Show
 
