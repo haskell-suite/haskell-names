@@ -71,6 +71,3 @@ combineSyms (Right s1) (Right s2)
 combineSyms (Left ss)  (Right s2) = Left $ s2 : ss
 combineSyms (Right s1) (Left ss)  = Left $ s1 : ss
 combineSyms (Left ss1) (Left ss2) = Left $ ss1 ++ ss2
-
-combineType :: ASymTypeInfo n -> ASymTypeInfo n -> ASymTypeInfo n
-combineType = undefined
