@@ -11,6 +11,7 @@ module Language.Haskell.Modules.GlobalSymbolTable
   , addValue
   , lookupType
   , addType
+  , fromLists
   ) where
 
 import Language.Haskell.Exts.Annotated
@@ -22,6 +23,7 @@ import Data.List
 import Data.Typeable
 import Data.Data
 import Control.Exception
+import Control.Arrow
 
 import Language.Haskell.Modules.Types
 import Language.Haskell.Modules.SyntaxUtils(nameToString, specialConToString)
@@ -66,6 +68,15 @@ lookupType qn (Table _ ts) = Map.lookup (toGName qn) ts
 
 addType :: QName l -> SymTypeInfo OrigName -> Table -> Table
 addType qn i (Table vs ts) = Table vs (Map.insertWith combineSyms (toGName qn) (Right i) ts)
+
+fromLists
+  :: ([(GName, SymValueInfo OrigName)],
+      [(GName, SymTypeInfo OrigName)])
+  -> Table
+fromLists (vs, ts) =
+  Table
+    (Map.fromListWith combineSyms $ map (second Right) vs)
+    (Map.fromListWith combineSyms $ map (second Right) ts)
 
 combineSyms :: Eq i => Either [i] i -> Either [i] i -> Either [i] i
 combineSyms (Right s1) (Right s2)
