@@ -3,10 +3,54 @@ module Language.Haskell.Modules.Imports where
 import qualified Data.Set as Set
 import qualified Data.Map as Map
 import Data.Monoid
+import Data.Maybe
 import Control.Applicative
 import Language.Haskell.Exts.Annotated
 import Language.Haskell.Modules.Types
+import qualified Language.Haskell.Modules.GlobalSymbolTable as Global
 import Language.Haskell.Modules.SyntaxUtils
+
+resolveImportDecl
+  :: Symbols OrigName
+  -> ImportDecl l
+  -> ImportDecl (Scoped l)
+resolveImportDecl syms (ImportDecl l mod qual src pkg mbAs mbSpecList) =
+  let
+    mbSpecList' = resolveImportSpecList mod syms <$> mbSpecList
+    tbl = do
+      impSyms <- maybe (return syms) ann2err mbSpecList'
+      return $ computeSymbolTable qual (fromMaybe mod mbAs) impSyms
+    newAnn = either (ScopeError l) (Import l) tbl
+  in
+    ImportDecl
+      newAnn
+      ((\l -> ImportPart l syms) <$> mod)
+      qual
+      src
+      pkg
+      (fmap (None <$>) mbAs)
+      mbSpecList'
+
+computeSymbolTable
+  :: Bool
+  -> ModuleName l
+  -> Symbols OrigName
+  -> Global.Table
+computeSymbolTable qual (ModuleName _ mod) (vs,ts) =
+  Global.fromLists $
+    if qual
+      then renamed
+      else renamed <> unqualified
+  where
+    renamed = renameSyms mod
+    unqualified = renameSyms ""
+    renameSyms mod = (map (renameV mod) vs, map (renameT mod) ts)
+    renameV m v =
+      let GName _ n = sv_origName v
+      in (GName m n, v)
+    renameT m v =
+      let GName _ n = st_origName v
+      in (GName mod n, v)
 
 resolveImportSpecList
   :: ModuleName l
