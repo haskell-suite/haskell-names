@@ -1,3 +1,4 @@
+{-# LANGUAGE DeriveDataTypeable #-}
 -- | This module is designed to be imported qualified.
 module Language.Haskell.Modules.GlobalSymbolTable
   ( Table
@@ -18,6 +19,8 @@ import Data.Monoid
 import qualified Data.Map as Map
 import qualified Data.Set as Set
 import Data.List
+import Data.Typeable
+import Data.Data
 import Control.Exception
 
 import Language.Haskell.Modules.Types
@@ -31,7 +34,7 @@ type ASymTypeInfo n = Either [SymTypeInfo n] (SymTypeInfo n)
 
 -- | Global symbol table — contains global names
 data Table = Table (Map.Map GName (ASymValueInfo OrigName)) (Map.Map GName (ASymTypeInfo OrigName))
-    deriving (Show)
+    deriving (Eq, Show, Data, Typeable)
 
 instance Monoid Table where
   mempty = empty

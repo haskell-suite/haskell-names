@@ -21,7 +21,7 @@ resolveImportSpecList mod allSyms@(vs,ts) (ImportSpecList l isHiding specs) =
       Left e -> ImportSpecList (ScopeError l e) isHiding specs'
       Right syms ->
         case isHiding of
-          False -> ImportSpecList (Import l syms) isHiding specs'
+          False -> ImportSpecList (ImportPart l syms) isHiding specs'
           True ->
             let
               (hvs, hts) = syms
@@ -32,7 +32,7 @@ resolveImportSpecList mod allSyms@(vs,ts) (ImportSpecList l isHiding specs) =
               resultSyms =
                 ( Map.elems $ allVls Map.\\ hidVls
                 , Map.elems $ allTys Map.\\ hidTys )
-            in ImportSpecList (Import l resultSyms) isHiding specs'
+            in ImportSpecList (ImportPart l resultSyms) isHiding specs'
 
 symbolMap
   :: Ord s
@@ -112,7 +112,7 @@ resolveImportSpec mod isHiding (vs,ts) spec =
         in
           case ann n' of
             e@ScopeError{} -> IThingAll e n'
-            _ -> IThingAll (Import l (subs, matches)) n'
+            _ -> IThingAll (ImportPart l (subs, matches)) n'
 
     IThingWith l n cns ->
       let
@@ -135,7 +135,7 @@ resolveImportSpec mod isHiding (vs,ts) spec =
           _ | Left e <- ann2err n' -> scopeError e spec
             | Left e <- mapM_ ann2err cns' ->
                 IThingWith (ScopeError l e) n' cns'
-          _ -> IThingWith (Import l (subs, matches)) n' cns'
+          _ -> IThingWith (ImportPart l (subs, matches)) n' cns'
   where
     (~~) :: GName -> Name l -> Bool
     GName _ n ~~ n' = n == nameToString n'
@@ -171,7 +171,7 @@ ann2err :: Annotated a => a (Scoped l) -> Either (Error l) (Symbols OrigName)
 ann2err a =
   case ann a of
     ScopeError _ e -> Left e
-    Import _ syms -> Right syms
+    ImportPart _ syms -> Right syms
     _ -> Left $ EInternal "ann2err"
 
 scopeError :: Functor f => Error l -> f l -> f (Scoped l)
@@ -185,6 +185,6 @@ checkUnique
   f l ->
   f (Scoped l)
 checkUnique notFound _ [] f = scopeError notFound f
-checkUnique _ syms [_] f = fmap (\l -> Import l syms) f
+checkUnique _ syms [_] f = fmap (\l -> ImportPart l syms) f
 -- there should be no clashes, and it should be checked elsewhere
 checkUnique _ _ _ f = scopeError (EInternal "ambiguous import") f

@@ -2,9 +2,9 @@
 module Language.Haskell.Modules.Types where
 
 import Language.Haskell.Exts.Annotated
-import Language.Haskell.Exts.Annotated
 import Data.Typeable
 import Data.Data
+import {-# SOURCE #-} qualified Language.Haskell.Modules.GlobalSymbolTable as Global
 
 type SymFixity = (Assoc (), Int)
 
@@ -52,7 +52,8 @@ data Scoped l
     | LocalValue  { sLoc :: l, sDefLoc :: SrcLoc }
     | TypeVar     { sLoc :: l, sDefLoc :: SrcLoc }
     | Binder      { sLoc :: l }
-    | Import      { sLoc :: l, importSymbols :: Symbols OrigName }
+    | Import      { sLoc :: l, importTable :: Global.Table }
+    | ImportPart  { sLoc :: l, importSymbols :: Symbols OrigName }
     | Export      { sLoc :: l, exportSymbols :: Symbols OrigName }
     | None        { sLoc :: l }
     | ScopeError  { sLoc :: l, serr :: Error l }
