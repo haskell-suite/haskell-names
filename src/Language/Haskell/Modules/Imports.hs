@@ -95,8 +95,6 @@ resolveImportSpec mod isHiding (vs,ts) spec =
             n
         typeName = st_origName $ head matches -- should be safe
         cns' = map (resolveCName mod (n,typeName) (vs,ts)) cns
-        ann2err :: Annotated a => a (Scoped l) -> Either (Error l) ()
-        ann2err a = case ann a of ScopeError _ e -> Left e; _ -> return ()
       in
         case () of
           _ | Left e <- ann2err n' -> scopeError e spec
@@ -133,6 +131,13 @@ resolveCName mod (pname, parent) (vs, ts) cn =
       (matches, [])
       matches
       cn
+
+ann2err :: Annotated a => a (Scoped l) -> Either (Error l) (Symbols OrigName)
+ann2err a =
+  case ann a of
+    ScopeError _ e -> Left e
+    Import _ syms -> Right syms
+    _ -> Left $ EInternal "ann2err"
 
 scopeError :: Functor f => Error l -> f l -> f (Scoped l)
 scopeError e f = (\l -> ScopeError l e) <$> f
