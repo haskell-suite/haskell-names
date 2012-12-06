@@ -17,7 +17,7 @@ resolveImportSpec mod isHiding (vs,ts) spec =
   case spec of
     IVar _ n ->
       let
-        matches = 
+        matches =
           -- Strictly speaking, the isConstructor check is unnecessary
           -- because constructors are lexically different from anything
           -- else.
@@ -29,15 +29,31 @@ resolveImportSpec mod isHiding (vs,ts) spec =
           matches
           spec
     -- FIXME think about data families etc.
-    IAbs _ n ->
-      let
-        matches = [info | info <- ts, st_origName info ~~ n]
-      in
-        checkUnique
-          (ENotExported Nothing n mod)
-          ([], matches)
-          matches
-          spec
+    IAbs _ n
+      | isHiding ->
+          -- This is a bit special. 'C' may match both types/classes and
+          -- data constructors.
+          -- FIXME Still check for uniqueness?
+          let
+            tyMatches =
+              [info | info <- ts, st_origName info ~~ n]
+            vlMatches =
+              [info | info <- vs, sv_origName info ~~ n]
+          in
+            if null tyMatches && null vlMatches
+              then
+                scopeError (ENotExported Nothing n mod) spec
+              else
+                (\l -> Export l (vlMatches, tyMatches)) <$> spec
+      | otherwise ->
+          let
+            matches = [info | info <- ts, st_origName info ~~ n]
+          in
+            checkUnique
+              (ENotExported Nothing n mod)
+              ([], matches)
+              matches
+              spec
 
     -- FIXME
     -- What about things like:
@@ -122,7 +138,7 @@ scopeError :: Functor f => Error l -> f l -> f (Scoped l)
 scopeError e f = (\l -> ScopeError l e) <$> f
 
 checkUnique
-  :: Functor f => 
+  :: Functor f =>
   Error l ->
   Symbols OrigName ->
   [a] ->
