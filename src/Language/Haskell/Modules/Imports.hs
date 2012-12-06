@@ -1,18 +1,53 @@
 module Language.Haskell.Modules.Imports where
 
 import qualified Data.Set as Set
+import qualified Data.Map as Map
+import Data.Monoid
 import Control.Applicative
 import Language.Haskell.Exts.Annotated
 import Language.Haskell.Modules.Types
 import Language.Haskell.Modules.SyntaxUtils
 
--- NB: this can be made more efficient
+resolveImportSpecList
+  :: ModuleName l
+  -> Symbols OrigName
+  -> ImportSpecList l
+  -> ImportSpecList (Scoped l)
+resolveImportSpecList mod allSyms@(vs,ts) (ImportSpecList l isHiding specs) =
+  let specs' = map (resolveImportSpec mod isHiding allSyms) specs
+      mentionedSyms = mconcat <$> mapM ann2err specs'
+  in
+    case mentionedSyms of
+      Left e -> ImportSpecList (ScopeError l e) isHiding specs'
+      Right syms ->
+        case isHiding of
+          False -> ImportSpecList (Import l syms) isHiding specs'
+          True ->
+            let
+              (hvs, hts) = syms
+              allTys = symbolMap st_origName ts
+              hidTys = symbolMap st_origName hts
+              allVls = symbolMap sv_origName vs
+              hidVls = symbolMap sv_origName hvs
+              resultSyms =
+                ( Map.elems $ allVls Map.\\ hidVls
+                , Map.elems $ allTys Map.\\ hidTys )
+            in ImportSpecList (Import l resultSyms) isHiding specs'
+
+symbolMap
+  :: Ord s
+  => (a -> s)
+  -> [a]
+  -> Map.Map s a
+symbolMap f is = Map.fromList [(f i, i) | i <- is]
+
 resolveImportSpec
   :: ModuleName l
   -> Bool
   -> Symbols OrigName
   -> ImportSpec l
   -> ImportSpec (Scoped l)
+-- NB: this can be made more efficient
 resolveImportSpec mod isHiding (vs,ts) spec =
   case spec of
     IVar _ n ->
