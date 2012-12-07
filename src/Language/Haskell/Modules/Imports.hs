@@ -1,3 +1,4 @@
+{-# LANGUAGE TypeFamilies #-}
 module Language.Haskell.Modules.Imports where
 
 import qualified Data.Set as Set
@@ -5,10 +6,28 @@ import qualified Data.Map as Map
 import Data.Monoid
 import Data.Maybe
 import Control.Applicative
+import Distribution.HaskellSuite.Helpers
 import Language.Haskell.Exts.Annotated
 import Language.Haskell.Modules.Types
 import qualified Language.Haskell.Modules.GlobalSymbolTable as Global
 import Language.Haskell.Modules.SyntaxUtils
+
+instance ModName (ModuleName l) where
+  modToString (ModuleName _ s) = s
+
+processImport
+  :: (MonadModule m, ModuleInfo m ~ Symbols OrigName)
+  => ImportDecl l
+  -> m (ImportDecl (Scoped l), Either (Error l) Global.Table)
+processImport imp = do
+  mbi <- getModuleInfo (importModule imp)
+  case mbi of
+    Nothing ->
+      let e = EModNotFound (importModule imp)
+      in return $ (scopeError e imp, Left e)
+    Just syms ->
+      let imp' = resolveImportDecl syms imp
+      in return (imp', ann2table imp')
 
 resolveImportDecl
   :: Symbols OrigName
@@ -18,7 +37,7 @@ resolveImportDecl syms (ImportDecl l mod qual src pkg mbAs mbSpecList) =
   let
     mbSpecList' = resolveImportSpecList mod syms <$> mbSpecList
     tbl = do
-      impSyms <- maybe (return syms) ann2err mbSpecList'
+      impSyms <- maybe (return syms) ann2syms mbSpecList'
       return $ computeSymbolTable qual (fromMaybe mod mbAs) impSyms
     newAnn = either (ScopeError l) (Import l) tbl
   in
@@ -59,7 +78,7 @@ resolveImportSpecList
   -> ImportSpecList (Scoped l)
 resolveImportSpecList mod allSyms@(vs,ts) (ImportSpecList l isHiding specs) =
   let specs' = map (resolveImportSpec mod isHiding allSyms) specs
-      mentionedSyms = mconcat <$> mapM ann2err specs'
+      mentionedSyms = mconcat <$> mapM ann2syms specs'
   in
     case mentionedSyms of
       Left e -> ImportSpecList (ScopeError l e) isHiding specs'
@@ -176,8 +195,8 @@ resolveImportSpec mod isHiding (vs,ts) spec =
         cns' = map (resolveCName mod (n,typeName) (vs,ts)) cns
       in
         case () of
-          _ | Left e <- ann2err n' -> scopeError e spec
-            | Left e <- mapM_ ann2err cns' ->
+          _ | Left e <- ann2syms n' -> scopeError e spec
+            | Left e <- mapM_ ann2syms cns' ->
                 IThingWith (ScopeError l e) n' cns'
           _ -> IThingWith (ImportPart l (subs, matches)) n' cns'
   where
@@ -211,12 +230,19 @@ resolveCName mod (pname, parent) (vs, ts) cn =
       matches
       cn
 
-ann2err :: Annotated a => a (Scoped l) -> Either (Error l) (Symbols OrigName)
-ann2err a =
+ann2syms :: Annotated a => a (Scoped l) -> Either (Error l) (Symbols OrigName)
+ann2syms a =
   case ann a of
     ScopeError _ e -> Left e
     ImportPart _ syms -> Right syms
-    _ -> Left $ EInternal "ann2err"
+    _ -> Left $ EInternal "ann2syms"
+
+ann2table :: Annotated a => a (Scoped l) -> Either (Error l) Global.Table
+ann2table a =
+  case ann a of
+    ScopeError _ e -> Left e
+    Import _ tbl -> Right tbl
+    _ -> Left $ EInternal "ann2syms"
 
 scopeError :: Functor f => Error l -> f l -> f (Scoped l)
 scopeError e f = (\l -> ScopeError l e) <$> f
