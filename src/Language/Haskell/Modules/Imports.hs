@@ -1,5 +1,9 @@
 {-# LANGUAGE TypeFamilies #-}
-module Language.Haskell.Modules.Imports where
+module Language.Haskell.Modules.Imports
+  ( processImport
+  , processImports
+  )
+  where
 
 import qualified Data.Set as Set
 import qualified Data.Map as Map
