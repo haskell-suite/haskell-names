@@ -3,9 +3,12 @@ module Language.Haskell.Modules.Imports where
 
 import qualified Data.Set as Set
 import qualified Data.Map as Map
-import Data.Monoid
+import Data.Monoid hiding (First(..))
 import Data.Maybe
 import Control.Applicative
+import Control.Arrow
+import Control.Monad
+import Control.Monad.Writer
 import Distribution.HaskellSuite.Helpers
 import Language.Haskell.Exts.Annotated
 import Language.Haskell.Modules.Types
@@ -14,6 +17,22 @@ import Language.Haskell.Modules.SyntaxUtils
 
 instance ModName (ModuleName l) where
   modToString (ModuleName _ s) = s
+
+newtype EitherMonoid e a = EitherMonoid { getEither :: Either e a }
+
+instance Monoid a => Monoid (EitherMonoid e a) where
+  mempty = EitherMonoid $ pure mempty
+  mappend (EitherMonoid a) (EitherMonoid b) =
+    EitherMonoid $ mappend <$> a <*> b
+
+processImports
+  :: (MonadModule m, ModuleInfo m ~ Symbols OrigName)
+  => [ImportDecl l]
+  -> m ([ImportDecl (Scoped l)], Either (Error l) Global.Table)
+processImports = unwrap . mapM (wrap . processImport)
+  where
+    wrap = WriterT . liftM (second EitherMonoid)
+    unwrap = liftM (second getEither) . runWriterT
 
 processImport
   :: (MonadModule m, ModuleInfo m ~ Symbols OrigName)
