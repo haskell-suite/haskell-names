@@ -19,6 +19,7 @@ import Control.Monad.Writer
 import Distribution.HaskellSuite.Helpers
 import Language.Haskell.Exts.Annotated
 import Language.Haskell.Modules.Types
+import Language.Haskell.Modules.ScopeUtils
 import qualified Language.Haskell.Modules.GlobalSymbolTable as Global
 import Language.Haskell.Modules.SyntaxUtils
 
