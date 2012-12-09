@@ -35,6 +35,6 @@ Library
                         Language.Haskell.Modules.GlobalSymbolTable
                         Language.Haskell.Modules.LocalSymbolTable
                         Language.Haskell.Modules.Imports
-Executable gen-iface
-  Build-depends:        base, containers, haskell-src-exts, haskell-modules, haskell-packages, filepath, mtl
-  Main-is: gen-iface.hs
+--Executable gen-iface
+--  Build-depends:        base, containers, haskell-src-exts, haskell-modules, haskell-packages, filepath, mtl
+--  Main-is: gen-iface.hs
