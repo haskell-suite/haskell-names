@@ -28,6 +28,7 @@ Library
                         Language.Haskell.Modules.Flags
 
                         Language.Haskell.Modules.Recursive
+                        Language.Haskell.Modules.ScopeCheck
                         Language.Haskell.Modules.ScopeCheckMonad
                         Language.Haskell.Modules.SyntaxUtils
                         Language.Haskell.Modules.ModuleSymbols
