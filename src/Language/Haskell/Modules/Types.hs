@@ -5,6 +5,7 @@ import Language.Haskell.Exts.Annotated
 import Data.Typeable
 import Data.Data
 import Data.Monoid
+import Control.Applicative
 import Data.Lens.Common
 import qualified Data.Set as Set
 import {-# SOURCE #-} qualified Language.Haskell.Modules.GlobalSymbolTable as Global
@@ -106,3 +107,6 @@ instance (SrcInfo l) => SrcInfo (Scoped l) where
     fileName = fileName . sLoc
     startLine = startLine . sLoc
     startColumn = startColumn . sLoc
+
+scopeError :: Functor f => Error l -> f l -> f (Scoped l)
+scopeError e f = (\l -> ScopeError l e) <$> f

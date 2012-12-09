@@ -284,9 +284,6 @@ ann2table a =
     Import _ tbl -> Right tbl
     _ -> Left $ EInternal "ann2syms"
 
-scopeError :: Functor f => Error l -> f l -> f (Scoped l)
-scopeError e f = (\l -> ScopeError l e) <$> f
-
 checkUnique
   :: Functor f =>
   Error l ->
