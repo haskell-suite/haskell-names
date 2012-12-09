@@ -19,12 +19,6 @@ data SymValueInfo name
     | SymConstructor { sv_origName :: name, sv_fixity :: Maybe SymFixity, sv_typeName :: name }
     deriving (Eq, Ord, Show, Data, Typeable)
 
-sv_parent :: SymValueInfo n -> Maybe n
-sv_parent (SymSelector { sv_typeName = n }) = Just n
-sv_parent (SymConstructor { sv_typeName = n }) = Just n
-sv_parent (SymMethod { sv_className = n }) = Just n
-sv_parent _ = Nothing
-
 data SymTypeInfo name
     = SymType        { st_origName :: name, st_fixity :: Maybe SymFixity }
     | SymData        { st_origName :: name, st_fixity :: Maybe SymFixity }
@@ -107,6 +101,3 @@ instance (SrcInfo l) => SrcInfo (Scoped l) where
     fileName = fileName . sLoc
     startLine = startLine . sLoc
     startColumn = startColumn . sLoc
-
-scopeError :: Functor f => Error l -> f l -> f (Scoped l)
-scopeError e f = (\l -> ScopeError l e) <$> f
