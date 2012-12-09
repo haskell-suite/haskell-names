@@ -4,8 +4,6 @@ module Language.Haskell.Modules.GlobalSymbolTable
   ( Table
   , GName
   , OrigName
-  , ASymValueInfo
-  , ASymTypeInfo
   , empty
   , lookupValue
   , addValue
@@ -57,14 +55,30 @@ toGName (Special _ s) = error "toGName: Special"
 empty :: Table
 empty = Table Map.empty Map.empty
 
-lookupValue :: QName l -> Table -> Maybe (ASymValueInfo OrigName)
-lookupValue qn (Table vs _) = Map.lookup (toGName qn) vs
+lookupValue
+  :: QName l
+  -> Table
+  -> Either (Error l) (SymValueInfo OrigName)
+lookupValue qn (Table vs _) =
+  case Map.lookup (toGName qn) vs of
+    Nothing -> Left $ ENotInScope qn
+    Just (Left ts) ->
+      Left $ EAmbiguous qn (map sv_origName ts)
+    Just (Right i) -> Right i
 
 addValue :: QName l -> SymValueInfo OrigName -> Table -> Table
 addValue qn i (Table vs ts) = Table (Map.insertWith combineSyms (toGName qn) (Right i) vs) ts
 
-lookupType :: QName l -> Table -> Maybe (ASymTypeInfo GName)
-lookupType qn (Table _ ts) = Map.lookup (toGName qn) ts
+lookupType
+  :: QName l
+  -> Table
+  -> Either (Error l) (SymTypeInfo OrigName)
+lookupType qn (Table _ ts) =
+  case Map.lookup (toGName qn) ts of
+    Nothing -> Left $ ENotInScope qn
+    Just (Left ts) ->
+      Left $ EAmbiguous qn (map st_origName ts)
+    Just (Right i) -> Right i
 
 addType :: QName l -> SymTypeInfo OrigName -> Table -> Table
 addType qn i (Table vs ts) = Table vs (Map.insertWith combineSyms (toGName qn) (Right i) ts)

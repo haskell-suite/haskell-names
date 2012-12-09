@@ -6,8 +6,6 @@ module Language.Haskell.Modules.ScopeCheckMonad
   , ScopeCheckM(..)
   , delimit
   , VName(..)
-  , Global.ASymTypeInfo
-  , Global.ASymValueInfo
   , lookupValue
   , lookupType
   , addVar
@@ -55,17 +53,18 @@ delimit (ScopeM a) = ScopeM $ do st <- get; r <- a; put st; return r
 
 data VName
   = LocalVName SrcLoc
-  | GlobalVName (Global.ASymValueInfo Global.OrigName)
+  | GlobalVName (SymValueInfo OrigName)
 
-lookupValue :: QName l -> ScopeM i (Maybe VName)
+lookupValue :: QName l -> ScopeM i (Either (Error l) VName)
 lookupValue qn = ScopeM $
   (<|>) <$>
     (fmap LocalVName  . Local.lookupValue  qn <$> get) <*>
     (fmap GlobalVName . Global.lookupValue qn <$> ask)
+  where
+    x@Right{} <|> _ = x
+    _ <|> y = y
 
-lookupType
-  :: QName l
-  -> ScopeM i (Maybe (Global.ASymTypeInfo Global.OrigName))
+lookupType :: QName l -> ScopeM i (Either (Error l) (SymTypeInfo OrigName))
 lookupType qn = ScopeM $ Global.lookupType qn <$> ask
 
 addVar :: SrcInfo l => Name l -> ScopeM Modify ()

@@ -29,10 +29,8 @@ scopeX ok qn = do
   let
     f l =
       case r of
-        Nothing -> ScopeError l $ ENotInScope qn
-        Just (Left ts) ->
-          ScopeError l $ EAmbiguous qn (map st_origName ts)
-        Just (Right i) ->
+        Left e -> ScopeError l e
+        Right i ->
           case ok i qn of
             Nothing -> GlobalType l i
             Just e -> ScopeError l e
@@ -60,11 +58,9 @@ scopeVal qn = do
   let
     f l =
       case r of
-        Nothing -> ScopeError l $ ENotInScope qn
-        Just (LocalVName loc) -> LocalValue l loc
-        Just (GlobalVName (Right info)) -> GlobalValue l info
-        Just (GlobalVName (Left infos)) ->
-          ScopeError l $ EAmbiguous qn (map sv_origName infos)
+        Right (LocalVName loc) -> LocalValue l loc
+        Right (GlobalVName info) -> GlobalValue l info
+        Left e -> ScopeError l e
 
   return $ fmap f qn
 
