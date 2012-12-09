@@ -1,4 +1,6 @@
-module Language.Haskell.Modules.ModuleSymbols where
+module Language.Haskell.Modules.ModuleSymbols
+  ( moduleSymbols )
+  where
 
 import Data.List
 import Data.Maybe
@@ -71,30 +73,3 @@ getTopDeclSymbols mdl d =
   where ModuleName _ smdl = mdl
         qname = GName smdl . nameToString
         hname = fst . splitDeclHead
-
-filterExports :: Maybe (ExportSpecList (Scoped l)) -> Symbols GName -> Symbols GName
-filterExports Nothing l = l
-filterExports (Just (ExportSpecList _ specs)) (vs, ts) = (filter expValue vs, filter expType ts)
-  where
-    expValue (SymConstructor { sv_typeName  = qn }) | qn `Set.member` allTys = True
-    expValue (SymSelector    { sv_typeName  = qn }) | qn `Set.member` allTys = True
-    expValue (SymMethod      { sv_className = qn }) | qn `Set.member` allTys = True
-    expValue i = sv_origName i `Set.member` vars
-    vars = Set.fromList $
-      [ getOriginalName n | EVar _ n <- specs ] ++
-      [ let GName mod _ = getOriginalName n
-        in  GName mod $ (nameToString $ unCName cn)
-      | EThingWith _ n cns <- specs, cn <- cns ]
-    expType  i = st_origName i `Set.member` tys
-    tys = Set.fromList ( [ getOriginalName n | EAbs _ n <- specs ] ++
-                     [ getOriginalName n | EThingWith _ n _ <- specs ])
-            `Set.union` allTys
-    allTys = Set.fromList [ getOriginalName n | EThingAll _ n <- specs ]
-    -- XXX EModuleContents
-
-getOriginalName :: (Annotated a) => a (Scoped l) -> GName
-getOriginalName x =
-  case ann x of
-    GlobalType  { sTInfo = n } -> st_origName n
-    GlobalValue { sVInfo = n } -> sv_origName n
-    _ -> error "getOriginalName" -- XXX handle ScopeError gracefully?
