@@ -1,6 +1,10 @@
 module Language.Haskell.Modules.Exports where
 
+import qualified Data.Map as Map
 import Control.Applicative
+import Control.Monad
+import Control.Monad.State
+import Data.Lens.Common
 import Language.Haskell.Exts.Annotated
 import Language.Haskell.Modules.Types
 import qualified Language.Haskell.Modules.GlobalSymbolTable as Global
@@ -28,3 +32,16 @@ resolveExportSpec tbl e =
             Global.lookupType qn tbl
       in ann <$> e
     -- FIXME: the rest
+
+-- Used to detect conflicts
+type SymbolSet a = (Map.Map NameS [a], Map.Map NameS [a])
+
+type Accum a = State (SymbolSet a)
+
+addSymbols :: a -> Symbols OrigName -> Accum a ()
+addSymbols a (ts,vs) =
+    mapM_ (add fstLens) vs >> mapM_ (add sndLens) ts
+  where
+    add lens i = do
+      let GName _ n = origName i
+      modify $ modL lens (Map.insertWith (++) n [a])
