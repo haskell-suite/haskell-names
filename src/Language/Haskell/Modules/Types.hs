@@ -33,6 +33,15 @@ data SymTypeInfo name
 
 type SymTypeInfos n = [SymTypeInfo n]
 
+class HasOrigName i where
+  origName :: i n -> n
+
+instance HasOrigName SymValueInfo where
+  origName = sv_origName
+
+instance HasOrigName SymTypeInfo where
+  origName = st_origName
+
 type Symbols n = ([SymValueInfo n], [SymTypeInfo n])
 
 type NameS = String
