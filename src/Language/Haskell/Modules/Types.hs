@@ -78,6 +78,7 @@ data Error l
       (Name l)         -- the name which is not exported
       (ModuleName l)
   | EModNotFound (ModuleName l)
+  | EExportConflict [(NameS, [ExportSpec l])]
   | EInternal String
   deriving (Data, Typeable, Show) -- FIXME write custom Show
 
