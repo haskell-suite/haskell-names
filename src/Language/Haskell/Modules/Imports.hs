@@ -106,19 +106,28 @@ resolveImportSpecList mod allSyms@(vs,ts) (ImportSpecList l isHiding specs) =
     case mentionedSyms of
       Left e -> ImportSpecList (ScopeError l e) isHiding specs'
       Right syms ->
-        case isHiding of
-          False -> ImportSpecList (ImportPart l syms) isHiding specs'
-          True ->
-            let
-              (hvs, hts) = syms
-              allTys = symbolMap st_origName ts
-              hidTys = symbolMap st_origName hts
-              allVls = symbolMap sv_origName vs
-              hidVls = symbolMap sv_origName hvs
-              resultSyms =
-                ( Map.elems $ allVls Map.\\ hidVls
-                , Map.elems $ allTys Map.\\ hidTys )
-            in ImportSpecList (ImportPart l resultSyms) isHiding specs'
+        let resultSyms = computeImportedSymbols isHiding allSyms syms
+        in ImportSpecList (ImportPart l resultSyms) isHiding specs'
+
+-- | This function takes care of the possible 'hiding' clause
+computeImportedSymbols
+  :: Bool
+  -> Symbols OrigName -- ^ all symbols
+  -> Symbols OrigName -- ^ mentioned symbols
+  -> Symbols OrigName -- ^ imported symbols
+computeImportedSymbols isHiding (vs,ts) mentionedSyms =
+  case isHiding of
+    False -> mentionedSyms
+    True ->
+      let
+        (hvs, hts) = mentionedSyms
+        allTys = symbolMap st_origName ts
+        hidTys = symbolMap st_origName hts
+        allVls = symbolMap sv_origName vs
+        hidVls = symbolMap sv_origName hvs
+      in
+        ( Map.elems $ allVls Map.\\ hidVls
+        , Map.elems $ allTys Map.\\ hidTys )
 
 symbolMap
   :: Ord s
