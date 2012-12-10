@@ -94,16 +94,11 @@ resolveImportSpecList
   -> (ImportSpecList (Scoped l), Symbols OrigName)
 resolveImportSpecList mod allSyms (ImportSpecList l isHiding specs) =
   let specs' = map (resolveImportSpec mod isHiding allSyms) specs
-      mentionedSyms = map ann2syms specs'
-      recognizedSyms =
-        computeImportedSymbols isHiding allSyms $ mconcat $ rights mentionedSyms
-      newAnn =
-        case sequence_ mentionedSyms of
-          Left e -> ScopeError l e
-          Right _ ->
-            ImportPart l $ computeImportedSymbols isHiding allSyms recognizedSyms
+      mentionedSyms = mconcat $ rights $ map ann2syms specs'
+      importedSyms = computeImportedSymbols isHiding allSyms mentionedSyms
+      newAnn = ImportPart l importedSyms
   in
-    (ImportSpecList newAnn isHiding specs', recognizedSyms)
+    (ImportSpecList newAnn isHiding specs', importedSyms)
 
 -- | This function takes care of the possible 'hiding' clause
 computeImportedSymbols
