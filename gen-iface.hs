@@ -5,16 +5,18 @@ import qualified Language.Haskell.Exts.Annotated as HSE
 import Language.Haskell.Modules
 import Language.Haskell.Modules.Interfaces
 import Language.Haskell.Modules.Flags
-import Language.Haskell.Modules.ModuleSummary
+import Language.Haskell.Modules.Types
 import Control.Applicative
 import Control.Monad
 import Control.Monad.Trans
 import Control.Exception
-import Data.Foldable
 import qualified Data.Map as Map
 import Data.Typeable
 import System.FilePath
 
+import Distribution.ModuleName hiding (main)
+import Distribution.Simple.Utils
+import Distribution.Verbosity
 import Distribution.HaskellSuite.Tool
 import Distribution.HaskellSuite.Cabal
 import Distribution.HaskellSuite.Helpers
@@ -22,8 +24,7 @@ import Paths_haskell_modules
 
 data GenIfaceException
   = ParseError HSE.SrcLoc String
-  | ScopeErrors [Msg]
-  | ModuleNotFound ModuleName
+  | ScopeErrors (Error HSE.SrcSpan)
   deriving (Show, Typeable)
 
 instance Exception GenIfaceException
@@ -42,40 +43,33 @@ theTool =
   simpleTool
     "haskell-modules"
     version
-    (return "/dev/null")
+    (return Nothing)
     compile
     [suffix]
 
-compile buildDir pkgdbs pkgids files = do
-  moduleSet <- forM files $ \file ->
+compile buildDir pkgdbs pkgids mods = do
+  moduleSet <- forM mods $ \mod ->
+    let file = toFilePath (fromString mod) <.> "hs" in
     return . fmap HSE.srcInfoSpan =<< fromParseResult =<< HSE.parseFile file
-  let analysis = scopeAnalysis getModuleInfo' defaultFlags moduleSet
+  let analysis = analyseModules moduleSet
   packages <- readPackagesInfo theTool pkgdbs pkgids
-  (msgs, scopedModules) <-
+  modData <-
     evalModuleT analysis packages retrieveModuleInfo Map.empty
-  let errs = filter isError msgs
-  when (not $ null errs) $
-    throwIO $ ScopeErrors errs
-  undefined
-
--- This functions works in the ModuleT monad and will be actually called
--- by the scope analysis
-getModuleInfo' :: HSE.ModuleName () -> ModuleT ModuleSummary IO ModuleSummary
-getModuleInfo' (HSE.ModuleName _ modStr) = do
-  let modName = fromString modStr
-  mbModInfo <- getModuleInfo modName
-  maybe (liftIO $ throwIO $ ModuleNotFound modName) return mbModInfo
+  forM_ modData $ \(mod, syms) -> do
+    let HSE.ModuleName _ modname = getModuleName mod
+        ifaceFile = buildDir </> toFilePath (fromString modname) <.> "iface"
+    createDirectoryIfMissingVerbose silent True (dropFileName ifaceFile)
+    writeInterface ifaceFile syms
 
 -- This function says how we actually find and read the module
 -- information, given the search path and the module name
-retrieveModuleInfo :: [FilePath] -> ModuleName -> IO ModuleSummary
+retrieveModuleInfo :: [FilePath] -> ModuleName -> IO Symbols
 retrieveModuleInfo dirs name = do
   (base, rel) <- findModuleFile dirs [suffix] name
   readInterface $ base </> rel
 
-{-
-  mod <- fromParseResult <$> parseFile f
-  let sc = snd $ runS defaultFlags $
-        (scopeModule $ fmap srcInfoSpan mod) >> getModules
-  forM_ (Map.toList $ sc) $ \ms -> writeInterface i $ makeIface ms
--}
+getModuleName :: HSE.Module l -> HSE.ModuleName l
+getModuleName (HSE.Module _ (Just (HSE.ModuleHead _ mn _ _)) _ _ _) = mn
+getModuleName (HSE.XmlPage _ mn _ _ _ _ _) = mn
+getModuleName (HSE.XmlHybrid _ (Just (HSE.ModuleHead _ mn _ _)) _ _ _ _ _ _ _) = mn
+getModuleName m = HSE.main_mod (HSE.ann m)
