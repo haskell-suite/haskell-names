@@ -9,6 +9,7 @@ import qualified Data.Set as Set
 import qualified Data.Map as Map
 import Data.Monoid hiding (First(..))
 import Data.Maybe
+import Data.Either
 import Control.Applicative
 import Control.Arrow
 import Control.Monad
@@ -22,49 +23,40 @@ import Language.Haskell.Modules.SyntaxUtils
 instance ModName (ModuleName l) where
   modToString (ModuleName _ s) = s
 
-newtype EitherMonoid e a = EitherMonoid { getEither :: Either e a }
-
-instance Monoid a => Monoid (EitherMonoid e a) where
-  mempty = EitherMonoid $ pure mempty
-  mappend (EitherMonoid a) (EitherMonoid b) =
-    EitherMonoid $ mappend <$> a <*> b
-
 processImports
   :: (MonadModule m, ModuleInfo m ~ Symbols OrigName)
   => [ImportDecl l]
-  -> m ([ImportDecl (Scoped l)], Either (Error l) Global.Table)
-processImports = unwrap . mapM (wrap . processImport)
-  where
-    wrap = WriterT . liftM (second EitherMonoid)
-    unwrap = liftM (second getEither) . runWriterT
+  -> m ([ImportDecl (Scoped l)], Global.Table)
+processImports = runWriterT . mapM (WriterT . processImport)
 
 processImport
   :: (MonadModule m, ModuleInfo m ~ Symbols OrigName)
   => ImportDecl l
-  -> m (ImportDecl (Scoped l), Either (Error l) Global.Table)
+  -> m (ImportDecl (Scoped l), Global.Table)
 processImport imp = do
   mbi <- getModuleInfo (importModule imp)
   case mbi of
     Nothing ->
       let e = EModNotFound (importModule imp)
-      in return $ (scopeError e imp, Left e)
-    Just syms ->
-      let imp' = resolveImportDecl syms imp
-      in return (imp', ann2table imp')
+      in return $ (scopeError e imp, Global.empty)
+    Just syms -> return $ resolveImportDecl syms imp
 
 resolveImportDecl
   :: Symbols OrigName
   -> ImportDecl l
-  -> ImportDecl (Scoped l)
+  -> (ImportDecl (Scoped l), Global.Table)
 resolveImportDecl syms (ImportDecl l mod qual src pkg mbAs mbSpecList) =
   let
-    mbSpecList' = resolveImportSpecList mod syms <$> mbSpecList
-    tbl = do
-      impSyms <- maybe (return syms) ann2syms mbSpecList'
-      return $ computeSymbolTable qual (fromMaybe mod mbAs) impSyms
-    newAnn = either (ScopeError l) (Import l) tbl
+    (mbSpecList', impSyms) =
+      (fmap fst &&& maybe syms snd) $
+        resolveImportSpecList mod syms <$> mbSpecList
+    tbl = computeSymbolTable qual (fromMaybe mod mbAs) impSyms
+    newAnn =
+      case mbSpecList' of
+        Just sl | ScopeError _ e <- ann sl -> ScopeError l e
+        _ -> Import l tbl
   in
-    ImportDecl
+    (ImportDecl
       newAnn
       ((\l -> ImportPart l syms) <$> mod)
       qual
@@ -72,6 +64,7 @@ resolveImportDecl syms (ImportDecl l mod qual src pkg mbAs mbSpecList) =
       pkg
       (fmap (None <$>) mbAs)
       mbSpecList'
+    , tbl)
 
 computeSymbolTable
   :: Bool
@@ -98,16 +91,19 @@ resolveImportSpecList
   :: ModuleName l
   -> Symbols OrigName
   -> ImportSpecList l
-  -> ImportSpecList (Scoped l)
-resolveImportSpecList mod allSyms@(vs,ts) (ImportSpecList l isHiding specs) =
+  -> (ImportSpecList (Scoped l), Symbols OrigName)
+resolveImportSpecList mod allSyms (ImportSpecList l isHiding specs) =
   let specs' = map (resolveImportSpec mod isHiding allSyms) specs
-      mentionedSyms = mconcat <$> mapM ann2syms specs'
+      mentionedSyms = map ann2syms specs'
+      recognizedSyms =
+        computeImportedSymbols isHiding allSyms $ mconcat $ rights mentionedSyms
+      newAnn =
+        case sequence_ mentionedSyms of
+          Left e -> ScopeError l e
+          Right _ ->
+            ImportPart l $ computeImportedSymbols isHiding allSyms recognizedSyms
   in
-    case mentionedSyms of
-      Left e -> ImportSpecList (ScopeError l e) isHiding specs'
-      Right syms ->
-        let resultSyms = computeImportedSymbols isHiding allSyms syms
-        in ImportSpecList (ImportPart l resultSyms) isHiding specs'
+    (ImportSpecList newAnn isHiding specs', recognizedSyms)
 
 -- | This function takes care of the possible 'hiding' clause
 computeImportedSymbols
