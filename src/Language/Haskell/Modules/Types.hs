@@ -13,9 +13,7 @@ data SymValueInfo name
     | SymMethod      { sv_origName :: name, sv_fixity :: Maybe SymFixity, sv_className :: name }
     | SymSelector    { sv_origName :: name, sv_fixity :: Maybe SymFixity, sv_typeName :: name }
     | SymConstructor { sv_origName :: name, sv_fixity :: Maybe SymFixity, sv_typeName :: name }
-    deriving (Eq, Show, Data, Typeable)
-
-type SymValueInfos n = [SymValueInfo n]
+    deriving (Eq, Ord, Show, Data, Typeable)
 
 sv_parent :: SymValueInfo n -> Maybe n
 sv_parent (SymSelector { sv_typeName = n }) = Just n
@@ -29,9 +27,7 @@ data SymTypeInfo name
     | SymTypeFam     { st_origName :: name, st_fixity :: Maybe SymFixity }
     | SymDataFam     { st_origName :: name, st_fixity :: Maybe SymFixity }
     | SymClass       { st_origName :: name, st_fixity :: Maybe SymFixity }
-    deriving (Eq, Show, Data, Typeable)
-
-type SymTypeInfos n = [SymTypeInfo n]
+    deriving (Eq, Ord, Show, Data, Typeable)
 
 class HasOrigName i where
   origName :: i n -> n

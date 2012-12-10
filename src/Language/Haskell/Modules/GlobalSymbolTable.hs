@@ -22,30 +22,35 @@ import Data.Typeable
 import Data.Data
 import Control.Exception
 import Control.Arrow
+import Control.Applicative hiding (empty)
+import Data.Lens.Common
 
 import Language.Haskell.Modules.Types
 import Language.Haskell.Modules.SyntaxUtils(nameToString, specialConToString)
 
--- | Possibly ambiguous value symbol
-type ASymValueInfo n = Either [SymValueInfo n] (SymValueInfo n)
-
--- | Possibly ambiguous type symbol
-type ASymTypeInfo n = Either [SymTypeInfo n] (SymTypeInfo n)
-
 -- | Global symbol table — contains global names
-data Table = Table (Map.Map GName (ASymValueInfo OrigName)) (Map.Map GName (ASymTypeInfo OrigName))
+data Table =
+  Table
+    (Map.Map GName (Set.Set (SymValueInfo OrigName)))
+    (Map.Map GName (Set.Set (SymTypeInfo  OrigName)))
     deriving (Eq, Show, Data, Typeable)
+
+valLens :: Lens Table (Map.Map GName (Set.Set (SymValueInfo OrigName)))
+valLens = lens (\(Table vs _) -> vs) (\vs (Table _ ts) -> Table vs ts)
+
+tyLens :: Lens Table (Map.Map GName (Set.Set (SymTypeInfo OrigName)))
+tyLens = lens (\(Table _ ts) -> ts) (\ts (Table vs _) -> Table vs ts)
 
 instance Monoid Table where
   mempty = empty
   mappend (Table vs1 ts1) (Table vs2 ts2) =
     Table (j vs1 vs2) (j ts1 ts2)
     where
-      j :: (Eq i, Ord k)
-        => Map.Map k (Either [i] i)
-        -> Map.Map k (Either [i] i)
-        -> Map.Map k (Either [i] i)
-      j = Map.unionWith combineSyms
+      j :: (Ord i, Ord k)
+        => Map.Map k (Set.Set i)
+        -> Map.Map k (Set.Set i)
+        -> Map.Map k (Set.Set i)
+      j = Map.unionWith Set.union
 
 toGName :: QName l -> GName
 toGName (UnQual _ n) = GName "" (nameToString n)
@@ -55,33 +60,38 @@ toGName (Special _ s) = error "toGName: Special"
 empty :: Table
 empty = Table Map.empty Map.empty
 
-lookupValue
-  :: QName l
+lookupL
+  :: HasOrigName i
+  => Lens Table (Map.Map GName (Set.Set (i OrigName)))
+  -> QName l
   -> Table
-  -> Either (Error l) (SymValueInfo OrigName)
-lookupValue qn (Table vs _) =
-  case Map.lookup (toGName qn) vs of
+  -> Either (Error l) (i OrigName)
+lookupL lens qn tbl =
+  case Set.toList <$> (Map.lookup (toGName qn) $ getL lens tbl) of
     Nothing -> Left $ ENotInScope qn
-    Just (Left ts) ->
-      Left $ EAmbiguous qn (map sv_origName ts)
-    Just (Right i) -> Right i
+    Just [] -> Left $ ENotInScope qn
+    Just [i] -> Right i
+    Just is -> Left $ EAmbiguous qn (map origName is)
+
+lookupValue :: QName l -> Table -> Either (Error l) (SymValueInfo OrigName)
+lookupValue = lookupL valLens
+
+lookupType :: QName l -> Table -> Either (Error l) (SymTypeInfo OrigName)
+lookupType  = lookupL tyLens
+
+addL
+  :: (HasOrigName i, Ord (i OrigName))
+  => Lens Table (Map.Map GName (Set.Set (i OrigName)))
+  -> QName l
+  -> i OrigName
+  -> Table -> Table
+addL lens qn i = modL lens (Map.insertWith Set.union (toGName qn) (Set.singleton i))
 
 addValue :: QName l -> SymValueInfo OrigName -> Table -> Table
-addValue qn i (Table vs ts) = Table (Map.insertWith combineSyms (toGName qn) (Right i) vs) ts
-
-lookupType
-  :: QName l
-  -> Table
-  -> Either (Error l) (SymTypeInfo OrigName)
-lookupType qn (Table _ ts) =
-  case Map.lookup (toGName qn) ts of
-    Nothing -> Left $ ENotInScope qn
-    Just (Left ts) ->
-      Left $ EAmbiguous qn (map st_origName ts)
-    Just (Right i) -> Right i
+addValue = addL valLens
 
 addType :: QName l -> SymTypeInfo OrigName -> Table -> Table
-addType qn i (Table vs ts) = Table vs (Map.insertWith combineSyms (toGName qn) (Right i) ts)
+addType = addL tyLens
 
 fromLists
   :: ([(GName, SymValueInfo OrigName)],
@@ -89,13 +99,5 @@ fromLists
   -> Table
 fromLists (vs, ts) =
   Table
-    (Map.fromListWith combineSyms $ map (second Right) vs)
-    (Map.fromListWith combineSyms $ map (second Right) ts)
-
-combineSyms :: Eq i => Either [i] i -> Either [i] i -> Either [i] i
-combineSyms (Right s1) (Right s2)
-  | s1 == s2 = Right s1
-  | otherwise = Left [s1, s2]
-combineSyms (Left ss)  (Right s2) = Left $ s2 : ss
-combineSyms (Right s1) (Left ss)  = Left $ s1 : ss
-combineSyms (Left ss1) (Left ss2) = Left $ ss1 ++ ss2
+    (Map.fromListWith Set.union $ map (second Set.singleton) vs)
+    (Map.fromListWith Set.union $ map (second Set.singleton) ts)
