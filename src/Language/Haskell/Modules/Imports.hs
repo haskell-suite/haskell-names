@@ -10,6 +10,8 @@ import qualified Data.Map as Map
 import Data.Monoid hiding (First(..))
 import Data.Maybe
 import Data.Either
+import Data.Lens.Common
+import Data.Foldable (foldMap)
 import Control.Applicative
 import Control.Arrow
 import Control.Monad
@@ -24,13 +26,13 @@ instance ModName (ModuleName l) where
   modToString (ModuleName _ s) = s
 
 processImports
-  :: (MonadModule m, ModuleInfo m ~ Symbols OrigName)
+  :: (MonadModule m, ModuleInfo m ~ Symbols)
   => [ImportDecl l]
   -> m ([ImportDecl (Scoped l)], Global.Table)
 processImports = runWriterT . mapM (WriterT . processImport)
 
 processImport
-  :: (MonadModule m, ModuleInfo m ~ Symbols OrigName)
+  :: (MonadModule m, ModuleInfo m ~ Symbols)
   => ImportDecl l
   -> m (ImportDecl (Scoped l), Global.Table)
 processImport imp = do
@@ -42,7 +44,7 @@ processImport imp = do
     Just syms -> return $ resolveImportDecl syms imp
 
 resolveImportDecl
-  :: Symbols OrigName
+  :: Symbols
   -> ImportDecl l
   -> (ImportDecl (Scoped l), Global.Table)
 resolveImportDecl syms (ImportDecl l mod qual src pkg mbAs mbSpecList) =
@@ -69,14 +71,16 @@ resolveImportDecl syms (ImportDecl l mod qual src pkg mbAs mbSpecList) =
 computeSymbolTable
   :: Bool
   -> ModuleName l
-  -> Symbols OrigName
+  -> Symbols
   -> Global.Table
-computeSymbolTable qual (ModuleName _ mod) (vs,ts) =
+computeSymbolTable qual (ModuleName _ mod) syms =
   Global.fromLists $
     if qual
       then renamed
       else renamed <> unqualified
   where
+    vs = Set.toList $ syms^.valSyms
+    ts = Set.toList $ syms^.tySyms
     renamed = renameSyms mod
     unqualified = renameSyms ""
     renameSyms mod = (map (renameV mod) vs, map (renameT mod) ts)
@@ -89,9 +93,9 @@ computeSymbolTable qual (ModuleName _ mod) (vs,ts) =
 
 resolveImportSpecList
   :: ModuleName l
-  -> Symbols OrigName
+  -> Symbols
   -> ImportSpecList l
-  -> (ImportSpecList (Scoped l), Symbols OrigName)
+  -> (ImportSpecList (Scoped l), Symbols)
 resolveImportSpecList mod allSyms (ImportSpecList l isHiding specs) =
   let specs' = map (resolveImportSpec mod isHiding allSyms) specs
       mentionedSyms = mconcat $ rights $ map ann2syms specs'
@@ -103,50 +107,53 @@ resolveImportSpecList mod allSyms (ImportSpecList l isHiding specs) =
 -- | This function takes care of the possible 'hiding' clause
 computeImportedSymbols
   :: Bool
-  -> Symbols OrigName -- ^ all symbols
-  -> Symbols OrigName -- ^ mentioned symbols
-  -> Symbols OrigName -- ^ imported symbols
-computeImportedSymbols isHiding (vs,ts) mentionedSyms =
+  -> Symbols -- ^ all symbols
+  -> Symbols -- ^ mentioned symbols
+  -> Symbols -- ^ imported symbols
+computeImportedSymbols isHiding (Symbols vs ts) mentionedSyms =
   case isHiding of
     False -> mentionedSyms
     True ->
       let
-        (hvs, hts) = mentionedSyms
+        Symbols hvs hts = mentionedSyms
         allTys = symbolMap st_origName ts
         hidTys = symbolMap st_origName hts
         allVls = symbolMap sv_origName vs
         hidVls = symbolMap sv_origName hvs
       in
-        ( Map.elems $ allVls Map.\\ hidVls
-        , Map.elems $ allTys Map.\\ hidTys )
+        Symbols
+          (Set.fromList $ Map.elems $ allVls Map.\\ hidVls)
+          (Set.fromList $ Map.elems $ allTys Map.\\ hidTys)
 
 symbolMap
   :: Ord s
   => (a -> s)
-  -> [a]
+  -> Set.Set a
   -> Map.Map s a
-symbolMap f is = Map.fromList [(f i, i) | i <- is]
+symbolMap f is = Map.fromList [(f i, i) | i <- Set.toList is]
 
 resolveImportSpec
   :: ModuleName l
   -> Bool
-  -> Symbols OrigName
+  -> Symbols
   -> ImportSpec l
   -> ImportSpec (Scoped l)
 -- NB: this can be made more efficient
-resolveImportSpec mod isHiding (vs,ts) spec =
+resolveImportSpec mod isHiding syms spec =
   case spec of
     IVar _ n ->
       let
-        matches =
+        matches = mconcat $
           -- Strictly speaking, the isConstructor check is unnecessary
           -- because constructors are lexically different from anything
           -- else.
-          [info | info <- vs, not (isConstructor info), sv_origName info ~~ n]
+          [ mkVal info
+          | info <- vs
+          , not (isConstructor info)
+          , sv_origName info ~~ n]
       in
         checkUnique
           (ENotExported Nothing n mod)
-          (matches, [])
           matches
           spec
     -- FIXME think about data families etc.
@@ -156,23 +163,23 @@ resolveImportSpec mod isHiding (vs,ts) spec =
           -- data constructors.
           -- FIXME Still check for uniqueness?
           let
-            tyMatches =
-              [info | info <- ts, st_origName info ~~ n]
-            vlMatches =
-              [info | info <- vs, sv_origName info ~~ n]
+            matches@(Symbols vlMatches tyMatches) =
+              mconcat [ mkVal info | info <- vs, sv_origName info ~~ n]
+              <>
+              mconcat [ mkTy info | info <- ts, st_origName info ~~ n]
           in
-            if null tyMatches && null vlMatches
+            if Set.null tyMatches && Set.null vlMatches
               then
                 scopeError (ENotExported Nothing n mod) spec
               else
-                (\l -> Export l (vlMatches, tyMatches)) <$> spec
+                (\l -> Export l (Symbols vlMatches tyMatches)) <$> spec
       | otherwise ->
           let
-            matches = [info | info <- ts, st_origName info ~~ n]
+            matches = mconcat
+              [mkTy info | info <- ts, st_origName info ~~ n]
           in
             checkUnique
               (ENotExported Nothing n mod)
-              ([], matches)
               matches
               spec
 
@@ -183,45 +190,53 @@ resolveImportSpec mod isHiding (vs,ts) spec =
     -- ?
     IThingAll l n ->
       let
-        matches = [info | info <- ts, st_origName info ~~ n]
-        subs = [ info
-               | n <- matches
-               , info <- vs
-               , Just n' <- return $ sv_parent info
-               , n' == st_origName n ]
+        matches = [ info | info <- ts, st_origName info ~~ n]
+        subs = mconcat
+          [ mkVal info
+          | n <- matches
+          , info <- vs
+          , Just n' <- return $ sv_parent info
+          , n' == st_origName n ]
         n' =
           checkUnique
             (ENotExported Nothing n mod)
-            ([], matches)
-            matches
+            (foldMap mkTy matches)
             n
         in
           case ann n' of
             e@ScopeError{} -> IThingAll e n'
-            _ -> IThingAll (ImportPart l (subs, matches)) n'
+            _ ->
+              IThingAll
+                (ImportPart l
+                  (subs <> foldMap mkTy matches))
+                n'
 
     IThingWith l n cns ->
       let
         matches = [info | info <- ts, st_origName info ~~ n]
-        subs = [ info
-               | n <- matches
-               , info <- vs
-               , Just n' <- return $ sv_parent info
-               , n' == st_origName n ]
+        subs = mconcat
+          [ mkVal info
+          | n <- matches
+          , info <- vs
+          , Just n' <- return $ sv_parent info
+          , n' == st_origName n ]
         n' =
           checkUnique
             (ENotExported Nothing n mod)
-            ([], matches)
-            matches
+            (foldMap mkTy matches)
             n
         typeName = st_origName $ head matches -- should be safe
-        cns' = map (resolveCName mod (n,typeName) (vs,ts)) cns
+        cns' = map (resolveCName mod (n,typeName) syms) cns
       in
         case () of
           _ | Left e <- ann2syms n' -> scopeError e spec
             | Left e <- mapM_ ann2syms cns' ->
                 IThingWith (ScopeError l e) n' cns'
-          _ -> IThingWith (ImportPart l (subs, matches)) n' cns'
+          _ ->
+            IThingWith
+              (ImportPart l (subs <> foldMap mkTy matches))
+              n'
+              cns'
   where
     (~~) :: GName -> Name l -> Bool
     GName _ n ~~ n' = n == nameToString n'
@@ -230,17 +245,20 @@ resolveImportSpec mod isHiding (vs,ts) spec =
     isConstructor SymConstructor {} = True
     isConstructor _ = False
 
+    vs = Set.toList $ syms^.valSyms
+    ts = Set.toList $ syms^.tySyms
+
 resolveCName
   :: ModuleName l
   -> (Name l, OrigName)
-  -> Symbols OrigName
+  -> Symbols
   -> CName l
   -> CName (Scoped l)
-resolveCName mod (pname, parent) (vs, ts) cn =
+resolveCName mod (pname, parent) syms cn =
   let
-    matches =
-      [ info
-      | info <- vs
+    matches = mconcat
+      [ mkVal info
+      | info <- Set.toList $ syms^.valSyms
       , let GName _ name = sv_origName info
       , nameToString (unCName cn) == name
       , Just p <- return $ sv_parent info
@@ -249,11 +267,10 @@ resolveCName mod (pname, parent) (vs, ts) cn =
   in
     checkUnique
       (ENotExported (Just pname) (unCName cn) mod)
-      (matches, [])
       matches
       cn
 
-ann2syms :: Annotated a => a (Scoped l) -> Either (Error l) (Symbols OrigName)
+ann2syms :: Annotated a => a (Scoped l) -> Either (Error l) (Symbols)
 ann2syms a =
   case ann a of
     ScopeError _ e -> Left e
@@ -273,11 +290,12 @@ scopeError e f = (\l -> ScopeError l e) <$> f
 checkUnique
   :: Functor f =>
   Error l ->
-  Symbols OrigName ->
-  [a] ->
+  Symbols ->
   f l ->
   f (Scoped l)
-checkUnique notFound _ [] f = scopeError notFound f
-checkUnique _ syms [_] f = fmap (\l -> ImportPart l syms) f
--- there should be no clashes, and it should be checked elsewhere
-checkUnique _ _ _ f = scopeError (EInternal "ambiguous import") f
+checkUnique notFound syms@(Symbols vs ts) f =
+  case Set.size vs + Set.size ts of
+    0 -> scopeError notFound f
+    1 -> fmap (\l -> ImportPart l syms) f
+    -- there should be no clashes, and it should be checked elsewhere
+    _ -> scopeError (EInternal "ambiguous import") f

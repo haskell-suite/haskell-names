@@ -5,6 +5,8 @@ module Language.Haskell.Modules.ModuleSymbols
 import Data.List
 import Data.Maybe
 import Data.Either
+import Data.Lens.Common
+import Data.Monoid
 import Data.Data
 import qualified Data.Set as Set
 import Language.Haskell.Exts.Annotated
@@ -12,19 +14,23 @@ import Language.Haskell.Exts.Annotated
 import Language.Haskell.Modules.Types
 import Language.Haskell.Modules.SyntaxUtils
 
-moduleSymbols :: (Eq l, Data l) => Module l -> Symbols GName
+moduleSymbols :: (Eq l, Data l) => Module l -> Symbols
 moduleSymbols m =
-  partitionEithers $
-    concatMap
-      (getTopDeclSymbols $ getModuleName m)
-      (getModuleDecls m)
+  let (vs,ts) =
+        partitionEithers $
+          concatMap
+            (getTopDeclSymbols $ getModuleName m)
+            (getModuleDecls m)
+  in
+    setL valSyms (Set.fromList vs) $
+    setL tySyms  (Set.fromList ts) mempty
 
 -- Extract names that get bound by a top level declaration.
 getTopDeclSymbols
   :: (Eq l, Data l)
   => ModuleName l
   -> Decl l
-  -> [Either (SymValueInfo GName) (SymTypeInfo GName)]
+  -> [Either (SymValueInfo OrigName) (SymTypeInfo OrigName)]
 getTopDeclSymbols mdl d =
   case d of
     TypeDecl _ dh _ ->

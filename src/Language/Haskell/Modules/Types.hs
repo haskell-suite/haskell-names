@@ -4,6 +4,9 @@ module Language.Haskell.Modules.Types where
 import Language.Haskell.Exts.Annotated
 import Data.Typeable
 import Data.Data
+import Data.Monoid
+import Data.Lens.Common
+import qualified Data.Set as Set
 import {-# SOURCE #-} qualified Language.Haskell.Modules.GlobalSymbolTable as Global
 
 type SymFixity = (Assoc (), Int)
@@ -38,7 +41,25 @@ instance HasOrigName SymValueInfo where
 instance HasOrigName SymTypeInfo where
   origName = st_origName
 
-type Symbols n = ([SymValueInfo n], [SymTypeInfo n])
+data Symbols = Symbols (Set.Set (SymValueInfo OrigName)) (Set.Set (SymTypeInfo OrigName))
+  deriving (Show, Data, Typeable)
+
+instance Monoid Symbols where
+  mempty = Symbols mempty mempty
+  mappend (Symbols s1 t1) (Symbols s2 t2) =
+    Symbols (s1 `mappend` s2) (t1 `mappend` t2)
+
+valSyms :: Lens Symbols (Set.Set (SymValueInfo OrigName))
+valSyms = lens (\(Symbols vs _) -> vs) (\vs (Symbols _ ts) -> Symbols vs ts)
+
+tySyms :: Lens Symbols (Set.Set (SymTypeInfo OrigName))
+tySyms = lens (\(Symbols _ ts) -> ts) (\ts (Symbols vs _) -> Symbols vs ts)
+
+mkVal :: SymValueInfo OrigName -> Symbols
+mkVal i = Symbols (Set.singleton i) mempty
+
+mkTy :: SymTypeInfo OrigName -> Symbols
+mkTy i = Symbols mempty (Set.singleton i)
 
 type NameS = String
 type ModuleNameS = String
@@ -58,8 +79,8 @@ data Scoped l
     | TypeVar     { sLoc :: l, sDefLoc :: SrcLoc }
     | Binder      { sLoc :: l }
     | Import      { sLoc :: l, importTable :: Global.Table }
-    | ImportPart  { sLoc :: l, importSymbols :: Symbols OrigName }
-    | Export      { sLoc :: l, exportSymbols :: Symbols OrigName }
+    | ImportPart  { sLoc :: l, importSymbols :: Symbols }
+    | Export      { sLoc :: l, exportSymbols :: Symbols }
     | None        { sLoc :: l }
     | ScopeError  { sLoc :: l, serr :: Error l }
     deriving (Show, Typeable, Data)
