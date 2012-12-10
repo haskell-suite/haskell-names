@@ -10,6 +10,7 @@ module Language.Haskell.Modules.ScopeCheckMonad
   , lookupType
   , addVar
   , addVars
+  , runScopeM
   )
   where
 

@@ -42,7 +42,7 @@ instance HasOrigName SymTypeInfo where
   origName = st_origName
 
 data Symbols = Symbols (Set.Set (SymValueInfo OrigName)) (Set.Set (SymTypeInfo OrigName))
-  deriving (Show, Data, Typeable)
+  deriving (Eq, Show, Data, Typeable)
 
 instance Monoid Symbols where
   mempty = Symbols mempty mempty

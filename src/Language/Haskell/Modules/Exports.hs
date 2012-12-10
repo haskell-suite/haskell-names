@@ -7,12 +7,27 @@ import Control.Arrow
 import Control.Monad
 import Control.Monad.State
 import Control.Monad.Writer
+import Data.Data
 import Data.Lens.Common
 import Data.Foldable as F
 import Distribution.HaskellSuite.Helpers
 import Language.Haskell.Exts.Annotated
 import Language.Haskell.Modules.Types
+import Language.Haskell.Modules.SyntaxUtils
+import Language.Haskell.Modules.ModuleSymbols
 import qualified Language.Haskell.Modules.GlobalSymbolTable as Global
+
+processExports
+  :: (MonadModule m, ModuleInfo m ~ Symbols, Data l, Eq l)
+  => Global.Table
+  -> Module l
+  -> m (Maybe (ExportSpecList (Scoped l)), Symbols)
+processExports tbl m =
+  case getExportSpecList m of
+    Nothing ->
+      return (Nothing, moduleSymbols m)
+    Just exp ->
+      liftM (first Just) $ resolveExportSpecList tbl exp
 
 resolveExportSpecList
   :: (MonadModule m, ModuleInfo m ~ Symbols)
