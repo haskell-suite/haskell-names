@@ -1,37 +1,50 @@
+{-# LANGUAGE TypeFamilies, NoMonoLocalBinds #-}
 module Language.Haskell.Modules.Exports where
 
 import qualified Data.Map as Map
 import Control.Applicative
+import Control.Arrow
 import Control.Monad
 import Control.Monad.State
+import Control.Monad.Writer
 import Data.Lens.Common
 import Data.Foldable as F
+import Distribution.HaskellSuite.Helpers
 import Language.Haskell.Exts.Annotated
 import Language.Haskell.Modules.Types
 import qualified Language.Haskell.Modules.GlobalSymbolTable as Global
 
+resolveExportSpecList
+  :: (MonadModule m, ModuleInfo m ~ Symbols)
+  => Global.Table
+  -> ExportSpecList l
+  -> m (ExportSpecList (Scoped l), Symbols)
+resolveExportSpecList tbl (ExportSpecList l specs) =
+  liftM (first (ExportSpecList $ None l)) $
+  runWriterT $
+  mapM (WriterT . resolveExportSpec tbl) specs
+
 resolveExportSpec
-  :: Global.Table
+  :: (MonadModule m, ModuleInfo m ~ Symbols)
+  => Global.Table
   -> ExportSpec l
-  -> ExportSpec (Scoped l)
-resolveExportSpec tbl e =
-  case e of
-    EVar _ qn ->
-      let
-        ann =
-          either
-            (\e l -> ScopeError l e)
-            (\i l -> Export l $ mkVal i) $
-            Global.lookupValue qn tbl
-      in ann <$> e
-    EAbs _ qn ->
-      let
-        ann =
-          either
-            (\e l -> ScopeError l e)
-            (\i l -> Export l $ mkTy i) $
-            Global.lookupType qn tbl
-      in ann <$> e
+  -> m (ExportSpec (Scoped l), Symbols)
+resolveExportSpec tbl exp =
+  case exp of
+    EVar _ qn -> return $
+      case Global.lookupValue qn tbl of
+        Left err ->
+          ((\l -> ScopeError l err) <$> exp, mempty)
+        Right i ->
+          let s = mkVal i
+          in ((\l -> Export l s) <$> exp, s)
+    EAbs _ qn -> return $
+      case Global.lookupType qn tbl of
+        Left err ->
+          ((\l -> ScopeError l err) <$> exp, mempty)
+        Right i ->
+          let s = mkTy i
+          in ((\l -> Export l s) <$> exp, s)
     -- FIXME: the rest
 
 -- Used to detect conflicts
