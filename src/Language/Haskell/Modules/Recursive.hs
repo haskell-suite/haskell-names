@@ -58,7 +58,9 @@ scopeSCC mods = do
     go syms = do
       forM_ (zip syms mods) $ \(s,m) -> insertInCache (getModuleName m) s
       new <- forM mods $ \m -> do
-        (imp, tbl) <- processImports $ getImports m
+        (imp, impTbl) <- processImports $ getImports m
+        let ownTbl = moduleTable m
+            tbl = impTbl <> ownTbl
         (exp, syms) <- processExports tbl m
         return (imp, exp, tbl, syms)
       let syms' = map (\(_,_,_,x) -> x) new
