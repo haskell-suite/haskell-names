@@ -1,5 +1,7 @@
 module Language.Haskell.Modules.ModuleSymbols
-  ( moduleSymbols )
+  ( moduleSymbols
+  , moduleTable
+  )
   where
 
 import Data.List
@@ -12,7 +14,13 @@ import qualified Data.Set as Set
 import Language.Haskell.Exts.Annotated
 
 import Language.Haskell.Modules.Types
+import qualified Language.Haskell.Modules.GlobalSymbolTable as Global
 import Language.Haskell.Modules.SyntaxUtils
+import Language.Haskell.Modules.ScopeUtils
+
+moduleTable :: (Eq l, Data l) => Module l -> Global.Table
+moduleTable m =
+  computeSymbolTable False (getModuleName m) (moduleSymbols m)
 
 moduleSymbols :: (Eq l, Data l) => Module l -> Symbols
 moduleSymbols m =
