@@ -11,6 +11,7 @@ import Distribution.HaskellSuite.Helpers
 
 import Language.Haskell.Modules.Types
 import Language.Haskell.Modules.SyntaxUtils
+import Language.Haskell.Modules.ScopeUtils
 import Language.Haskell.Modules.ModuleSymbols
 import Language.Haskell.Modules.Exports
 import Language.Haskell.Modules.Imports
@@ -30,7 +31,6 @@ groupModules modules =
       , map (dropAnn . importModule) $ getImports m
       )
 
--- FIXME: scope utils (none, noScope)
 scopeSCC
   :: (MonadModule m, ModuleInfo m ~ Symbols)
   => [Module SrcSpan] -> m [(Module (Scoped SrcSpan), Symbols)]
@@ -39,16 +39,16 @@ scopeSCC mods = do
   return $ flip map (zip mods modData) $
     \(Module lm mh os is ds, (imp, exp, tbl, syms)) ->
       let
-        lm' = None lm
-        os' = fmap (fmap None) os
+        lm' = none lm
+        os' = fmap noScope os
         is' = imp
         ds' = runScopeM (mapM scopeR ds) tbl
 
         mh' = flip fmap mh $ \(ModuleHead lh n mw me) ->
           let
-            lh' = None lh
-            n'  = None <$> n
-            mw' = fmap (fmap None) mw
+            lh' = none lh
+            n'  = noScope n
+            mw' = fmap noScope mw
             me' = exp
           in ModuleHead lh' n' mw' me'
 

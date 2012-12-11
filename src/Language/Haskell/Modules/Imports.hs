@@ -7,7 +7,7 @@ module Language.Haskell.Modules.Imports
 
 import qualified Data.Set as Set
 import qualified Data.Map as Map
-import Data.Monoid hiding (First(..))
+import Data.Monoid
 import Data.Maybe
 import Data.Either
 import Data.Lens.Common
@@ -65,32 +65,9 @@ resolveImportDecl syms (ImportDecl l mod qual src pkg mbAs mbSpecList) =
       qual
       src
       pkg
-      (fmap (None <$>) mbAs)
+      (fmap noScope mbAs)
       mbSpecList'
     , tbl)
-
-computeSymbolTable
-  :: Bool
-  -> ModuleName l
-  -> Symbols
-  -> Global.Table
-computeSymbolTable qual (ModuleName _ mod) syms =
-  Global.fromLists $
-    if qual
-      then renamed
-      else renamed <> unqualified
-  where
-    vs = Set.toList $ syms^.valSyms
-    ts = Set.toList $ syms^.tySyms
-    renamed = renameSyms mod
-    unqualified = renameSyms ""
-    renameSyms mod = (map (renameV mod) vs, map (renameT mod) ts)
-    renameV m v =
-      let GName _ n = sv_origName v
-      in (GName m n, v)
-    renameT m v =
-      let GName _ n = st_origName v
-      in (GName mod n, v)
 
 resolveImportSpecList
   :: ModuleName l

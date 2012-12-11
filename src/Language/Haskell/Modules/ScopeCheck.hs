@@ -9,16 +9,8 @@ import Language.Haskell.Exts.Annotated
 
 import Language.Haskell.Modules.Types
 import Language.Haskell.Modules.SyntaxUtils
+import Language.Haskell.Modules.ScopeUtils
 import Language.Haskell.Modules.ScopeCheckMonad
-
-none :: l -> Scoped l
-none = None
-
-binder :: l -> Scoped l
-binder = Binder
-
-noScope :: (Annotated a) => a l -> a (Scoped l)
-noScope = fmap None
 
 scopeX
   :: SrcInfo a
