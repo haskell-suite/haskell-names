@@ -38,6 +38,7 @@ Library
                         Language.Haskell.Modules.Exports
                         Language.Haskell.Modules.Interfaces
                         Language.Haskell.Modules.Types
+                        Language.Haskell.Modules.ScopeUtils
 Executable gen-iface
   Build-depends:        base, containers, haskell-src-exts, haskell-modules, haskell-packages, filepath, mtl, Cabal
   Main-is: gen-iface.hs
