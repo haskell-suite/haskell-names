@@ -9,6 +9,7 @@ import System.FilePath.Find
 import Data.Monoid
 import qualified Data.Map as Map
 import Control.Monad.Identity
+import Control.Applicative
 
 import Language.Haskell.Exts.Annotated
 import Language.Haskell.Modules.Exports
@@ -29,7 +30,7 @@ exportTest file =
       mod <-
         return . fmap srcInfoSpan . fromParseResult =<<
         parseFile file
-      let mExps = processExports mempty mod
+      let mExps = snd <$> processExports mempty mod
           exps = runIdentity $
             evalModuleT mExps [] (error "retrieve") Map.empty
       BS.writeFile out $ BS.fromString $ show exps
