@@ -57,7 +57,7 @@ compile buildDir pkgdbs pkgids mods = do
     evalModuleT analysis packages retrieveModuleInfo Map.empty
   forM_ modData $ \(mod, syms) -> do
     let HSE.ModuleName _ modname = getModuleName mod
-        ifaceFile = buildDir </> toFilePath (fromString modname) <.> "iface"
+        ifaceFile = buildDir </> toFilePath (fromString modname) <.> suffix
     createDirectoryIfMissingVerbose silent True (dropFileName ifaceFile)
     writeInterface ifaceFile syms
 
