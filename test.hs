@@ -14,6 +14,7 @@ import Text.Show.Pretty
 
 import Language.Haskell.Exts.Annotated
 import Language.Haskell.Modules.Exports
+import Language.Haskell.Modules.ModuleSymbols
 import qualified Language.Haskell.Modules.GlobalSymbolTable as Global
 import Distribution.HaskellSuite.Helpers
 
@@ -31,7 +32,7 @@ exportTest file =
       mod <-
         return . fmap srcInfoSpan . fromParseResult =<<
         parseFile file
-      let mExps = snd <$> processExports mempty mod
+      let mExps = snd <$> processExports (moduleTable mod) mod
           exps = runIdentity $
             evalModuleT mExps [] (error "retrieve") Map.empty
       BS.writeFile out $ BS.fromString $ ppShow exps
