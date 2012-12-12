@@ -41,10 +41,8 @@ computeSymbolTable qual (ModuleName _ mod) syms =
     ts = Set.toList $ syms^.tySyms
     renamed = renameSyms mod
     unqualified = renameSyms ""
-    renameSyms mod = (map (renameV mod) vs, map (renameT mod) ts)
-    renameV m v =
-      let GName _ n = sv_origName v
+    renameSyms mod = (map (rename mod) vs, map (rename mod) ts)
+    rename :: HasOrigName i => ModuleNameS -> i GName -> (GName, i GName)
+    rename m v =
+      let GName _ n = origName v
       in (GName m n, v)
-    renameT m v =
-      let GName _ n = st_origName v
-      in (GName mod n, v)
