@@ -1,5 +1,6 @@
-import Test.Framework
+import Test.Framework hiding (defaultMain)
 import Test.Golden
+import Test.Golden.Console
 
 import qualified Data.ByteString.Lazy as BS
 import qualified Data.ByteString.Lazy.UTF8 as BS
