@@ -10,6 +10,7 @@ import Data.Monoid
 import qualified Data.Map as Map
 import Control.Monad.Identity
 import Control.Applicative
+import Text.Show.Pretty
 
 import Language.Haskell.Exts.Annotated
 import Language.Haskell.Modules.Exports
@@ -33,7 +34,7 @@ exportTest file =
       let mExps = snd <$> processExports mempty mod
           exps = runIdentity $
             evalModuleT mExps [] (error "retrieve") Map.empty
-      BS.writeFile out $ BS.fromString $ show exps
+      BS.writeFile out $ BS.fromString $ ppShow exps
 
 exportTests = do
   testFiles <- find (return True) (extension ==? ".hs") "tests/exports"

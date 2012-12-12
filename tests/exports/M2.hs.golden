@@ -1,0 +1,20 @@
+Symbols (
+  fromList
+    [ SymConstructor
+        { sv_origName = GName
+                          "M2"
+                          "A"
+        , sv_fixity = Nothing
+        , sv_typeName = GName
+                          "M2"
+                          "A"
+        }
+    ] ) (
+  fromList
+    [ SymData
+        { st_origName = GName
+                          "M2"
+                          "A"
+        , st_fixity = Nothing
+        }
+    ] )
