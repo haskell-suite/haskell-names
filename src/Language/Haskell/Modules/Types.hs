@@ -1,4 +1,4 @@
-{-# LANGUAGE DeriveDataTypeable #-}
+{-# LANGUAGE DeriveDataTypeable, DeriveFunctor #-}
 module Language.Haskell.Modules.Types where
 
 import Language.Haskell.Exts.Annotated
@@ -92,7 +92,7 @@ data Error l
   | EModNotFound (ModuleName l)
   | EExportConflict [(NameS, [ExportSpec l])]
   | EInternal String
-  deriving (Data, Typeable, Show) -- FIXME write custom Show
+  deriving (Data, Typeable, Show, Functor) -- FIXME write custom Show
 
 instance (SrcInfo l) => SrcInfo (Scoped l) where
     toSrcInfo l1 ss l2 = None $ toSrcInfo l1 ss l2
