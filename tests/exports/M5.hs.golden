@@ -1,0 +1,19 @@
+Symbols (
+  fromList
+    [ SymValue
+        { sv_origName = GName
+                          "M5"
+                          "c"
+        , sv_fixity = Nothing
+        }
+    , SymSelector
+        { sv_origName = GName
+                          "M5"
+                          "b"
+        , sv_fixity = Nothing
+        , sv_typeName = GName
+                          "M5"
+                          "A"
+        }
+    ] ) (
+  fromList [] )
