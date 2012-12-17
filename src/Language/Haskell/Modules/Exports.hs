@@ -13,6 +13,7 @@ import Data.Foldable as F
 import Distribution.HaskellSuite.Helpers
 import Language.Haskell.Exts.Annotated
 import Language.Haskell.Modules.Types
+import Language.Haskell.Modules.ScopeUtils
 import Language.Haskell.Modules.SyntaxUtils
 import Language.Haskell.Modules.ModuleSymbols
 import qualified Language.Haskell.Modules.GlobalSymbolTable as Global
@@ -49,14 +50,14 @@ resolveExportSpec tbl exp =
     EVar _ qn -> return $
       case Global.lookupValue qn tbl of
         Left err ->
-          ((\l -> ScopeError l err) <$> exp, mempty)
+          (scopeError err exp, mempty)
         Right i ->
           let s = mkVal i
           in ((\l -> Export l s) <$> exp, s)
     EAbs _ qn -> return $
       case Global.lookupType qn tbl of
         Left err ->
-          ((\l -> ScopeError l err) <$> exp, mempty)
+          (scopeError err exp, mempty)
         Right i ->
           let s = mkTy i
           in ((\l -> Export l s) <$> exp, s)
