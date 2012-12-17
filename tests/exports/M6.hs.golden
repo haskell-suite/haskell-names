@@ -1,0 +1,10 @@
+Symbols (
+  fromList
+    [ SymValue
+        { sv_origName = GName
+                          "Main"
+                          "main"
+        , sv_fixity = Nothing
+        }
+    ] ) (
+  fromList [] )
