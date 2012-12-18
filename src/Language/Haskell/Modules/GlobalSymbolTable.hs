@@ -10,6 +10,8 @@ module Language.Haskell.Modules.GlobalSymbolTable
   , lookupType
   , addType
   , fromLists
+  , types
+  , values
   ) where
 
 import Language.Haskell.Exts.Annotated
@@ -101,3 +103,8 @@ fromLists (vs, ts) =
   Table
     (Map.fromListWith Set.union $ map (second Set.singleton) vs)
     (Map.fromListWith Set.union $ map (second Set.singleton) ts)
+
+values :: Table -> Map.Map GName (Set.Set (SymValueInfo OrigName))
+types  :: Table -> Map.Map GName (Set.Set (SymTypeInfo  OrigName))
+values = getL valLens
+types = getL tyLens
