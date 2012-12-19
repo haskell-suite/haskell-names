@@ -1,0 +1,68 @@
+Symbols (
+  fromList
+    [ SymMethod
+        { sv_origName = GName
+                          "M8"
+                          "x"
+        , sv_fixity = Nothing
+        , sv_className = GName
+                           "M8"
+                           "Bar"
+        }
+    , SymSelector
+        { sv_origName = GName
+                          "M8"
+                          "c"
+        , sv_fixity = Nothing
+        , sv_typeName = GName
+                          "M8"
+                          "Foo"
+        }
+    , SymConstructor
+        { sv_origName = GName
+                          "M8"
+                          "Foo1"
+        , sv_fixity = Nothing
+        , sv_typeName = GName
+                          "M8"
+                          "Foo"
+        }
+    , SymConstructor
+        { sv_origName = GName
+                          "M8"
+                          "Foo3"
+        , sv_fixity = Nothing
+        , sv_typeName = GName
+                          "M8"
+                          "Foo"
+        }
+    , SymConstructor
+        { sv_origName = GName
+                          "M8"
+                          "N"
+        , sv_fixity = Nothing
+        , sv_typeName = GName
+                          "M8"
+                          "N"
+        }
+    ] ) (
+  fromList
+    [ SymData
+        { st_origName = GName
+                          "M8"
+                          "Foo"
+        , st_fixity = Nothing
+        }
+    , SymData
+        { st_origName = GName
+                          "M8"
+                          "N"
+        , st_fixity = Nothing
+        }
+    , SymClass
+        { st_origName = GName
+                          "M8"
+                          "Bar"
+        , st_fixity = Nothing
+        }
+    ] )
