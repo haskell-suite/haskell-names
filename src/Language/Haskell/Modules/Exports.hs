@@ -78,6 +78,23 @@ resolveExportSpec tbl exp =
             ( EThingAll (Export l s) ((\l -> GlobalType l i) <$> qn)
             , s
             )
+    EThingWith l qn cns -> return $
+      case Global.lookupType qn tbl of
+        Left err ->
+          (scopeError err exp, mempty)
+        Right i ->
+          let
+            (cns', subs) =
+              resolveCNames
+                (Global.toSymbols tbl)
+                (st_origName i)
+                (\cn -> ENotInScope (UnQual (ann cn) (unCName cn))) -- FIXME better error
+                cns
+            s = mkTy i <> subs
+          in
+            ( EThingWith (Export l s) ((\l -> GlobalType l i) <$> qn) cns'
+            , s
+            )
   where
     allValueInfos =
       Set.toList $ Map.foldl' Set.union Set.empty $ Global.values tbl
