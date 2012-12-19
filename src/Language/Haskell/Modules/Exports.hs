@@ -2,6 +2,7 @@
 module Language.Haskell.Modules.Exports where
 
 import qualified Data.Map as Map
+import qualified Data.Set as Set
 import Control.Applicative
 import Control.Arrow
 import Control.Monad
@@ -61,7 +62,25 @@ resolveExportSpec tbl exp =
         Right i ->
           let s = mkTy i
           in ((\l -> Export l s) <$> exp, s)
-    -- FIXME: the rest
+    EThingAll l qn -> return $
+      case Global.lookupType qn tbl of
+        Left err ->
+          (scopeError err exp, mempty)
+        Right i ->
+          let
+            subs = mconcat
+              [ mkVal info
+              | info <- allValueInfos
+              , Just n' <- return $ sv_parent info
+              , n' == st_origName i ]
+            s = mkTy i <> subs
+          in
+            ( EThingAll (Export l s) ((\l -> GlobalType l i) <$> qn)
+            , s
+            )
+  where
+    allValueInfos =
+      Set.toList $ Map.foldl' Set.union Set.empty $ Global.values tbl
 
 -- Used to detect conflicts
 type SymbolSet a = (Map.Map NameS [a], Map.Map NameS [a])
