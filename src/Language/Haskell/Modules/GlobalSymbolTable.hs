@@ -12,6 +12,7 @@ module Language.Haskell.Modules.GlobalSymbolTable
   , fromLists
   , types
   , values
+  , toSymbols
   ) where
 
 import Language.Haskell.Exts.Annotated
@@ -108,3 +109,12 @@ values :: Table -> Map.Map GName (Set.Set (SymValueInfo OrigName))
 types  :: Table -> Map.Map GName (Set.Set (SymTypeInfo  OrigName))
 values = getL valLens
 types = getL tyLens
+
+toSymbols :: Table -> Symbols
+toSymbols tbl =
+  Symbols
+    (gather $ values tbl)
+    (gather $ types  tbl)
+  where
+    gather :: Ord a => Map.Map k (Set.Set a) -> Set.Set a
+    gather = Map.foldl' Set.union Set.empty
