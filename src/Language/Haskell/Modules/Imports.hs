@@ -192,29 +192,23 @@ resolveImportSpec mod isHiding syms spec =
     IThingWith l n cns ->
       let
         matches = [info | info <- ts, st_origName info ~~ n]
-        subs = mconcat
-          [ mkVal info
-          | n <- matches
-          , info <- vs
-          , Just n' <- return $ sv_parent info
-          , n' == st_origName n ]
         n' =
           checkUnique
             (ENotExported Nothing n mod)
             (foldMap mkTy matches)
             n
         typeName = st_origName $ head matches -- should be safe
-        cns' = map (resolveCName mod (n,typeName) syms) cns
+        (cns', cnSyms) = unzip $ flip map cns $ \cn ->
+          resolveCName
+            syms
+            typeName
+            (ENotExported (Just n) (unCName cn) mod)
+            cn
       in
-        case () of
-          _ | Left e <- ann2syms n' -> scopeError e spec
-            | Left e <- mapM_ ann2syms cns' ->
-                IThingWith (ScopeError l e) n' cns'
-          _ ->
-            IThingWith
-              (ImportPart l (subs <> foldMap mkTy matches))
-              n'
-              cns'
+        IThingWith
+          (ImportPart l (mconcat cnSyms <> foldMap mkTy matches))
+          n'
+          cns'
   where
     (~~) :: GName -> Name l -> Bool
     GName _ n ~~ n' = n == nameToString n'
@@ -225,28 +219,6 @@ resolveImportSpec mod isHiding syms spec =
 
     vs = Set.toList $ syms^.valSyms
     ts = Set.toList $ syms^.tySyms
-
-resolveCName
-  :: ModuleName l
-  -> (Name l, OrigName)
-  -> Symbols
-  -> CName l
-  -> CName (Scoped l)
-resolveCName mod (pname, parent) syms cn =
-  let
-    matches = mconcat
-      [ mkVal info
-      | info <- Set.toList $ syms^.valSyms
-      , let GName _ name = sv_origName info
-      , nameToString (unCName cn) == name
-      , Just p <- return $ sv_parent info
-      , p == parent
-      ]
-  in
-    checkUnique
-      (ENotExported (Just pname) (unCName cn) mod)
-      matches
-      cn
 
 ann2syms :: Annotated a => a (Scoped l) -> Either (Error l) (Symbols)
 ann2syms a =

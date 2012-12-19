@@ -5,6 +5,7 @@ import qualified Data.Set as Set
 import Data.Monoid
 import Data.Lens.Common
 import Language.Haskell.Modules.Types
+import Language.Haskell.Modules.SyntaxUtils
 import Language.Haskell.Exts.Annotated
 import qualified Language.Haskell.Modules.GlobalSymbolTable as Global
 
@@ -46,3 +47,25 @@ computeSymbolTable qual (ModuleName _ mod) syms =
     rename m v =
       let GName _ n = origName v
       in (GName m n, v)
+
+resolveCName
+  :: Symbols
+  -> OrigName
+  -> Error l -- ^ error for "not found" condition
+  -> CName l
+  -> (CName (Scoped l), Symbols)
+resolveCName syms parent notFound cn =
+  let
+    vs =
+      [ info
+      | info <- Set.toList $ syms^.valSyms
+      , let GName _ name = sv_origName info
+      , nameToString (unCName cn) == name
+      , Just p <- return $ sv_parent info
+      , p == parent
+      ]
+  in
+    case vs of
+      [] -> (scopeError notFound cn, mempty)
+      [i] -> ((\l -> GlobalValue l i) <$> cn, mkVal i)
+      _ -> (scopeError (EInternal "resolveCName") cn, mempty)
