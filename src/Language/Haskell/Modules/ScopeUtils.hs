@@ -1,6 +1,7 @@
 module Language.Haskell.Modules.ScopeUtils where
 
 import Control.Applicative
+import Control.Arrow
 import qualified Data.Set as Set
 import Data.Monoid
 import Data.Lens.Common
@@ -51,7 +52,7 @@ computeSymbolTable qual (ModuleName _ mod) syms =
 resolveCName
   :: Symbols
   -> OrigName
-  -> Error l -- ^ error for "not found" condition
+  -> (CName l -> Error l) -- ^ error for "not found" condition
   -> CName l
   -> (CName (Scoped l), Symbols)
 resolveCName syms parent notFound cn =
@@ -66,6 +67,15 @@ resolveCName syms parent notFound cn =
       ]
   in
     case vs of
-      [] -> (scopeError notFound cn, mempty)
+      [] -> (scopeError (notFound cn) cn, mempty)
       [i] -> ((\l -> GlobalValue l i) <$> cn, mkVal i)
       _ -> (scopeError (EInternal "resolveCName") cn, mempty)
+
+resolveCNames
+  :: Symbols
+  -> OrigName
+  -> (CName l -> Error l) -- ^ error for "not found" condition
+  -> [CName l]
+  -> ([CName (Scoped l)], Symbols)
+resolveCNames syms orig notFound =
+  second mconcat . unzip . map (resolveCName syms orig notFound)

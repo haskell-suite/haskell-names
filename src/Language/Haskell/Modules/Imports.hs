@@ -198,15 +198,15 @@ resolveImportSpec mod isHiding syms spec =
             (foldMap mkTy matches)
             n
         typeName = st_origName $ head matches -- should be safe
-        (cns', cnSyms) = unzip $ flip map cns $ \cn ->
-          resolveCName
+        (cns', cnSyms) =
+          resolveCNames
             syms
             typeName
-            (ENotExported (Just n) (unCName cn) mod)
-            cn
+            (\cn -> ENotExported (Just n) (unCName cn) mod)
+            cns
       in
         IThingWith
-          (ImportPart l (mconcat cnSyms <> foldMap mkTy matches))
+          (ImportPart l (cnSyms <> foldMap mkTy matches))
           n'
           cns'
   where
