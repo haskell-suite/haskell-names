@@ -1,4 +1,4 @@
-Name:                   haskell-modules
+Name:                   haskell-names
 Version:                0.1
 License:                BSD3
 --License-File:           LICENSE
@@ -42,7 +42,7 @@ Library
                         Language.Haskell.Modules.ScopeUtils
 Executable gen-iface
   Default-Language: Haskell2010
-  Build-depends:        base, containers, haskell-src-exts, haskell-modules, haskell-packages, filepath, mtl, Cabal
+  Build-depends:        base, containers, haskell-src-exts, haskell-names, haskell-packages, filepath, mtl, Cabal
   Main-is: gen-iface.hs
 
 Test-suite test
