@@ -55,7 +55,7 @@ instance Monoid Table where
 toGName :: QName l -> GName
 toGName (UnQual _ n) = GName "" (nameToString n)
 toGName (Qual _ (ModuleName _ m) n) = GName m (nameToString n)
-toGName (Special _ s) = error "toGName: Special"
+toGName (Special _ _) = error "toGName: Special"
 
 empty :: Table
 empty = Table Map.empty Map.empty
