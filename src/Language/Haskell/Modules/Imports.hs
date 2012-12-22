@@ -141,7 +141,7 @@ resolveImportSpec mod isHiding syms spec =
           -- data constructors.
           -- FIXME Still check for uniqueness?
           let
-            matches@(Symbols vlMatches tyMatches) =
+            Symbols vlMatches tyMatches =
               mconcat [ mkVal info | info <- vs, sv_origName info ~~ n]
               <>
               mconcat [ mkTy info | info <- ts, st_origName info ~~ n]
@@ -225,13 +225,6 @@ ann2syms a =
   case ann a of
     ScopeError _ e -> Left e
     ImportPart _ syms -> Right syms
-    _ -> Left $ EInternal "ann2syms"
-
-ann2table :: Annotated a => a (Scoped l) -> Either (Error l) Global.Table
-ann2table a =
-  case ann a of
-    ScopeError _ e -> Left e
-    Import _ tbl -> Right tbl
     _ -> Left $ EInternal "ann2syms"
 
 checkUnique
