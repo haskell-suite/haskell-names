@@ -23,7 +23,7 @@ import qualified Language.Haskell.Modules.GlobalSymbolTable as Global
 import qualified Language.Haskell.Modules.LocalSymbolTable  as Local
 
 -- | Used as a phantom type
-data Modify = Modify
+data Modify
 
 -- | The phantom type @i@ can either be left polymoprhic (which means that
 -- the monadic action just reads, but does not modify, the symbol table) or
