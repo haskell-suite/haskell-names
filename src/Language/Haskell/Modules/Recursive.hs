@@ -3,9 +3,7 @@ module Language.Haskell.Modules.Recursive(analyseModules) where
 
 import Data.Graph(stronglyConnComp, flattenSCC)
 import Data.Monoid
-import Data.Data
 import Control.Monad
-import Control.Applicative
 import Language.Haskell.Exts.Annotated
 import Distribution.HaskellSuite.Helpers
 
@@ -15,7 +13,7 @@ import Language.Haskell.Modules.ScopeUtils
 import Language.Haskell.Modules.ModuleSymbols
 import Language.Haskell.Modules.Exports
 import Language.Haskell.Modules.Imports
-import Language.Haskell.Modules.ScopeCheck
+import Language.Haskell.Modules.ScopeCheck ()
 import Language.Haskell.Modules.ScopeCheckMonad
 
 -- | Take a set of modules and return a list of sets, where each sets for

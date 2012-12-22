@@ -14,7 +14,6 @@ import Data.Lens.Common
 import Data.Foldable (foldMap)
 import Control.Applicative
 import Control.Arrow
-import Control.Monad
 import Control.Monad.Writer
 import Distribution.HaskellSuite.Helpers
 import Language.Haskell.Exts.Annotated

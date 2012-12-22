@@ -5,7 +5,6 @@ import Language.Haskell.Exts.Annotated
 import Data.Typeable
 import Data.Data
 import Data.Monoid
-import Control.Applicative
 import Data.Lens.Common
 import qualified Data.Set as Set
 import {-# SOURCE #-} qualified Language.Haskell.Modules.GlobalSymbolTable as Global

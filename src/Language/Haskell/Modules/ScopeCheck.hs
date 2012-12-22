@@ -3,7 +3,6 @@ module Language.Haskell.Modules.ScopeCheck where
 
 import Prelude hiding (mapM)
 import Control.Applicative
-import Data.List hiding (mapM)
 import Data.Traversable (mapM)
 
 import Language.Haskell.Exts.Annotated

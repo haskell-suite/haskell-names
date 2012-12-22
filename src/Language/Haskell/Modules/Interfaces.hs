@@ -12,8 +12,6 @@ import Language.Haskell.Exts.Annotated
 import qualified Data.ByteString.Lazy as BS
 import Data.Aeson
 import Data.Aeson.TH
-import Data.Aeson.Types
-import Data.Aeson ((.:))
 import Data.Monoid
 import Data.Char
 import Data.Typeable

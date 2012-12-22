@@ -16,20 +16,17 @@ module Language.Haskell.Modules.GlobalSymbolTable
   ) where
 
 import Language.Haskell.Exts.Annotated
-import qualified Language.Haskell.Exts.Syntax as S
 import Data.Monoid
 import qualified Data.Map as Map
 import qualified Data.Set as Set
-import Data.List
 import Data.Typeable
 import Data.Data
-import Control.Exception
 import Control.Arrow
 import Control.Applicative hiding (empty)
 import Data.Lens.Common
 
 import Language.Haskell.Modules.Types
-import Language.Haskell.Modules.SyntaxUtils(nameToString, specialConToString)
+import Language.Haskell.Modules.SyntaxUtils
 
 -- | Global symbol table — contains global names
 data Table =
