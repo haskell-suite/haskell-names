@@ -7,7 +7,7 @@ module Language.Haskell.Modules.SyntaxUtils(
 import Data.Char
 import Data.Data
 import Data.Maybe
-import Data.Generics.PlateData
+import Data.Generics.Uniplate.Data
 import Language.Haskell.Exts.Annotated
 
 dropAnn :: (Functor a) => a l -> a ()
