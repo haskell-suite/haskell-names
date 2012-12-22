@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -fno-warn-orphans #-}
 module Language.Haskell.Modules.ScopeCheck where
 
 import Prelude hiding (mapM)
