@@ -17,9 +17,10 @@ Description:            This is an addon to Haskell-Source with Extensions (HSE,
 Stability:              Experimental
 Tested-with:            GHC==6.12.1
 Build-Type:             Simple
-Cabal-Version:          >= 1.8
+Cabal-Version:          >= 1.10
 
 Library
+  Default-Language: Haskell2010
   Build-depends:        base >= 4 && < 5, haskell-src-exts >= 1.9, mtl, filepath >= 1.1, containers >= 0.2, split >= 0.1.2 && < 0.2, cpphs >= 1.11, uniplate >= 1.5.1, tuple >= 0.2.0.1, aeson, bytestring, haskell-packages, data-lens
   Hs-source-dirs:       src
   Ghc-options:          -Wall
@@ -40,10 +41,12 @@ Library
                         Language.Haskell.Modules.Types
                         Language.Haskell.Modules.ScopeUtils
 Executable gen-iface
+  Default-Language: Haskell2010
   Build-depends:        base, containers, haskell-src-exts, haskell-modules, haskell-packages, filepath, mtl, Cabal
   Main-is: gen-iface.hs
 
 Test-suite test
+  Default-Language: Haskell2010
   type:       exitcode-stdio-1.0
   main-is:    test.hs
   Build-depends:        base >= 4 && < 5, haskell-src-exts >= 1.9, mtl, filepath >= 1.1, containers >= 0.2, split >= 0.1.2 && < 0.2, cpphs >= 1.11, uniplate >= 1.5.1, tuple >= 0.2.0.1, aeson, bytestring, haskell-packages, data-lens, test-framework, test-framework-golden, filemanip, utf8-string, pretty-show
