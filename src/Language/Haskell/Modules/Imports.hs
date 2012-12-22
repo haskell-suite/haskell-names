@@ -1,4 +1,5 @@
 {-# LANGUAGE TypeFamilies #-}
+{-# OPTIONS_GHC -fno-warn-orphans #-} -- ModName (ModuleName l)
 module Language.Haskell.Modules.Imports
   ( processImport
   , processImports
