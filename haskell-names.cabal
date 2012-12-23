@@ -44,6 +44,7 @@ Executable gen-iface
   Default-Language: Haskell2010
   Build-depends:        base, containers, haskell-src-exts, haskell-names, haskell-packages, filepath, mtl, Cabal
   Main-is: gen-iface.hs
+  Other-modules: Paths_haskell_names
 
 Test-suite test
   Default-Language: Haskell2010
