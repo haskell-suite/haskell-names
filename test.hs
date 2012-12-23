@@ -2,9 +2,6 @@ import Test.Framework hiding (defaultMain)
 import Test.Golden
 import Test.Golden.Console
 
-import qualified Data.ByteString.Lazy as BS
-import qualified Data.ByteString.Lazy.UTF8 as BS
-
 import System.FilePath
 import System.FilePath.Find
 import Data.Monoid
@@ -25,7 +22,14 @@ main = defaultMain =<< tests
 
 tests = sequence [exportTests]
 
--- Export test: parse a source file, dumb its symbols
+parseAndPrepare file =
+  return . fmap srcInfoSpan . fromParseResult =<< parseFile file
+
+getModules = do
+  libraryIface <- getInterface mempty "tests/exports/Library.hs"
+  return $ Map.singleton (convertModuleName "Library") libraryIface
+
+-- Export test: parse a source file, dump its symbols
 exportTest mods file =
   goldenVsFile file golden out run
   where
@@ -33,20 +37,17 @@ exportTest mods file =
     out = file <.> "out"
     run = do
       exps <- getInterface mods file
-      BS.writeFile out $ BS.fromString $ ppShow exps
+      writeFile out $ ppShow exps
 
 getInterface :: Map.Map Cabal.ModuleName Symbols -> FilePath -> IO Symbols
 getInterface mods file = do
-      mod <-
-        return . fmap srcInfoSpan . fromParseResult =<<
-        parseFile file
-      let mExps = snd <$> processExports (moduleTable mod) mod
-          exps = runIdentity $
-            evalModuleT mExps [] (error "retrieve") mods
-      return exps
+  mod <- parseAndPrepare file
+  let mExps = snd <$> processExports (moduleTable mod) mod
+      exps = runIdentity $
+        evalModuleT mExps [] (error "retrieve") mods
+  return exps
 
 exportTests = do
-  libraryIface <- getInterface mempty "tests/exports/Library.hs"
-  let mods = Map.singleton (convertModuleName "Library") libraryIface
+  mods <- getModules
   testFiles <- find (return True) (extension ==? ".hs") "tests/exports"
   return $ testGroup "exports" $ map (exportTest mods) testFiles
