@@ -95,6 +95,33 @@ resolveExportSpec tbl exp =
             ( EThingWith (Export l s) ((\l -> GlobalType l i) <$> qn) cns'
             , s
             )
+    EModuleContents _ (ModuleName _ mod) ->
+      -- FIXME ambiguity check
+      let
+        filterByPrefix
+          :: Ord i
+          => ModuleNameS
+          -> Map.Map GName (Set.Set i)
+          -> Set.Set i
+        filterByPrefix prefix m =
+          Set.unions
+            [ i | (GName prefix' _, i) <- Map.toList m, prefix' == prefix ]
+
+        filterEntities
+          :: Ord i
+          => Map.Map GName (Set.Set i)
+          -> Set.Set i
+        filterEntities ents =
+          Set.intersection
+            (filterByPrefix mod ents)
+            (filterByPrefix ""  ents)
+
+        eVals = filterEntities $ Global.values tbl
+        eTyps = filterEntities $ Global.types tbl
+
+        s = Symbols eVals eTyps
+      in
+        return ((\l -> Export l s) <$> exp, s)
   where
     allValueInfos =
       Set.toList $ Map.foldl' Set.union Set.empty $ Global.values tbl
