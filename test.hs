@@ -61,8 +61,8 @@ importTest mods file =
     golden = file <.> "golden"
     out = file <.> "out"
     run = do
-      exps <- getInterface mods file
-      writeFile out $ ppShow exps
+      imps <- getGlobalTable mods file
+      writeFile out $ ppShow imps
 
 getGlobalTable :: Map.Map Cabal.ModuleName Symbols -> FilePath -> IO Global.Table
 getGlobalTable mods file = do
@@ -75,4 +75,4 @@ getGlobalTable mods file = do
 importTests = do
   mods <- getModules
   testFiles <- find (return True) (extension ==? ".hs") "tests/imports"
-  return $ testGroup "imports" $ map (exportTest mods) testFiles
+  return $ testGroup "imports" $ map (importTest mods) testFiles

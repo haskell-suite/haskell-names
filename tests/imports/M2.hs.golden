@@ -1,0 +1,113 @@
+Table (
+  fromList
+    [ ( GName
+          ""
+          "Constructor1"
+      , fromList
+          [ SymConstructor
+              { sv_origName = GName
+                                "Library"
+                                "Constructor1"
+              , sv_fixity = Nothing
+              , sv_typeName = GName
+                                "Library"
+                                "DataType"
+              }
+          ]
+      )
+    , ( GName
+          ""
+          "Constructor2"
+      , fromList
+          [ SymConstructor
+              { sv_origName = GName
+                                "Library"
+                                "Constructor2"
+              , sv_fixity = Nothing
+              , sv_typeName = GName
+                                "Library"
+                                "DataType"
+              }
+          ]
+      )
+    , ( GName
+          ""
+          "function"
+      , fromList
+          [ SymValue
+              { sv_origName = GName
+                                "Library"
+                                "function"
+              , sv_fixity = Nothing
+              }
+          ]
+      )
+    , ( GName
+          "Library"
+          "Constructor1"
+      , fromList
+          [ SymConstructor
+              { sv_origName = GName
+                                "Library"
+                                "Constructor1"
+              , sv_fixity = Nothing
+              , sv_typeName = GName
+                                "Library"
+                                "DataType"
+              }
+          ]
+      )
+    , ( GName
+          "Library"
+          "Constructor2"
+      , fromList
+          [ SymConstructor
+              { sv_origName = GName
+                                "Library"
+                                "Constructor2"
+              , sv_fixity = Nothing
+              , sv_typeName = GName
+                                "Library"
+                                "DataType"
+              }
+          ]
+      )
+    , ( GName
+          "Library"
+          "function"
+      , fromList
+          [ SymValue
+              { sv_origName = GName
+                                "Library"
+                                "function"
+              , sv_fixity = Nothing
+              }
+          ]
+      )
+    ] ) (
+  fromList
+    [ ( GName
+          ""
+          "DataType"
+      , fromList
+          [ SymData
+              { st_origName = GName
+                                "Library"
+                                "DataType"
+              , st_fixity = Nothing
+              }
+          ]
+      )
+    , ( GName
+          "Library"
+          "DataType"
+      , fromList
+          [ SymData
+              { st_origName = GName
+                                "Library"
+                                "DataType"
+              , st_fixity = Nothing
+              }
+          ]
+      )
+    ] )
