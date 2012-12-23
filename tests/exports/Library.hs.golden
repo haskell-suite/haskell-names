@@ -1,0 +1,137 @@
+Symbols (
+  fromList
+    [ SymValue
+        { sv_origName = GName
+                          "Library"
+                          "function"
+        , sv_fixity = Nothing
+        }
+    , SymMethod
+        { sv_origName = GName
+                          "Library"
+                          "method1"
+        , sv_fixity = Nothing
+        , sv_className = GName
+                           "Library"
+                           "Class"
+        }
+    , SymMethod
+        { sv_origName = GName
+                          "Library"
+                          "method2"
+        , sv_fixity = Nothing
+        , sv_className = GName
+                           "Library"
+                           "Class"
+        }
+    , SymSelector
+        { sv_origName = GName
+                          "Library"
+                          "selector1"
+        , sv_fixity = Nothing
+        , sv_typeName = GName
+                          "Library"
+                          "DataTypeWithSelectors"
+        }
+    , SymSelector
+        { sv_origName = GName
+                          "Library"
+                          "selector2"
+        , sv_fixity = Nothing
+        , sv_typeName = GName
+                          "Library"
+                          "DataTypeWithSelectors"
+        }
+    , SymSelector
+        { sv_origName = GName
+                          "Library"
+                          "unNewtype"
+        , sv_fixity = Nothing
+        , sv_typeName = GName
+                          "Library"
+                          "NewtypeWithSelectors"
+        }
+    , SymConstructor
+        { sv_origName = GName
+                          "Library"
+                          "Constructor1"
+        , sv_fixity = Nothing
+        , sv_typeName = GName
+                          "Library"
+                          "DataType"
+        }
+    , SymConstructor
+        { sv_origName = GName
+                          "Library"
+                          "Constructor2"
+        , sv_fixity = Nothing
+        , sv_typeName = GName
+                          "Library"
+                          "DataType"
+        }
+    , SymConstructor
+        { sv_origName = GName
+                          "Library"
+                          "DataTypeWithSelectors"
+        , sv_fixity = Nothing
+        , sv_typeName = GName
+                          "Library"
+                          "DataTypeWithSelectors"
+        }
+    , SymConstructor
+        { sv_origName = GName
+                          "Library"
+                          "Newtype"
+        , sv_fixity = Nothing
+        , sv_typeName = GName
+                          "Library"
+                          "Newtype"
+        }
+    , SymConstructor
+        { sv_origName = GName
+                          "Library"
+                          "NewtypeWithSelectors"
+        , sv_fixity = Nothing
+        , sv_typeName = GName
+                          "Library"
+                          "NewtypeWithSelectors"
+        }
+    ] ) (
+  fromList
+    [ SymType
+        { st_origName = GName
+                          "Library"
+                          "TypeSynonym"
+        , st_fixity = Nothing
+        }
+    , SymData
+        { st_origName = GName
+                          "Library"
+                          "DataType"
+        , st_fixity = Nothing
+        }
+    , SymData
+        { st_origName = GName
+                          "Library"
+                          "DataTypeWithSelectors"
+        , st_fixity = Nothing
+        }
+    , SymData
+        { st_origName = GName
+                          "Library"
+                          "Newtype"
+        , st_fixity = Nothing
+        }
+    , SymData
+        { st_origName = GName
+                          "Library"
+                          "NewtypeWithSelectors"
+        , st_fixity = Nothing
+        }
+    , SymClass
+        { st_origName = GName
+                          "Library"
+                          "Class"
+        , st_fixity = Nothing
+        }
+    ] )
