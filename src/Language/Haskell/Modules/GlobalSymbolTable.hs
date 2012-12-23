@@ -9,6 +9,7 @@ module Language.Haskell.Modules.GlobalSymbolTable
   , addValue
   , lookupType
   , addType
+  , fromMaps
   , fromLists
   , types
   , values
@@ -93,12 +94,18 @@ addValue = addL valLens
 addType :: QName l -> SymTypeInfo OrigName -> Table -> Table
 addType = addL tyLens
 
+fromMaps
+  :: Map.Map GName (Set.Set (SymValueInfo OrigName))
+  -> Map.Map GName (Set.Set (SymTypeInfo  OrigName))
+  -> Table
+fromMaps = Table
+
 fromLists
   :: ([(GName, SymValueInfo OrigName)],
       [(GName, SymTypeInfo OrigName)])
   -> Table
 fromLists (vs, ts) =
-  Table
+  fromMaps
     (Map.fromListWith Set.union $ map (second Set.singleton) vs)
     (Map.fromListWith Set.union $ map (second Set.singleton) ts)
 
