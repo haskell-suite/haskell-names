@@ -42,7 +42,7 @@ Library
                         Language.Haskell.Modules.ScopeUtils
 Executable gen-iface
   Default-Language: Haskell2010
-  Build-depends:        base, containers, haskell-src-exts, haskell-names, haskell-packages, filepath, mtl, Cabal
+  Build-depends:        base, containers, haskell-src-exts, haskell-names, haskell-packages, filepath, mtl, Cabal, cpphs
   Main-is: gen-iface.hs
   Other-modules: Paths_haskell_names
 

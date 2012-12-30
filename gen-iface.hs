@@ -2,10 +2,12 @@
 module Main where
 
 import qualified Language.Haskell.Exts.Annotated as HSE
+import qualified Language.Haskell.Exts as UnAnn
 import Language.Haskell.Modules
 import Language.Haskell.Modules.Interfaces
 import Language.Haskell.Modules.Flags
 import Language.Haskell.Modules.Types
+import Language.Preprocessor.Cpphs
 import Control.Applicative
 import Control.Monad
 import Control.Monad.Trans
@@ -29,9 +31,9 @@ data GenIfaceException
 
 instance Exception GenIfaceException
 
-fromParseResult :: HSE.ParseResult a -> IO a
-fromParseResult (HSE.ParseOk x) = return x
-fromParseResult (HSE.ParseFailed loc msg) = throwIO $ ParseError loc msg
+fromParseResult :: HSE.ParseResult a -> a
+fromParseResult (HSE.ParseOk x) = x
+fromParseResult (HSE.ParseFailed loc msg) = throw $ ParseError loc msg
 
 main =
   defaultMain theTool
@@ -47,10 +49,23 @@ theTool =
     compile
     [suffix]
 
-compile buildDir pkgdbs pkgids mods = do
+parse ::  CpphsOptions -> FilePath -> IO (HSE.Module HSE.SrcSpan)
+parse cppOpts file = do
+  str <- readFile file
+  let pragmas = fromParseResult $ UnAnn.getTopPragmas str
+  let useCpp = not $ null [() | UnAnn.LanguagePragma _ names <- pragmas, UnAnn.Ident "CPP" <- names]
+
+  preprocessed <-
+    if useCpp
+      then runCpphs cppOpts file str
+      else return str
+
+  return . fmap HSE.srcInfoSpan . fromParseResult $ HSE.parseFileContents preprocessed
+
+compile buildDir cppOpts pkgdbs pkgids mods = do
   moduleSet <- forM mods $ \mod ->
     let file = toFilePath (fromString mod) <.> "hs" in
-    return . fmap HSE.srcInfoSpan =<< fromParseResult =<< HSE.parseFile file
+    parse cppOpts file
   let analysis = analyseModules moduleSet
   packages <- readPackagesInfo theTool pkgdbs pkgids
   modData <-
