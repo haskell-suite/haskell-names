@@ -62,10 +62,8 @@ parse cppOpts file = do
 
   return . fmap HSE.srcInfoSpan . fromParseResult $ HSE.parseFileContents preprocessed
 
-compile buildDir cppOpts pkgdbs pkgids mods = do
-  moduleSet <- forM mods $ \mod ->
-    let file = toFilePath (fromString mod) <.> "hs" in
-    parse cppOpts file
+compile buildDir cppOpts pkgdbs pkgids files = do
+  moduleSet <- mapM (parse cppOpts) files
   let analysis = analyseModules moduleSet
   packages <- readPackagesInfo theTool pkgdbs pkgids
   modData <-
