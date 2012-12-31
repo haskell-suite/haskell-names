@@ -3,17 +3,21 @@ module Main where
 
 import qualified Language.Haskell.Exts.Annotated as HSE
 import qualified Language.Haskell.Exts as UnAnn
+import Language.Haskell.Exts (defaultParseMode, ParseMode(..))
 import Language.Haskell.Modules
 import Language.Haskell.Modules.Interfaces
 import Language.Haskell.Modules.Flags
 import Language.Haskell.Modules.Types
 import Language.Preprocessor.Cpphs
+import Language.Haskell.Exts.Extension
 import Control.Applicative
 import Control.Monad
 import Control.Monad.Trans
 import Control.Exception
 import qualified Data.Map as Map
 import Data.Typeable
+import Data.Maybe
+import Data.List
 import System.FilePath
 
 import Distribution.ModuleName hiding (main)
@@ -49,21 +53,33 @@ theTool =
     compile
     [suffix]
 
-parse ::  CpphsOptions -> FilePath -> IO (HSE.Module HSE.SrcSpan)
-parse cppOpts file = do
+fixCppOpts :: CpphsOptions -> CpphsOptions
+fixCppOpts opts =
+  opts {
+    boolopts = (boolopts opts)
+      { locations = False
+      }
+  }
+
+parse :: [Extension] -> CpphsOptions -> FilePath -> IO (HSE.Module HSE.SrcSpan)
+parse exts cppOpts file = do
   str <- readFile file
   let pragmas = fromParseResult $ UnAnn.getTopPragmas str
-  let useCpp = not $ null [() | UnAnn.LanguagePragma _ names <- pragmas, UnAnn.Ident "CPP" <- names]
+  let useCpp =
+        isJust (find (== CPP) exts) ||
+        not (null [() | UnAnn.LanguagePragma _ names <- pragmas, UnAnn.Ident "CPP" <- names])
 
   preprocessed <-
     if useCpp
-      then runCpphs cppOpts file str
+      then runCpphs (fixCppOpts cppOpts) file str
       else return str
 
-  return . fmap HSE.srcInfoSpan . fromParseResult $ HSE.parseFileContents preprocessed
+  let mode = defaultParseMode { UnAnn.parseFilename = file, extensions = exts, ignoreLanguagePragmas = False }
 
-compile buildDir cppOpts pkgdbs pkgids files = do
-  moduleSet <- mapM (parse cppOpts) files
+  return . fmap HSE.srcInfoSpan . fromParseResult $ HSE.parseFileContentsWithMode mode preprocessed
+
+compile buildDir exts cppOpts pkgdbs pkgids files = do
+  moduleSet <- mapM (parse exts cppOpts) files
   let analysis = analyseModules moduleSet
   packages <- readPackagesInfo theTool pkgdbs pkgids
   modData <-
