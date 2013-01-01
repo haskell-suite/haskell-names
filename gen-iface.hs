@@ -49,6 +49,7 @@ theTool =
   simpleTool
     "haskell-modules"
     version
+    knownExtensions
     (return Nothing)
     compile
     [suffix]
