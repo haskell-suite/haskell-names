@@ -59,6 +59,8 @@ fixCppOpts opts =
   opts {
     boolopts = (boolopts opts)
       { locations = False
+      , stripC89 = True
+      , stripEol = True
       }
   }
 
