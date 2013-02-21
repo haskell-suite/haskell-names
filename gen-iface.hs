@@ -10,6 +10,7 @@ import Language.Haskell.Modules.Flags
 import Language.Haskell.Modules.Types
 import Language.Preprocessor.Cpphs
 import Language.Haskell.Exts.Extension
+import Language.Haskell.Exts.SrcLoc
 import Control.Applicative
 import Control.Monad
 import Control.Monad.Trans
@@ -19,6 +20,7 @@ import Data.Typeable
 import Data.Maybe
 import Data.List
 import System.FilePath
+import Text.Printf
 
 import Distribution.ModuleName hiding (main)
 import Distribution.Simple.Utils
@@ -31,7 +33,12 @@ import Paths_haskell_names
 data GenIfaceException
   = ParseError HSE.SrcLoc String
   | ScopeErrors (Error HSE.SrcSpan)
-  deriving (Show, Typeable)
+  deriving Typeable
+
+instance Show GenIfaceException where
+  show (ParseError (SrcLoc file line col) msg) =
+    printf "%s:%d:%d:\n  %s" file line col msg
+  show ScopeErrors {} = "scope errors (show not implemented yet)"
 
 instance Exception GenIfaceException
 
