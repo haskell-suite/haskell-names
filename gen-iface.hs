@@ -42,9 +42,9 @@ instance Show GenIfaceException where
 
 instance Exception GenIfaceException
 
-fromParseResult :: HSE.ParseResult a -> a
-fromParseResult (HSE.ParseOk x) = x
-fromParseResult (HSE.ParseFailed loc msg) = throw $ ParseError loc msg
+fromParseResult :: HSE.ParseResult a -> IO a
+fromParseResult (HSE.ParseOk x) = return x
+fromParseResult (HSE.ParseFailed loc msg) = throwIO $ ParseError loc msg
 
 main =
   defaultMain theTool
@@ -71,7 +71,7 @@ parse :: [Extension] -> CpphsOptions -> FilePath -> IO (HSE.Module HSE.SrcSpan)
 parse exts cppOpts file =
   let mode = defaultParseMode { UnAnn.parseFilename = file, extensions = exts, ignoreLanguagePragmas = False }
   -- FIXME: use parseFileWithMode?
-  in fmap HSE.srcInfoSpan . fst . fromParseResult <$> parseFileWithComments (fixCppOpts cppOpts) mode file
+  in return . fmap HSE.srcInfoSpan . fst =<< fromParseResult =<< parseFileWithComments (fixCppOpts cppOpts) mode file
 
 compile buildDir exts cppOpts pkgdbs pkgids files = do
   moduleSet <- mapM (parse exts cppOpts) files
