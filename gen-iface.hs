@@ -69,7 +69,7 @@ fixCppOpts opts =
 
 parse :: [Extension] -> CpphsOptions -> FilePath -> IO (HSE.Module HSE.SrcSpan)
 parse exts cppOpts file =
-  let mode = defaultParseMode { UnAnn.parseFilename = file, extensions = exts, ignoreLanguagePragmas = False }
+  let mode = defaultParseMode { UnAnn.parseFilename = file, extensions = exts, ignoreLanguagePragmas = False, ignoreLinePragmas = False }
   -- FIXME: use parseFileWithMode?
   in return . fmap HSE.srcInfoSpan . fst =<< fromParseResult =<< parseFileWithComments (fixCppOpts cppOpts) mode file
 
