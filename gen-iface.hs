@@ -8,9 +8,9 @@ import Language.Haskell.Modules
 import Language.Haskell.Modules.Interfaces
 import Language.Haskell.Modules.Flags
 import Language.Haskell.Modules.Types
-import Language.Preprocessor.Cpphs
 import Language.Haskell.Exts.Extension
 import Language.Haskell.Exts.SrcLoc
+import Language.Haskell.Exts.Annotated.CPP
 import Control.Applicative
 import Control.Monad
 import Control.Monad.Trans
@@ -64,29 +64,14 @@ theTool =
 fixCppOpts :: CpphsOptions -> CpphsOptions
 fixCppOpts opts =
   opts {
-    boolopts = (boolopts opts)
-      { locations = False
-      , stripC89 = True
-      , stripEol = True
-      }
+    defines = ("__GLASGOW_HASKELL__", "") : defines opts -- FIXME
   }
 
 parse :: [Extension] -> CpphsOptions -> FilePath -> IO (HSE.Module HSE.SrcSpan)
-parse exts cppOpts file = do
-  str <- readFile file
-  let pragmas = fromParseResult $ UnAnn.getTopPragmas str
-  let useCpp =
-        isJust (find (== CPP) exts) ||
-        not (null [() | UnAnn.LanguagePragma _ names <- pragmas, UnAnn.Ident "CPP" <- names])
-
-  preprocessed <-
-    if useCpp
-      then runCpphs (fixCppOpts cppOpts) file str
-      else return str
-
+parse exts cppOpts file =
   let mode = defaultParseMode { UnAnn.parseFilename = file, extensions = exts, ignoreLanguagePragmas = False }
-
-  return . fmap HSE.srcInfoSpan . fromParseResult $ HSE.parseFileContentsWithMode mode preprocessed
+  -- FIXME: use parseFileWithMode?
+  in fmap HSE.srcInfoSpan . fst . fromParseResult <$> parseFileWithComments (fixCppOpts cppOpts) mode file
 
 compile buildDir exts cppOpts pkgdbs pkgids files = do
   moduleSet <- mapM (parse exts cppOpts) files
