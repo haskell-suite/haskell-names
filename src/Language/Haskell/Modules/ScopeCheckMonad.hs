@@ -1,10 +1,12 @@
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving, DataKinds, KindSignatures, TypeFamilies #-}
 module Language.Haskell.Modules.ScopeCheckMonad
   ( ScopeM
-  , Modify
-  , ScopeCheckR(..)
-  , ScopeCheckM(..)
+  , Mode(..)
+  , ScopeCheck(..)
   , delimit
+  , upcast
+  , unsafeCast
+  , CombineModes
   , VName(..)
   , lookupValue
   , lookupType
@@ -17,19 +19,14 @@ module Language.Haskell.Modules.ScopeCheckMonad
 import Control.Applicative
 import Control.Monad.State
 import Control.Monad.Reader
-import Language.Haskell.Exts.Annotated
+import Language.Haskell.Exts.Annotated hiding (Mode)
 import Language.Haskell.Modules.Types
 import qualified Language.Haskell.Modules.GlobalSymbolTable as Global
 import qualified Language.Haskell.Modules.LocalSymbolTable  as Local
 
--- | Used as a phantom type
-data Modify
+data Mode = RW | RO
 
--- | The phantom type @i@ can either be left polymoprhic (which means that
--- the monadic action just reads, but does not modify, the symbol table) or
--- instantiated with 'Modify', which means that the action modifies the symbol
--- table.
-newtype ScopeM i a =
+newtype ScopeM (m :: Mode) a =
   ScopeM (ReaderT Global.Table (State Local.Table) a)
   deriving (Functor, Applicative, Monad)
 
@@ -40,17 +37,24 @@ runScopeM (ScopeM a) gst = evalState (runReaderT a gst) Local.empty
 -- accidentally using scopeR where scopeM is intended (and thus losing scope
 -- changes).
 
-class ScopeCheckM a where
-  -- | 'scopeM' may modify the symbol table if the node introduces any bindings
-  scopeM :: a SrcSpan -> ScopeM Modify (a (Scoped SrcSpan))
+class ScopeCheck a where
+  type ScopeMode a :: Mode
 
-class ScopeCheckR a where
-  -- | 'scopeR' never modifies the symbol table
-  scopeR :: a SrcSpan -> ScopeM i (a (Scoped SrcSpan))
+  scope :: a SrcSpan -> ScopeM (ScopeMode a) (a (Scoped SrcSpan))
 
 -- | Delimit the scope of changes that are introduced by the action
-delimit :: ScopeM i1 a -> ScopeM i2 a
+delimit :: ScopeM mode a -> ScopeM RO a
 delimit (ScopeM a) = ScopeM $ do st <- get; r <- a; put st; return r
+
+upcast :: ScopeM RO a -> ScopeM m a
+upcast = unsafeCast
+
+unsafeCast :: ScopeM m1 a -> ScopeM m2 a
+unsafeCast (ScopeM a) = ScopeM a
+
+type family CombineModes (m1 :: Mode) (m2 :: Mode) :: Mode
+type instance CombineModes RO a = a
+type instance CombineModes RW a = RW
 
 data VName
   = LocalVName SrcLoc
@@ -68,8 +72,8 @@ lookupValue qn = ScopeM $
 lookupType :: QName l -> ScopeM i (Either (Error l) (SymTypeInfo OrigName))
 lookupType qn = ScopeM $ Global.lookupType qn <$> ask
 
-addVar :: SrcInfo l => Name l -> ScopeM Modify ()
+addVar :: SrcInfo l => Name l -> ScopeM RW ()
 addVar n = ScopeM $ modify $ Local.addValue n
 
-addVars :: SrcInfo l => [Name l] -> ScopeM Modify ()
+addVars :: SrcInfo l => [Name l] -> ScopeM RW ()
 addVars = mapM_ addVar
