@@ -4,8 +4,10 @@ module Language.Haskell.Modules.Generic where
 import Prelude hiding ((*))
 import Language.Haskell.Exts.Annotated hiding (Mode)
 import Language.Haskell.Modules.ScopeCheckMonad
+import Data.Data (Data)
 import Data.Typeable
 import Control.Applicative
+import Language.Haskell.Modules.SyntaxUtils
 
 ----
 -- Resolvable class and a DSL for defining instances
@@ -38,7 +40,8 @@ lab l Alg{..} = return $ algLab l
 class Typeable1 a => Resolvable a where
   type RMode a :: Mode
   rfold
-    :: a l1
+    :: (Data l1, SrcInfo l1)
+    => a l1
     -> Alg c l1 l2
     -> ScopeM (RMode a) (c (a l2))
 
@@ -257,3 +260,10 @@ instance Resolvable SpecialCon where
 instance Resolvable Decl where
   type RMode Decl = RO
 
+instance Resolvable Binds where
+  type RMode Binds = RW
+
+  rfold (BDecls l ds)
+    = ign BDecls
+    * lab l
+    * (\alg -> (addVars $ getBound ds) >> (upcast $ foldList ds alg))
