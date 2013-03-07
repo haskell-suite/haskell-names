@@ -293,3 +293,18 @@ instance Resolvable Deriving
 instance Resolvable QualConDecl
 instance Resolvable Context
 instance Resolvable DataOrNew
+
+----
+-- rfold-based functions
+rmapM
+  :: (Resolvable a, Monad m, SrcInfo l1, Data l1)
+  => (l1 -> l2)
+  -> (forall b . Resolvable b => b l1 -> ScopeM (m (b l2)))
+  ->                             a l1 -> ScopeM (m (a l2))
+rmapM lf f a =
+  rfold a Alg
+    { algApp = ap
+    , algLab = return . lf
+    , algIgn = return
+    , algRec = f
+    }
