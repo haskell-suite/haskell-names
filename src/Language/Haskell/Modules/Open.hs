@@ -1,11 +1,15 @@
 {-# LANGUAGE RankNTypes, RecordWildCards #-}
 module Language.Haskell.Modules.Generic where
 
-import Prelude hiding ((*))
+import Prelude hiding ((*), (/))
 import Language.Haskell.Exts.Annotated hiding (Mode)
 -- import Language.Haskell.Modules.ScopeCheckMonad
 import Data.Data (Data)
 import Data.Typeable
+import qualified Data.Foldable as F
+import Data.Monoid
+import Data.List
+import Control.Arrow
 import Control.Applicative
 import Control.Monad.Reader
 import Language.Haskell.Modules.SyntaxUtils
@@ -16,6 +20,15 @@ import qualified Language.Haskell.Modules.LocalSymbolTable  as Local
 -- Scope monad
 
 type ScopeM a = Reader (Global.Table, Local.Table) a
+
+intro
+  :: (SrcInfo l1, GetBound a l1)
+  => a
+  -> (Alg c l1 l2 -> ScopeM b)
+  -> (Alg c l1 l2 -> ScopeM b)
+intro node =
+  liftM $ local $ second $
+    \tbl -> foldl' (flip Local.addValue) tbl $ getBound node
 
 ----
 -- Resolvable class and a DSL for defining instances
@@ -36,6 +49,9 @@ data Alg c l1 l2 = Alg
 (a * b) alg@Alg{..} =
   algApp <$> (a alg) <*> (b alg)
 infixl 2 *
+
+a / b = a b
+infixr 3 /
 
 ign :: d -> Alg c l1 l2 -> ScopeM (c d)
 ign a Alg{..} = return $ algIgn a
@@ -238,10 +254,42 @@ instance Resolvable SpecialCon where
     * ign n
 
 instance Resolvable Decl where
+  rfold (TypeDecl l dh t)
+    = ign TypeDecl
+    * lab l
+    * rfold dh
+    * rfold t
 
+  rfold (DataDecl l dn mc dh cs md)
+    = ign DataDecl
+    * lab l
+    * rfold dn
+    * foldMaybe mc
+    * rfold dh
+    * foldList cs
+    * foldMaybe md
+
+  rfold (PatBind l pat mbT rhs mbBinds)
+    = ign (\l pat mbBinds mbT rhs -> PatBind l pat mbT rhs mbBinds)
+    * lab l
+    * rfold pat
+    * intro pat
+    / foldMaybe mbBinds
+    * intro mbBinds
+    / foldMaybe mbT
+    * rfold rhs
 
 instance Resolvable Binds where
   rfold (BDecls l ds)
     = ign BDecls
     * lab l
     * foldList ds
+
+instance Resolvable Pat
+instance Resolvable Type
+instance Resolvable Rhs
+instance Resolvable DeclHead
+instance Resolvable Deriving
+instance Resolvable QualConDecl
+instance Resolvable Context
+instance Resolvable DataOrNew
