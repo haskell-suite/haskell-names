@@ -11,11 +11,13 @@ main = do
   mapM_ printInst decls
   
 printInst :: Decl -> IO ()
-printInst (DataDecl _ DataType _ tname [UnkindedVar lvar@(Ident "l")] cons _)
+printInst (DataDecl _ DataType _ tname vars cons _)
   -- = putStrLn $ prettyPrint $ InstDecl (error "loc") [] (UnQual $ Ident "Resolvable") [TyCon $ UnQual tname] 
   = do 
-    printf "instance Resolvable %s where\n" (prettyPrint tname)
-    mapM_ rfoldDef cons
+    -- printf "instance Sat (ResolvableD (%s)) where\n" (intercalate " " $ prettyPrint tname : map prettyPrint vars)
+    -- printf "  dict = ResolvableD defaultRfoldl\n\n"
+    printf "deriveOneData ''%s\n\n" (prettyPrint tname)
+    -- mapM_ rfoldDef cons
 
 printInst _ = return ()
 
