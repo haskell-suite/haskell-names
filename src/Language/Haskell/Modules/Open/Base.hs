@@ -1,4 +1,4 @@
-{-# LANGUAGE RankNTypes, FlexibleInstances, FlexibleContexts, UndecidableInstances, DefaultSignatures, OverlappingInstances #-}
+{-# LANGUAGE RankNTypes, FlexibleInstances, FlexibleContexts, UndecidableInstances, DefaultSignatures, OverlappingInstances, TemplateHaskell #-}
 module Language.Haskell.Modules.Open.Base where
 
 import qualified Language.Haskell.Modules.GlobalSymbolTable as Global
@@ -10,8 +10,20 @@ import Control.Monad.Reader
 import Data.Generics.SYB.WithClass.Basics
 import Control.Arrow
 import Data.List
+import Data.Lens.Common
+import Data.Lens.Template
 
-type ScopeM a = Reader (Global.Table, Local.Table) a
+type ScopeM a = Reader ScopeInfo a
+
+data NameContext = Binding | Reference | Other
+
+data ScopeInfo = ScopeInfo
+  { _gTable :: Global.Table
+  , _lTable :: Local.Table
+  , _nameCtx :: NameContext
+  }
+
+makeLens ''ScopeInfo
 
 defaultRfoldl
   :: Data ResolvableD a
@@ -39,5 +51,8 @@ instance Data ResolvableD a => Sat (ResolvableD a) where
 
 intro :: (SrcInfo l, GetBound a l) => a -> ScopeM b -> ScopeM b
 intro node =
-  local $ second $
+  local $ modL lTable $
     \tbl -> foldl' (flip Local.addValue) tbl $ getBound node
+
+setNameCtx :: NameContext -> ScopeM b -> ScopeM b
+setNameCtx ctx = local $ setL nameCtx ctx
