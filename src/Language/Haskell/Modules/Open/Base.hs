@@ -6,30 +6,27 @@ import qualified Language.Haskell.Modules.LocalSymbolTable as Local
 import Language.Haskell.Modules.SyntaxUtils
 import Language.Haskell.Exts.Annotated
 import Control.Applicative
-import Control.Monad.Reader
 import Data.Generics.SYB.WithClass.Basics
 import Control.Arrow
 import Data.List
 import Data.Lens.Common
 import Data.Lens.Template
 
-type ScopeM a = Reader ScopeInfo a
-
 data NameContext = Binding | Reference | Other
 
-data ScopeInfo = ScopeInfo
+data Scope = Scope
   { _gTable :: Global.Table
   , _lTable :: Local.Table
   , _nameCtx :: NameContext
   }
 
-makeLens ''ScopeInfo
+makeLens ''Scope
 
 defaultRfoldl
   :: Data ResolvableD a
-  => (forall b c. Data ResolvableD b => w (b -> c) -> b -> ScopeM (w c))
+  => (forall b c. Data ResolvableD b => w (b -> c) -> b -> Scope -> w c)
   -> (forall g. g -> w g)
-  -> a -> ScopeM (w a)
+  -> a -> Scope -> w a
 defaultRfoldl f z = unScopeT .
   gfoldl
     (undefined :: Proxy ResolvableD)
@@ -39,20 +36,23 @@ defaultRfoldl f z = unScopeT .
 newtype ResolvableD a = ResolvableD
   { rfoldl
     :: forall w .
-       (forall b c. Data ResolvableD b => w (b -> c) -> b -> ScopeM (w c))
+       (forall b c. Data ResolvableD b => w (b -> c) -> b -> Scope -> w c)
     -> (forall g. g -> w g)
-    -> a -> ScopeM (w a)
+    -> a -> Scope -> w a
   }
 
-newtype ScopeT w a = ScopeT { unScopeT :: ScopeM (w a) }
+newtype ScopeT w a = ScopeT { unScopeT :: Scope -> w a }
 
 instance Data ResolvableD a => Sat (ResolvableD a) where
   dict = ResolvableD defaultRfoldl
 
-intro :: (SrcInfo l, GetBound a l) => a -> ScopeM b -> ScopeM b
+intro :: (SrcInfo l, GetBound a l) => a -> Scope -> Scope
 intro node =
-  local $ modL lTable $
+  modL lTable $
     \tbl -> foldl' (flip Local.addValue) tbl $ getBound node
 
-setNameCtx :: NameContext -> ScopeM b -> ScopeM b
-setNameCtx ctx = local $ setL nameCtx ctx
+setNameCtx :: NameContext -> Scope -> Scope
+setNameCtx ctx = setL nameCtx ctx
+
+binder :: Scope -> Scope
+binder = setNameCtx Binding
