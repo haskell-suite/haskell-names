@@ -1,139 +1,140 @@
-{-# LANGUAGE FlexibleContexts, FlexibleInstances, TemplateHaskell,
-             MultiParamTypeClasses, UndecidableInstances #-}
+{-# LANGUAGE TemplateHaskell, MultiParamTypeClasses, FlexibleInstances, ConstraintKinds, UndecidableInstances #-}
 module Language.Haskell.Modules.Open.Derived where
 
 import Language.Haskell.Modules.Open.Base
 import Language.Haskell.Exts.Annotated
-import Data.Generics.SYB.WithClass.Derive
+import Data.Generics.Traversable
+import Data.Generics.Traversable.TH
+import Control.Applicative
 
-deriveOneData ''ModuleName
+deriveGTraversable ''ModuleName
 
-deriveOneData ''SpecialCon
+deriveGTraversable ''SpecialCon
 
-deriveOneData ''QName
+deriveGTraversable ''QName
 
-deriveOneData ''Name
+deriveGTraversable ''Name
 
-deriveOneData ''IPName
+deriveGTraversable ''Boxed
 
-deriveOneData ''QOp
+deriveGTraversable ''IPName
 
-deriveOneData ''Op
+deriveGTraversable ''QOp
 
-deriveOneData ''CName
+deriveGTraversable ''Op
 
-deriveOneData ''Module
+deriveGTraversable ''CName
 
-deriveOneData ''ModuleHead
+deriveGTraversable ''Module
 
-deriveOneData ''ExportSpecList
+deriveGTraversable ''ModuleHead
 
-deriveOneData ''ExportSpec
+deriveGTraversable ''ExportSpecList
 
-deriveOneData ''ImportDecl
+deriveGTraversable ''ExportSpec
 
-deriveOneData ''ImportSpecList
+deriveGTraversable ''ImportDecl
 
-deriveOneData ''ImportSpec
+deriveGTraversable ''ImportSpecList
 
-deriveOneData ''Assoc
+deriveGTraversable ''ImportSpec
 
-deriveOneData ''Decl
+deriveGTraversable ''Assoc
 
-deriveOneData ''Annotation
+deriveGTraversable ''Decl
 
-deriveOneData ''DataOrNew
+deriveGTraversable ''Annotation
 
-deriveOneData ''DeclHead
+deriveGTraversable ''DataOrNew
 
-deriveOneData ''InstHead
+deriveGTraversable ''DeclHead
 
-deriveOneData ''Deriving
+deriveGTraversable ''InstHead
 
-deriveOneData ''Binds
+deriveGTraversable ''Deriving
 
-deriveOneData ''IPBind
+deriveGTraversable ''Binds
 
-deriveOneData ''Match
+deriveGTraversable ''IPBind
 
-deriveOneData ''QualConDecl
+deriveGTraversable ''Match
 
-deriveOneData ''ConDecl
+deriveGTraversable ''QualConDecl
 
-deriveOneData ''FieldDecl
+deriveGTraversable ''ConDecl
 
-deriveOneData ''GadtDecl
+deriveGTraversable ''FieldDecl
 
-deriveOneData ''ClassDecl
+deriveGTraversable ''GadtDecl
 
-deriveOneData ''InstDecl
+deriveGTraversable ''ClassDecl
 
-deriveOneData ''BangType
+deriveGTraversable ''InstDecl
 
-deriveOneData ''Rhs
+deriveGTraversable ''BangType
 
-deriveOneData ''GuardedRhs
+deriveGTraversable ''Rhs
 
-deriveOneData ''Type
+deriveGTraversable ''GuardedRhs
 
-deriveOneData ''Boxed
+deriveGTraversable ''Type
 
-deriveOneData ''TyVarBind
+deriveGTraversable ''TyVarBind
 
-deriveOneData ''Kind
+deriveGTraversable ''Kind
 
-deriveOneData ''FunDep
+deriveGTraversable ''FunDep
 
-deriveOneData ''Context
+deriveGTraversable ''Context
 
-deriveOneData ''Asst
+deriveGTraversable ''Asst
 
-deriveOneData ''Literal
+deriveGTraversable ''Literal
 
-deriveOneData ''Exp
+deriveGTraversable ''Exp
 
-deriveOneData ''XName
+deriveGTraversable ''XName
 
-deriveOneData ''XAttr
+deriveGTraversable ''XAttr
 
-deriveOneData ''Bracket
+deriveGTraversable ''Bracket
 
-deriveOneData ''Splice
+deriveGTraversable ''Splice
 
-deriveOneData ''Safety
+deriveGTraversable ''Safety
 
-deriveOneData ''CallConv
+deriveGTraversable ''CallConv
 
-deriveOneData ''ModulePragma
+deriveGTraversable ''ModulePragma
 
-deriveOneData ''Tool
+deriveGTraversable ''Tool
 
-deriveOneData ''Activation
+deriveGTraversable ''Activation
 
-deriveOneData ''Rule
+deriveGTraversable ''Rule
 
-deriveOneData ''RuleVar
+deriveGTraversable ''RuleVar
 
-deriveOneData ''WarningText
+deriveGTraversable ''WarningText
 
-deriveOneData ''Pat
+deriveGTraversable ''Pat
 
-deriveOneData ''PXAttr
+deriveGTraversable ''PXAttr
 
-deriveOneData ''RPatOp
+deriveGTraversable ''RPatOp
 
-deriveOneData ''RPat
+deriveGTraversable ''RPat
 
-deriveOneData ''PatField
+deriveGTraversable ''PatField
 
-deriveOneData ''Stmt
+deriveGTraversable ''Stmt
 
-deriveOneData ''QualStmt
+deriveGTraversable ''QualStmt
 
-deriveOneData ''FieldUpdate
+deriveGTraversable ''FieldUpdate
 
-deriveOneData ''Alt
+deriveGTraversable ''Alt
 
-deriveOneData ''GuardedAlts
+deriveGTraversable ''GuardedAlts
 
-deriveOneData ''GuardedAlt
+deriveGTraversable ''GuardedAlt
