@@ -5,39 +5,38 @@ module Language.Haskell.Modules.Open.Instances where
 
 import Language.Haskell.Modules.Open.Base
 import Language.Haskell.Modules.Open.Derived ()
-import Data.Generics.SYB.WithClass.Basics
-import Data.Generics.SYB.WithClass.Instances ()
+import Data.Generics.Traversable
 import Language.Haskell.Exts.Annotated
 import qualified Data.Data as D
+import Control.Applicative
 
-data Alg w = Alg
-  { algF :: forall b c. Data ResolvableD b => w (b -> c) -> b -> Scope -> w c
-  , algZ :: forall g. g -> w g
-  }
+type Alg w = forall d . Resolvable d => d -> Scope -> w d
 
-dsl
-  :: (forall w . a -> Scope -> Alg w -> w a)
-  -> ResolvableD a
-dsl dslExpr = ResolvableD $ \f z a sc -> dslExpr a sc (Alg f z)
+dsl :: (d -> Scope -> Alg w -> r) -> (Alg w -> d -> Scope -> r)
+dsl dslExpr alg d sc = dslExpr d sc alg
 
-c :: a -> Alg w -> w a
-c x alg = algZ alg x
+c :: Applicative w => c -> Alg w -> w c
+c x _ = pure x
 
 (<|)
-  :: Data ResolvableD b
+  :: (Applicative w, GTraversable Resolvable b)
   => (Alg w -> w (b -> c)) -> (b, Scope) -> Alg w -> w c
-k <| (b, sc) = \alg -> algF alg (k alg) b sc
+(<|) k (b, sc) f = k f <*> f b sc
 infixl 2 <|
 
 sc -: b = (b, sc)
 infix 3 -:
 
+defaultImpl
+  :: (GTraversable Resolvable a, Applicative f)
+  => a -> Scope
+  -> (forall d . Resolvable d => d -> Scope -> f d)
+  -> f a
 defaultImpl e sc alg =
-  defaultRfoldl (algF alg) (algZ alg) e sc
+  defaultRtraverse alg e sc
 
-instance (Data ResolvableD l, Sat (ResolvableD l), SrcInfo l, D.Data l) =>
-  Sat (ResolvableD (Decl l)) where
-  dict = dsl $ \e sc ->
+instance (GTraversable Resolvable l, SrcInfo l, D.Data l) => Resolvable (Decl l) where
+  rtraverse = dsl $ \e sc ->
     case e of
       PatBind l pat mbType rhs mbWhere ->
         let
@@ -59,9 +58,9 @@ foldPats pats sc0 alg =
     let scWithPat = intro pat sc in
     c (:) <| sc -: pat <| scWithPat rest
 -}
-instance (Data ResolvableD l, Sat (ResolvableD l), SrcInfo l, D.Data l) =>
-  Sat (ResolvableD (Match l)) where
-  dict = dsl $ \e sc ->
+
+instance (GTraversable Resolvable l, SrcInfo l, D.Data l) => Resolvable (Match l) where
+  rtraverse = dsl $ \e sc ->
     case e of
       Match l name pats rhs mbWhere ->
         let
