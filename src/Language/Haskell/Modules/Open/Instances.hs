@@ -19,7 +19,7 @@ c :: Applicative w => c -> Alg w -> w c
 c x _ = pure x
 
 (<|)
-  :: (Applicative w, GTraversable Resolvable b)
+  :: (Applicative w, Resolvable b)
   => (Alg w -> w (b -> c)) -> (b, Scope) -> Alg w -> w c
 (<|) k (b, sc) f = k f <*> f b sc
 infixl 2 <|
