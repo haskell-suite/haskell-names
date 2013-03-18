@@ -51,13 +51,18 @@ instance (GTraversable Resolvable l, SrcInfo l, D.Data l) => Resolvable (Decl l)
           <| scWithPat   -: mbWhere
       _ -> defaultImpl e sc
 
-{-
-foldPats :: [Pat l] -> Scope -> Alg w -> (w [Pat l], Scope)
-foldPats pats sc0 alg =
-  (\f -> foldr f pats (\sc -> (algZ alg [], sc)) sc0) $ \pat rest sc ->
-    let scWithPat = intro pat sc in
-    c (:) <| sc -: pat <| scWithPat rest
--}
+foldPats
+  :: (GTraversable Resolvable l, Resolvable l, Applicative w, SrcInfo l, D.Data l)
+  => [Pat l] -> Scope -> Alg w -> (w [Pat l], Scope)
+foldPats pats sc alg =
+  case pats of
+    [] -> (pure [], sc)
+    p:ps ->
+      let
+        sc' = intro p sc
+        p' = alg p sc
+        (ps', sc'') = foldPats ps sc' alg
+      in ((:) <$> p' <*> ps', sc'')
 
 instance (GTraversable Resolvable l, SrcInfo l, D.Data l) => Resolvable (Match l) where
   rtraverse = dsl $ \e sc ->
