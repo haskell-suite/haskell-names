@@ -51,6 +51,7 @@ instance (GTraversable Resolvable l, SrcInfo l, D.Data l) => Resolvable (Decl l)
           <| scWithPat   -: mbWhere
       _ -> defaultImpl e sc
 
+-- See Note [Nested pattern scopes]
 foldPats
   :: (GTraversable Resolvable l, Resolvable l, Applicative w, SrcInfo l, D.Data l)
   => [Pat l] -> Scope -> Alg w -> (w [Pat l], Scope)
@@ -78,3 +79,24 @@ instance (GTraversable Resolvable l, SrcInfo l, D.Data l) => Resolvable (Match l
           <| sc          -: pats
           <| scWithWhere -: rhs
           <| scWithPats  -: mbWhere
+
+{-
+Note [Nested pattern scopes]
+~~~~~~~~~~~~~~~~~~~~~~
+
+When we resolve a group of patterns, their scopes nest.
+
+Most of the time, this is not important, but there are two exceptions:
+1. ScopedTypeVariables
+
+Example: f (x :: a) (y :: a) = ...
+
+The first 'a' is a binder, the second — a reference.
+
+2. View patterns
+
+An expression inside a view pattern may reference the variables bound
+earlier.
+
+Example: f x (find (< x) -> Just y) = ...
+-}
