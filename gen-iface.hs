@@ -11,6 +11,7 @@ import Language.Haskell.Modules.Types
 import Language.Haskell.Exts.Extension
 import Language.Haskell.Exts.SrcLoc
 import Language.Haskell.Exts.Annotated.CPP
+import Language.Preprocessor.Cpphs
 import Control.Applicative
 import Control.Monad
 import Control.Monad.Trans
@@ -21,7 +22,6 @@ import Data.Maybe
 import Data.List
 import System.FilePath
 import Text.Printf
-
 import Distribution.ModuleName hiding (main)
 import Distribution.Simple.Utils
 import Distribution.Verbosity
