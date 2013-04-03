@@ -1,4 +1,4 @@
-{-# LANGUAGE RankNTypes, FlexibleInstances, FlexibleContexts, UndecidableInstances, DefaultSignatures, OverlappingInstances, TemplateHaskell #-}
+{-# LANGUAGE RankNTypes, FlexibleInstances, FlexibleContexts, UndecidableInstances, DefaultSignatures, OverlappingInstances, TemplateHaskell, ScopedTypeVariables #-}
 {-# LANGUAGE ImplicitParams #-}
 module Language.Haskell.Modules.Open.Base where
 
@@ -23,20 +23,22 @@ data Scope = Scope
 
 makeLens ''Scope
 
+newtype Alg w = Alg { runAlg :: forall d . Resolvable d => d -> Scope -> w d }
+
+alg :: (?alg :: Alg w, Resolvable d) => d -> Scope -> w d
+alg = runAlg ?alg
+
 defaultRtraverse
-  :: (GTraversable Resolvable a, Applicative f)
-  => (forall d . Resolvable d => d -> Scope -> f d)
-  -> a -> Scope -> f a
-defaultRtraverse f a sc =
+  :: (GTraversable Resolvable a, Applicative f, ?alg :: Alg f)
+  => a -> Scope -> f a
+defaultRtraverse a sc =
   let ?c = Proxy :: Proxy Resolvable
-  in gtraverse (\a -> f a sc) a
+  in gtraverse (\a -> alg a sc) a
 
 class Resolvable a where
   rtraverse
-    :: Applicative f
-    => (forall d . Resolvable d => d -> Scope -> f d)
-    -> a -> Scope -> f a
-
+    :: (Applicative f, ?alg :: Alg f)
+    => a -> Scope -> f a
 
 instance GTraversable Resolvable a => Resolvable a where
   rtraverse = defaultRtraverse

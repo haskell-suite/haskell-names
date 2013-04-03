@@ -1,6 +1,6 @@
 {-# LANGUAGE FlexibleContexts, FlexibleInstances, TemplateHaskell,
              MultiParamTypeClasses, UndecidableInstances, RankNTypes #-}
--- {-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE ImplicitParams #-}
 module Language.Haskell.Modules.Open.Instances where
 
 import Language.Haskell.Modules.Open.Base
@@ -10,33 +10,26 @@ import Language.Haskell.Exts.Annotated
 import qualified Data.Data as D
 import Control.Applicative
 
-type Alg w = forall d . Resolvable d => d -> Scope -> w d
-
-dsl :: (d -> Scope -> Alg w -> r) -> (Alg w -> d -> Scope -> r)
-dsl dslExpr alg d sc = dslExpr d sc alg
-
-c :: Applicative w => c -> Alg w -> w c
-c x _ = pure x
+c :: Applicative w => c -> w c
+c = pure
 
 (<|)
-  :: (Applicative w, Resolvable b)
-  => (Alg w -> w (b -> c)) -> (b, Scope) -> Alg w -> w c
-(<|) k (b, sc) f = k f <*> f b sc
+  :: (Applicative w, Resolvable b, ?alg :: Alg w)
+  => w (b -> c) -> (b, Scope) -> w c
+(<|) k (b, sc) = k <*> alg b sc
 infixl 2 <|
 
 sc -: b = (b, sc)
 infix 3 -:
 
 defaultImpl
-  :: (GTraversable Resolvable a, Applicative f)
-  => a -> Scope
-  -> (forall d . Resolvable d => d -> Scope -> f d)
-  -> f a
-defaultImpl e sc alg =
-  defaultRtraverse alg e sc
+  :: (GTraversable Resolvable a, Applicative w, ?alg :: Alg w)
+  => a -> Scope -> w a
+defaultImpl e sc =
+  defaultRtraverse e sc
 
 instance (GTraversable Resolvable l, SrcInfo l, D.Data l) => Resolvable (Decl l) where
-  rtraverse = dsl $ \e sc ->
+  rtraverse e sc =
     case e of
       PatBind l pat mbType rhs mbWhere ->
         let
@@ -53,20 +46,25 @@ instance (GTraversable Resolvable l, SrcInfo l, D.Data l) => Resolvable (Decl l)
 
 -- See Note [Nested pattern scopes]
 foldPats
-  :: (GTraversable Resolvable l, Resolvable l, Applicative w, SrcInfo l, D.Data l)
-  => [Pat l] -> Scope -> Alg w -> (w [Pat l], Scope)
-foldPats pats sc alg =
+  :: ( GTraversable Resolvable l
+     , Resolvable l
+     , Applicative w
+     , SrcInfo l
+     , D.Data l
+     , ?alg :: Alg w)
+  => [Pat l] -> Scope -> (w [Pat l], Scope)
+foldPats pats sc =
   case pats of
     [] -> (pure [], sc)
     p:ps ->
       let
         sc' = intro p sc
         p' = alg p sc
-        (ps', sc'') = foldPats ps sc' alg
+        (ps', sc'') = foldPats ps sc'
       in ((:) <$> p' <*> ps', sc'')
 
 instance (GTraversable Resolvable l, SrcInfo l, D.Data l) => Resolvable (Match l) where
-  rtraverse = dsl $ \e sc ->
+  rtraverse e sc =
     case e of
       Match l name pats rhs mbWhere ->
         let
