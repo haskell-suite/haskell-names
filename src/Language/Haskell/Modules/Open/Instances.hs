@@ -17,10 +17,10 @@ c = pure
   :: (Applicative w, Resolvable b, ?alg :: Alg w)
   => w (b -> c) -> (b, Scope) -> w c
 (<|) k (b, sc) = k <*> alg b sc
-infixl 2 <|
+infixl 4 <|
 
 sc -: b = (b, sc)
-infix 3 -:
+infix 5 -:
 
 defaultImpl
   :: (GTraversable Resolvable a, Applicative w, ?alg :: Alg w)
@@ -67,14 +67,16 @@ instance (GTraversable Resolvable l, SrcInfo l, D.Data l) => Resolvable (Match l
   rtraverse e sc =
     case e of
       Match l name pats rhs mbWhere ->
+        -- f x y z = ...
+        --   where ...
         let
-          scWithPats = intro pats sc
+          (pats', scWithPats) = foldPats pats sc
           scWithWhere = intro mbWhere scWithPats
         in
         c Match
           <| sc          -: l
           <| binder sc   -: name
-          <| sc          -: pats
+          <*> pats' -- has been already traversed
           <| scWithWhere -: rhs
           <| scWithPats  -: mbWhere
 
