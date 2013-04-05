@@ -3,6 +3,7 @@ module Language.Haskell.Modules.Recursive(analyseModules) where
 
 import Data.Graph(stronglyConnComp, flattenSCC)
 import Data.Monoid
+import Data.Data (Data)
 import Control.Monad
 import Language.Haskell.Exts.Annotated
 import Distribution.HaskellSuite.Helpers
@@ -15,6 +16,7 @@ import Language.Haskell.Modules.Exports
 import Language.Haskell.Modules.Imports
 import Language.Haskell.Modules.ScopeCheck ()
 import Language.Haskell.Modules.ScopeCheckMonad
+import qualified Language.Haskell.Modules.GlobalSymbolTable as Global
 
 -- | Take a set of modules and return a list of sets, where each sets for
 -- a strongly connected component in the import graph.
@@ -33,7 +35,7 @@ scopeSCC
   :: (MonadModule m, ModuleInfo m ~ Symbols)
   => [Module SrcSpan] -> m [(Module (Scoped SrcSpan), Symbols)]
 scopeSCC mods = do
-  modData <- go $ map (const mempty) mods
+  modData <- findFixPoint mods
   return $ flip map (zip mods modData) $
     \(Module lm mh os is ds, (imp, exp, tbl, syms)) ->
       let
@@ -52,19 +54,34 @@ scopeSCC mods = do
 
       in (Module lm' mh' os' is' ds', syms)
 
-  where
-    go syms = do
-      forM_ (zip syms mods) $ \(s,m) -> insertInCache (getModuleName m) s
-      new <- forM mods $ \m -> do
-        (imp, impTbl) <- processImports $ getImports m
-        let ownTbl = moduleTable m
-            tbl = impTbl <> ownTbl
-        (exp, syms) <- processExports tbl m
-        return (imp, exp, tbl, syms)
-      let syms' = map (\(_,_,_,x) -> x) new
-      if syms' == syms
-        then return new
-        else go syms'
+-- Input: a list of mutually recursive modules (typically, a strongly
+-- connected component in the dependency graph).
+--
+-- Output: a list consisting of, per each module and in the same order,
+-- the annotated import and export declarations, the module's global symbol
+-- table and the set of exported symbols.
+findFixPoint
+  :: (Eq l, Data l, MonadModule m, ModuleInfo m ~ Symbols)
+  => [Module l]
+  -> m [ ( [ImportDecl (Scoped l)]
+         , Maybe (ExportSpecList (Scoped l))
+         , Global.Table
+         , Symbols
+         )
+       ]
+findFixPoint mods = go mods (map (const mempty) mods) where
+  go mods syms = do
+    forM_ (zip syms mods) $ \(s,m) -> insertInCache (getModuleName m) s
+    new <- forM mods $ \m -> do
+      (imp, impTbl) <- processImports $ getImports m
+      let ownTbl = moduleTable m
+          tbl = impTbl <> ownTbl
+      (exp, syms) <- processExports tbl m
+      return (imp, exp, tbl, syms)
+    let syms' = map (\(_,_,_,x) -> x) new
+    if syms' == syms
+      then return new
+      else go mods syms'
 
 analyseModules
   :: (MonadModule m, ModuleInfo m ~ Symbols)
