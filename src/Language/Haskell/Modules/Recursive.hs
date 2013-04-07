@@ -14,9 +14,11 @@ import Language.Haskell.Modules.ScopeUtils
 import Language.Haskell.Modules.ModuleSymbols
 import Language.Haskell.Modules.Exports
 import Language.Haskell.Modules.Imports
-import Language.Haskell.Modules.ScopeCheck ()
 import Language.Haskell.Modules.ScopeCheckMonad
 import qualified Language.Haskell.Modules.GlobalSymbolTable as Global
+import qualified Language.Haskell.Modules.LocalSymbolTable  as Local
+import Language.Haskell.Modules.Open.Base
+import Language.Haskell.Modules.Annotated
 
 -- | Take a set of modules and return a list of sets, where each sets for
 -- a strongly connected component in the import graph.
@@ -42,7 +44,7 @@ scopeSCC mods = do
         lm' = none lm
         os' = fmap noScope os
         is' = imp
-        ds' = runScopeM (mapM scopeR ds) tbl
+        ds' = annotate (Scope tbl Local.empty Reference) `map` ds
 
         mh' = flip fmap mh $ \(ModuleHead lh n mw me) ->
           let
