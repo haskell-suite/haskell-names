@@ -13,6 +13,7 @@ import Data.Lens.Common
 import Data.Lens.Template
 import Data.Generics.Traversable
 import Data.Proxy
+import Data.Typeable
 
 data NameContext = Binding | Reference | Other
 
@@ -24,7 +25,8 @@ data Scope = Scope
 
 makeLens ''Scope
 
-newtype Alg w = Alg { runAlg :: forall d . Resolvable d => d -> Scope -> w d }
+newtype Alg w = Alg
+  { runAlg :: forall d . Resolvable d => d -> Scope -> w d }
 
 alg :: (?alg :: Alg w, Resolvable d) => d -> Scope -> w d
 alg = runAlg ?alg
@@ -36,12 +38,15 @@ defaultRtraverse a sc =
   let ?c = Proxy :: Proxy Resolvable
   in gtraverse (\a -> alg a sc) a
 
-class Resolvable a where
+-- We use Typeable here rather than a class-based approach.
+-- Otherwise, hand-written instances would carry extremely long lists of
+-- constraints, saying that the subterms satisfy the user-supplied class.
+class Typeable a => Resolvable a where
   rtraverse
     :: (Applicative f, ?alg :: Alg f)
     => a -> Scope -> f a
 
-instance GTraversable Resolvable a => Resolvable a where
+instance (Typeable a, GTraversable Resolvable a) => Resolvable a where
   rtraverse = defaultRtraverse
 
 -- analogous to gmap, but for Resolvable
