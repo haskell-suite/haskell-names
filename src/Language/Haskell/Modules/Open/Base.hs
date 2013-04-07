@@ -7,6 +7,7 @@ import qualified Language.Haskell.Modules.LocalSymbolTable as Local
 import Language.Haskell.Modules.SyntaxUtils
 import Language.Haskell.Exts.Annotated
 import Control.Applicative
+import Control.Monad.Identity
 import Data.List
 import Data.Lens.Common
 import Data.Lens.Template
@@ -42,6 +43,15 @@ class Resolvable a where
 
 instance GTraversable Resolvable a => Resolvable a where
   rtraverse = defaultRtraverse
+
+-- analogous to gmap, but for Resolvable
+rmap
+  :: Resolvable a
+  => (forall b. Resolvable b => Scope -> b -> b)
+  -> Scope -> a -> a
+rmap f sc =
+  let ?alg = Alg $ \a sc -> Identity (f sc a)
+  in runIdentity . flip rtraverse sc
 
 intro :: (SrcInfo l, GetBound a l) => a -> Scope -> Scope
 intro node =
