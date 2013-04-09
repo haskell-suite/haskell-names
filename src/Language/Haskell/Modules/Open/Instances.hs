@@ -3,12 +3,14 @@
 {-# LANGUAGE ImplicitParams #-}
 module Language.Haskell.Modules.Open.Instances where
 
+import Language.Haskell.Modules.Types
 import Language.Haskell.Modules.Open.Base
 import Language.Haskell.Modules.Open.Derived ()
 import Data.Generics.Traversable
 import Language.Haskell.Exts.Annotated
 import qualified Data.Data as D
 import Control.Applicative
+import Data.Typeable
 
 c :: Applicative w => c -> w c
 c = pure
@@ -94,3 +96,7 @@ earlier.
 
 Example: f x (find (< x) -> Just y) = ...
 -}
+
+-- Some road-block Resolvable instances
+instance Typeable a => Resolvable (Scoped a) where
+  rtraverse = flip $ const pure
