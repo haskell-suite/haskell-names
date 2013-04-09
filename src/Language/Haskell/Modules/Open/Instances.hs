@@ -22,12 +22,6 @@ infixl 4 <|
 sc -: b = (b, sc)
 infix 5 -:
 
-defaultImpl
-  :: (GTraversable Resolvable a, Applicative w, ?alg :: Alg w)
-  => a -> Scope -> w a
-defaultImpl e sc =
-  defaultRtraverse e sc
-
 instance (GTraversable Resolvable l, SrcInfo l, D.Data l) => Resolvable (Decl l) where
   rtraverse e sc =
     case e of
@@ -42,7 +36,7 @@ instance (GTraversable Resolvable l, SrcInfo l, D.Data l) => Resolvable (Decl l)
           <| sc          -: mbType
           <| scWithWhere -: rhs
           <| scWithPat   -: mbWhere
-      _ -> defaultImpl e sc
+      _ -> defaultRtraverse e sc
 
 -- See Note [Nested pattern scopes]
 foldPats
