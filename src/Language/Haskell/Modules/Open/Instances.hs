@@ -1,6 +1,11 @@
 {-# LANGUAGE FlexibleContexts, FlexibleInstances, TemplateHaskell,
              MultiParamTypeClasses, UndecidableInstances, RankNTypes #-}
 {-# LANGUAGE ImplicitParams #-}
+
+-- MonoLocalBinds extension prevents premature generalization, which
+-- results in the "default" instance being picked.
+{-# LANGUAGE MonoLocalBinds #-}
+
 module Language.Haskell.Modules.Open.Instances where
 
 import Language.Haskell.Modules.Types
@@ -24,7 +29,7 @@ infixl 4 <|
 sc -: b = (b, sc)
 infix 5 -:
 
-instance (GTraversable Resolvable l, SrcInfo l, D.Data l) => Resolvable (Decl l) where
+instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (Decl l) where
   rtraverse e sc =
     case e of
       PatBind l pat mbType rhs mbWhere ->
@@ -42,8 +47,7 @@ instance (GTraversable Resolvable l, SrcInfo l, D.Data l) => Resolvable (Decl l)
 
 -- See Note [Nested pattern scopes]
 foldPats
-  :: ( GTraversable Resolvable l
-     , Resolvable l
+  :: ( Resolvable l
      , Applicative w
      , SrcInfo l
      , D.Data l
@@ -59,7 +63,7 @@ foldPats pats sc =
         (ps', sc'') = foldPats ps sc'
       in ((:) <$> p' <*> ps', sc'')
 
-instance (GTraversable Resolvable l, SrcInfo l, D.Data l) => Resolvable (Match l) where
+instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (Match l) where
   rtraverse e sc =
     case e of
       Match l name pats rhs mbWhere ->
