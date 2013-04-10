@@ -29,6 +29,9 @@ Library
                         Language.Haskell.Modules.Flags
                         Language.Haskell.Modules.Annotated
 
+                        Language.Haskell.Modules.Open.Base
+                        Language.Haskell.Modules.Open.Instances
+                        Language.Haskell.Modules.Open.Derived
                         Language.Haskell.Modules.Recursive
                         Language.Haskell.Modules.ScopeCheckMonad
                         Language.Haskell.Modules.SyntaxUtils
