@@ -25,6 +25,9 @@ data Scope = Scope
 
 makeLens ''Scope
 
+initialScope :: Scope
+initialScope = Scope Global.empty Local.empty Reference
+
 newtype Alg w = Alg
   { runAlg :: forall d . Resolvable d => d -> Scope -> w d }
 
