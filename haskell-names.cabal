@@ -45,7 +45,10 @@ Library
 Executable gen-iface
   Default-Language: Haskell2010
   Build-depends:        base, containers, haskell-src-exts, haskell-names, haskell-packages, filepath, mtl, Cabal, hse-cpp
-  Main-is: gen-iface.hs
+  Hs-source-dirs:
+    gen-iface
+  Main-is:
+    gen-iface.hs
   Other-modules: Paths_haskell_names
 
 Test-suite test
