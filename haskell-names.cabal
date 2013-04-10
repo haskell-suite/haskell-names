@@ -26,6 +26,7 @@ Library
   Ghc-options:          -Wall -fno-warn-name-shadowing
 
   Exposed-modules:      Language.Haskell.Modules
+                        Language.Haskell.Modules.Open
                         Language.Haskell.Modules.Annotated
                         Language.Haskell.Modules.Interfaces
                         Language.Haskell.Modules.GlobalSymbolTable
