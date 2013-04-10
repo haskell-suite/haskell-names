@@ -31,7 +31,9 @@ getModules = do
   libraryIface <- getInterface mempty "tests/exports/Library.hs"
   return $ Map.singleton (convertModuleName "Library") libraryIface
 
+-----------------------------------------------------
 -- Export test: parse a source file, dump its symbols
+-----------------------------------------------------
 exportTest mods file =
   goldenVsFile file golden out run
   where
@@ -54,7 +56,9 @@ exportTests = do
   testFiles <- find (return True) (extension ==? ".hs") "tests/exports"
   return $ testGroup "exports" $ map (exportTest mods) testFiles
 
+----------------------------------------------------------
 -- Import test: parse a source file, dump its global table
+----------------------------------------------------------
 importTest mods file =
   goldenVsFile file golden out run
   where
