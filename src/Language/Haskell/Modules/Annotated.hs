@@ -10,11 +10,10 @@ module Language.Haskell.Modules.Annotated
 
 import Language.Haskell.Modules.Types
 import Language.Haskell.Modules.Open.Base
-import Language.Haskell.Modules.Open.Instances
+import Language.Haskell.Modules.Open.Instances ()
 import qualified Language.Haskell.Modules.GlobalSymbolTable as Global
 import qualified Language.Haskell.Modules.LocalSymbolTable as Local
 import Language.Haskell.Exts.Annotated
-import Data.Generics.Traversable
 import Data.Proxy
 import Data.Lens.Common
 import Data.Typeable

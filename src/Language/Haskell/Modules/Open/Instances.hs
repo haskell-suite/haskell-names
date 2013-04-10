@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -fno-warn-orphans #-}
 {-# LANGUAGE FlexibleContexts, FlexibleInstances, TemplateHaskell,
              MultiParamTypeClasses, UndecidableInstances, RankNTypes #-}
 {-# LANGUAGE ImplicitParams #-}
@@ -11,7 +12,6 @@ module Language.Haskell.Modules.Open.Instances where
 import Language.Haskell.Modules.Types
 import Language.Haskell.Modules.Open.Base
 import Language.Haskell.Modules.Open.Derived ()
-import Data.Generics.Traversable
 import Language.Haskell.Exts.Annotated
 import qualified Data.Data as D
 import Control.Applicative
@@ -26,6 +26,7 @@ c = pure
 (<|) k (b, sc) = k <*> alg b sc
 infixl 4 <|
 
+(-:) :: Scope -> a -> (a, Scope)
 sc -: b = (b, sc)
 infix 5 -:
 

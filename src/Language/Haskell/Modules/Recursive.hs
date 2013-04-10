@@ -14,7 +14,6 @@ import Language.Haskell.Modules.ScopeUtils
 import Language.Haskell.Modules.ModuleSymbols
 import Language.Haskell.Modules.Exports
 import Language.Haskell.Modules.Imports
-import Language.Haskell.Modules.ScopeCheckMonad
 import qualified Language.Haskell.Modules.GlobalSymbolTable as Global
 import qualified Language.Haskell.Modules.LocalSymbolTable  as Local
 import Language.Haskell.Modules.Open.Base

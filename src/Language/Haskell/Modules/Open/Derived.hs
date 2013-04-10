@@ -1,11 +1,9 @@
+{-# OPTIONS_GHC -fno-warn-orphans #-}
 {-# LANGUAGE TemplateHaskell, MultiParamTypeClasses, FlexibleInstances, ConstraintKinds, UndecidableInstances #-}
 module Language.Haskell.Modules.Open.Derived where
 
-import Language.Haskell.Modules.Open.Base
 import Language.Haskell.Exts.Annotated
-import Data.Generics.Traversable
 import Data.Generics.Traversable.TH
-import Control.Applicative
 
 deriveGTraversable ''ModuleName
 
