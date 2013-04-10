@@ -9,14 +9,10 @@ import Language.Haskell.Modules.Interfaces
 import Language.Haskell.Exts.Extension
 import Language.Haskell.Exts.SrcLoc
 import Language.Haskell.Exts.Annotated.CPP
-import Control.Applicative
 import Control.Monad
-import Control.Monad.Trans
 import Control.Exception
 import qualified Data.Map as Map
 import Data.Typeable
-import Data.Maybe
-import Data.List
 import System.FilePath
 import Text.Printf
 
