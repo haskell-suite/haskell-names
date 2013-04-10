@@ -6,8 +6,6 @@ import qualified Language.Haskell.Exts as UnAnn
 import Language.Haskell.Exts (defaultParseMode, ParseMode(..))
 import Language.Haskell.Modules
 import Language.Haskell.Modules.Interfaces
-import Language.Haskell.Modules.Flags
-import Language.Haskell.Modules.Types
 import Language.Haskell.Exts.Extension
 import Language.Haskell.Exts.SrcLoc
 import Language.Haskell.Exts.Annotated.CPP
