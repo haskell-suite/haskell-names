@@ -11,7 +11,7 @@ import Control.Applicative
 import Text.Show.Pretty
 
 import Language.Haskell.Exts.Annotated
-import Language.Haskell.Modules.Types
+import Language.Haskell.Modules
 import Language.Haskell.Modules.Exports
 import Language.Haskell.Modules.Imports
 import Language.Haskell.Modules.ModuleSymbols
