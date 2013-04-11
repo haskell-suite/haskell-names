@@ -14,6 +14,8 @@ import Language.Haskell.Exts.Annotated
 import Language.Haskell.Modules
 import Language.Haskell.Modules.Exports
 import Language.Haskell.Modules.Imports
+import Language.Haskell.Modules.Annotated
+import Language.Haskell.Modules.Open
 import Language.Haskell.Modules.ModuleSymbols
 import Language.Haskell.Modules.SyntaxUtils
 import qualified Language.Haskell.Modules.GlobalSymbolTable as Global
@@ -22,7 +24,7 @@ import qualified Distribution.ModuleName as Cabal
 
 main = defaultMain =<< tests
 
-tests = sequence [exportTests, importTests]
+tests = sequence [exportTests, importTests, annotationTests]
 
 parseAndPrepare file =
   return . fmap srcInfoSpan . fromParseResult =<< parseFile file
@@ -80,3 +82,19 @@ importTests = do
   mods <- getModules
   testFiles <- find (return True) (extension ==? ".hs") "tests/imports"
   return $ testGroup "imports" $ map (importTest mods) testFiles
+
+------------------------------------------------------------------
+-- Annotation test: parse the source, annotate it and pretty-print
+------------------------------------------------------------------
+annotationTest file = goldenVsFile file golden out run
+  where
+    golden = file <.> "golden"
+    out = file <.> "out"
+    run = do
+      mod <- parseAndPrepare file
+      let annotatedMod = annotate initialScope mod
+      writeFile out $ ppShow annotatedMod
+
+annotationTests = do
+  testFiles <- find (return True) (extension ==? ".hs") "tests/annotations"
+  return $ testGroup "imports" $ map annotationTest testFiles
