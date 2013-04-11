@@ -32,10 +32,13 @@ annotateRec
   :: forall a l .
      (Typeable l, Resolvable a)
   => Proxy l -> Scope -> a -> a
-annotateRec _ sc a
-  | Just (Eq :: QName (Scoped l) :~: a) <- dynamicEq
-    = lookupValue (fmap sLoc a) sc <$ a
-  | otherwise = a
+annotateRec _ sc a = go sc a where
+  go :: forall a . Resolvable a => Scope -> a -> a
+  go sc a
+    | Just (Eq :: QName (Scoped l) :~: a) <- dynamicEq
+      = lookupValue (fmap sLoc a) sc <$ a
+    | otherwise
+      = rmap go sc a
 
 lookupValue :: QName l -> Scope -> Scoped l
 lookupValue qn sc =
