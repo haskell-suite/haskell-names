@@ -35,6 +35,7 @@ annotateRec
 annotateRec _ sc a
   | Just (Eq :: QName (Scoped l) :~: a) <- dynamicEq
     = lookupValue (fmap sLoc a) sc <$ a
+  | otherwise = a
 
 lookupValue :: QName l -> Scope -> Scoped l
 lookupValue qn sc =
