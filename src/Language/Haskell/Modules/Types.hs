@@ -77,7 +77,7 @@ data Scoped l
     | Export      { sLoc :: l, exportSymbols :: Symbols }
     | None        { sLoc :: l }
     | ScopeError  { sLoc :: l, serr :: Error l }
-    deriving (Show, Typeable, Data)
+    deriving (Functor, Show, Typeable, Data)
 
 data Error l
   = ENotInScope (QName l) -- FIXME annotate with namespace (types/values)
