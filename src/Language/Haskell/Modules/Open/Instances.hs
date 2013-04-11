@@ -105,3 +105,7 @@ Example: f x (find (< x) -> Just y) = ...
 -- Some road-block Resolvable instances
 instance Typeable a => Resolvable (Scoped a) where
   rtraverse = flip $ const pure
+instance Resolvable SrcSpan where
+  rtraverse = flip $ const pure
+instance Resolvable SrcSpanInfo where
+  rtraverse = flip $ const pure
