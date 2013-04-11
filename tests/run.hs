@@ -93,7 +93,7 @@ annotationTest file = goldenVsFile file golden out run
     run = do
       mod <- parseAndPrepare file
       let annotatedMod = annotate initialScope mod
-      writeFile out $ ppShow annotatedMod
+      writeFile out $ ppShow $ fmap void annotatedMod
 
 annotationTests = do
   testFiles <- find (return True) (extension ==? ".hs") "tests/annotations"
