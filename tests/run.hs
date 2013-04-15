@@ -136,4 +136,4 @@ annotationTest file = goldenVsFile file golden out run
 
 annotationTests = do
   testFiles <- find (return True) (extension ==? ".hs") "tests/annotations"
-  return $ testGroup "imports" $ map annotationTest testFiles
+  return $ testGroup "annotations" $ map annotationTest testFiles
