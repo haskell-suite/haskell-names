@@ -81,6 +81,18 @@ instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (Match l) where
           <| scWithWhere -: rhs
           <| scWithPats  -: mbWhere
 
+-- NB: there is an inefficiency here (and in similar places), because we
+-- call intro on the same subtree several times. Maybe tackle it later.
+instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (Binds l) where
+  rtraverse e sc =
+    case e of
+      BDecls l decls ->
+        let scWithBinds = intro decls sc
+        in
+        c BDecls
+          <| sc          -: l
+          <| scWithBinds -: decls
+
 {-
 Note [Nested pattern scopes]
 ~~~~~~~~~~~~~~~~~~~~~~
