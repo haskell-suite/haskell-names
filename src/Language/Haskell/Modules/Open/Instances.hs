@@ -92,6 +92,19 @@ instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (Binds l) where
         c BDecls
           <| sc          -: l
           <| scWithBinds -: decls
+      _ -> defaultRtraverse e sc
+
+instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (Exp l) where
+  rtraverse e sc =
+    case e of
+      Let l bnds body ->
+        let scWithBinds = intro bnds sc
+        in
+        c Let
+          <| sc          -: l
+          <| scWithBinds -: bnds
+          <| scWithBinds -: body
+      _ -> defaultRtraverse e sc
 
 {-
 Note [Nested pattern scopes]
