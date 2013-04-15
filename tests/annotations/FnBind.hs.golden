@@ -24,3 +24,23 @@ LocalValue {sLoc = (), sDefLoc = SrcLoc {srcFilename = "tests/annotations/FnBind
 ScopeError {sLoc = (), serr = ENotInScope (UnQual () (Symbol () "+"))}
 z @ tests/annotations/FnBind.hs: (7:13) - (7:14)
 LocalValue {sLoc = (), sDefLoc = SrcLoc {srcFilename = "tests/annotations/FnBind.hs", srcLine = 6, srcColumn = 5}}
+x @ tests/annotations/FnBind.hs: (9:13) - (9:14)
+LocalValue {sLoc = (), sDefLoc = SrcLoc {srcFilename = "tests/annotations/FnBind.hs", srcLine = 9, srcColumn = 6}}
++ @ tests/annotations/FnBind.hs: (9:15) - (9:16)
+ScopeError {sLoc = (), serr = ENotInScope (UnQual () (Symbol () "+"))}
+y @ tests/annotations/FnBind.hs: (9:17) - (9:18)
+LocalValue {sLoc = (), sDefLoc = SrcLoc {srcFilename = "tests/annotations/FnBind.hs", srcLine = 9, srcColumn = 9}}
++ @ tests/annotations/FnBind.hs: (9:19) - (9:20)
+ScopeError {sLoc = (), serr = ENotInScope (UnQual () (Symbol () "+"))}
+z @ tests/annotations/FnBind.hs: (9:21) - (9:22)
+LocalValue {sLoc = (), sDefLoc = SrcLoc {srcFilename = "tests/annotations/FnBind.hs", srcLine = 9, srcColumn = 2}}
++ @ tests/annotations/FnBind.hs: (9:23) - (9:24)
+ScopeError {sLoc = (), serr = ENotInScope (UnQual () (Symbol () "+"))}
+t @ tests/annotations/FnBind.hs: (9:25) - (9:26)
+LocalValue {sLoc = (), sDefLoc = SrcLoc {srcFilename = "tests/annotations/FnBind.hs", srcLine = 11, srcColumn = 5}}
+y @ tests/annotations/FnBind.hs: (11:9) - (11:10)
+LocalValue {sLoc = (), sDefLoc = SrcLoc {srcFilename = "tests/annotations/FnBind.hs", srcLine = 9, srcColumn = 9}}
++ @ tests/annotations/FnBind.hs: (11:11) - (11:12)
+ScopeError {sLoc = (), serr = ENotInScope (UnQual () (Symbol () "+"))}
+z @ tests/annotations/FnBind.hs: (11:13) - (11:14)
+LocalValue {sLoc = (), sDefLoc = SrcLoc {srcFilename = "tests/annotations/FnBind.hs", srcLine = 9, srcColumn = 2}}
