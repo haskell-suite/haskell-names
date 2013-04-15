@@ -1,3 +1,5 @@
+{-# LANGUAGE FlexibleInstances, OverlappingInstances, ImplicitParams,
+             MultiParamTypeClasses #-}
 import Test.Framework hiding (defaultMain)
 import Test.Golden
 import Test.Golden.Console
@@ -9,6 +11,8 @@ import qualified Data.Map as Map
 import Control.Monad.Identity
 import Control.Applicative
 import Text.Show.Pretty
+import Text.Printf
+import qualified Data.Foldable as F
 
 import Language.Haskell.Exts.Annotated
 import Language.Haskell.Modules
@@ -21,6 +25,9 @@ import Language.Haskell.Modules.SyntaxUtils
 import qualified Language.Haskell.Modules.GlobalSymbolTable as Global
 import Distribution.HaskellSuite.Helpers
 import qualified Distribution.ModuleName as Cabal
+
+import Data.Generics.Traversable
+import Data.Proxy
 
 main = defaultMain =<< tests
 
@@ -86,6 +93,37 @@ importTests = do
 ------------------------------------------------------------------
 -- Annotation test: parse the source, annotate it and pretty-print
 ------------------------------------------------------------------
+class TestAnn a where
+  getAnn :: a -> Maybe (String, Scoped SrcSpan)
+
+instance TestAnn a where
+  getAnn = const Nothing
+
+instance TestAnn (QName (Scoped SrcSpan)) where
+  getAnn qn = Just (nameToString . qNameToName $ qn, ann qn)
+
+instance GTraversable (Rec TestAnn) (Scoped SrcSpan) where
+  gtraverse _ x = pure x
+
+printAnns
+  :: Rec TestAnn (a (Scoped SrcSpan))
+  => a (Scoped SrcSpan) -> String
+printAnns =
+  let ?c = Proxy :: Proxy (Rec TestAnn) in
+  let
+    -- format one annotation
+    one :: TestAnn a => a -> String
+    one a =
+      flip F.foldMap (getAnn a) $ \(name, scpd) ->
+        printf "%s @ %s\n%s\n"
+          name
+          (prettyPrint $ sLoc scpd)
+          (show $ void scpd)
+    -- tie the knot
+    go :: Rec TestAnn a => a -> String
+    go a = one a ++ gfoldMap go a
+  in go
+
 annotationTest file = goldenVsFile file golden out run
   where
     golden = file <.> "golden"
@@ -93,7 +131,8 @@ annotationTest file = goldenVsFile file golden out run
     run = do
       mod <- parseAndPrepare file
       let annotatedMod = annotate initialScope mod
-      writeFile out $ ppShow $ fmap void annotatedMod
+      -- writeFile out $ ppShow $ fmap void annotatedMod
+      writeFile out $ printAnns annotatedMod
 
 annotationTests = do
   testFiles <- find (return True) (extension ==? ".hs") "tests/annotations"
