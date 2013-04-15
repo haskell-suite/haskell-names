@@ -80,6 +80,13 @@ instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (Match l) where
           <*> pats' -- has been already traversed
           <| scWithWhere -: rhs
           <| scWithPats  -: mbWhere
+      InfixMatch l pat1 name patsRest rhs mbWhere ->
+        let
+          equivalentMatch = Match l name (pat1:patsRest) rhs mbWhere
+          back (Match l name (pat1:patsRest) rhs mbWhere) =
+            InfixMatch l pat1 name patsRest rhs mbWhere
+          back _ = error "InfixMatch"
+        in back <$> rtraverse equivalentMatch sc
 
 -- NB: there is an inefficiency here (and in similar places), because we
 -- call intro on the same subtree several times. Maybe tackle it later.
