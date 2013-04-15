@@ -1,7 +1,6 @@
 Name:                   haskell-names
 Version:                0.1
 License:                BSD3
---License-File:           LICENSE
 Author:                 Roman Cheplyaka, Lennart Augustsson
 Maintainer:             Roman Cheplyaka <roma@ro-che.info>
 Category:               Language
@@ -15,7 +14,6 @@ Description:            This is an addon to Haskell-Source with Extensions (HSE,
                         .
                         * Using symbol fixities to do the final parsing.
 Stability:              Experimental
-Tested-with:            GHC==6.12.1
 Build-Type:             Simple
 Cabal-Version:          >= 1.10
 
@@ -44,14 +42,6 @@ Library
                         Language.Haskell.Modules.ScopeCheckMonad
                         Language.Haskell.Modules.Types
                         Language.Haskell.Modules.ScopeUtils
-Executable gen-iface
-  Default-Language: Haskell2010
-  Build-depends:        base, containers, haskell-src-exts, haskell-names, haskell-packages, filepath, mtl, Cabal, hse-cpp
-  Hs-source-dirs:
-    gen-iface
-  Main-is:
-    gen-iface.hs
-  Other-modules: Paths_haskell_names
 
 Test-suite test
   Default-Language: Haskell2010

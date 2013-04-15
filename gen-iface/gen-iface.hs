@@ -22,7 +22,7 @@ import Distribution.Verbosity
 import Distribution.HaskellSuite.Tool
 import Distribution.HaskellSuite.Cabal
 import Distribution.HaskellSuite.Helpers
-import Paths_haskell_names
+import Paths_gen_iface
 
 data GenIfaceException
   = ParseError HSE.SrcLoc String

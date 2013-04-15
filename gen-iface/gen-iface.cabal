@@ -1,0 +1,27 @@
+Name:                   gen-iface
+Version:                0.1
+License:                BSD3
+Author:                 Roman Cheplyaka
+Maintainer:             Roman Cheplyaka <roma@ro-che.info>
+Category:               Language
+Synopsis:               Utility to generate haskell-names interface files
+Stability:              Experimental
+Build-Type:             Simple
+Cabal-Version:          >= 1.10
+
+Executable gen-iface
+  Default-Language: Haskell2010
+  Build-depends:
+    base,
+    containers,
+    haskell-src-exts,
+    haskell-names,
+    haskell-packages,
+    filepath,
+    mtl,
+    Cabal,
+    hse-cpp
+  Main-is:
+    gen-iface.hs
+  Other-modules:
+    Paths_gen_iface
