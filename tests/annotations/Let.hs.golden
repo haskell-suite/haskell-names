@@ -1,0 +1,10 @@
+x @ tests/annotations/Let.hs: (9:6) - (9:7)
+LocalValue {sLoc = (), sDefLoc = SrcLoc {srcFilename = "tests/annotations/Let.hs", srcLine = 4, srcColumn = 7}}
++ @ tests/annotations/Let.hs: (9:8) - (9:9)
+ScopeError {sLoc = (), serr = ENotInScope (UnQual () (Symbol () "+"))}
+y @ tests/annotations/Let.hs: (9:10) - (9:11)
+LocalValue {sLoc = (), sDefLoc = SrcLoc {srcFilename = "tests/annotations/Let.hs", srcLine = 8, srcColumn = 7}}
++ @ tests/annotations/Let.hs: (9:12) - (9:13)
+ScopeError {sLoc = (), serr = ENotInScope (UnQual () (Symbol () "+"))}
+z @ tests/annotations/Let.hs: (9:14) - (9:15)
+LocalValue {sLoc = (), sDefLoc = SrcLoc {srcFilename = "tests/annotations/Let.hs", srcLine = 7, srcColumn = 7}}
