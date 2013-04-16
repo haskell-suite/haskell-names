@@ -1,0 +1,4 @@
+x @ tests/annotations/Lambda.hs: (3:13) - (3:14)
+LocalValue {sLoc = (), sDefLoc = SrcLoc {srcFilename = "tests/annotations/Lambda.hs", srcLine = 3, srcColumn = 6}}
+y @ tests/annotations/Lambda.hs: (3:15) - (3:16)
+LocalValue {sLoc = (), sDefLoc = SrcLoc {srcFilename = "tests/annotations/Lambda.hs", srcLine = 3, srcColumn = 8}}
