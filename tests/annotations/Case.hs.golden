@@ -1,0 +1,18 @@
+x @ tests/annotations/Case.hs: (3:12) - (3:13)
+LocalValue {sLoc = (), sDefLoc = SrcLoc {srcFilename = "tests/annotations/Case.hs", srcLine = 3, srcColumn = 3}}
+Right @ tests/annotations/Case.hs: (4:3) - (4:8)
+ScopeError {sLoc = (), serr = ENotInScope (UnQual () (Ident () "Right"))}
+a @ tests/annotations/Case.hs: (4:20) - (4:21)
+LocalValue {sLoc = (), sDefLoc = SrcLoc {srcFilename = "tests/annotations/Case.hs", srcLine = 4, srcColumn = 10}}
+b @ tests/annotations/Case.hs: (4:22) - (4:23)
+LocalValue {sLoc = (), sDefLoc = SrcLoc {srcFilename = "tests/annotations/Case.hs", srcLine = 4, srcColumn = 12}}
+c @ tests/annotations/Case.hs: (4:24) - (4:25)
+LocalValue {sLoc = (), sDefLoc = SrcLoc {srcFilename = "tests/annotations/Case.hs", srcLine = 4, srcColumn = 14}}
+Left @ tests/annotations/Case.hs: (5:3) - (5:7)
+ScopeError {sLoc = (), serr = ENotInScope (UnQual () (Ident () "Left"))}
+Left @ tests/annotations/Case.hs: (6:3) - (6:7)
+ScopeError {sLoc = (), serr = ENotInScope (UnQual () (Ident () "Left"))}
+a @ tests/annotations/Case.hs: (6:13) - (6:14)
+ScopeError {sLoc = (), serr = ENotInScope (UnQual () (Ident () "a"))}
+y @ tests/annotations/Case.hs: (6:15) - (6:16)
+LocalValue {sLoc = (), sDefLoc = SrcLoc {srcFilename = "tests/annotations/Case.hs", srcLine = 6, srcColumn = 8}}
