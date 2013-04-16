@@ -5,5 +5,8 @@ b        at 6:22 is a local value defined at 6:12
 c        at 6:24 is a local value defined at 6:14
 Left     at  7:3 is not in scope
 Left     at  8:3 is not in scope
-a        at 8:13 is not in scope
-y        at 8:15 is a local value defined at 8:8
+t        at 8:13 is a local value defined at 10:7
+a        at 8:15 is not in scope
+y        at 8:17 is a local value defined at 8:8
+y        at 10:11 is a local value defined at 8:8
+x        at 10:13 is a local value defined at 5:3
