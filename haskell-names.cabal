@@ -39,7 +39,6 @@ Library
                         Language.Haskell.Modules.Open.Instances
                         Language.Haskell.Modules.Open.Derived
                         Language.Haskell.Modules.Recursive
-                        Language.Haskell.Modules.ScopeCheckMonad
                         Language.Haskell.Modules.Types
                         Language.Haskell.Modules.ScopeUtils
 
