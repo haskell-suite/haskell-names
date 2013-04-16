@@ -120,6 +120,20 @@ instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (Exp l) where
           <|  scWithPats -: body
       _ -> defaultRtraverse e sc
 
+instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (Alt l) where
+  rtraverse e sc =
+    case e of
+      Alt l pat guardedAlts mbWhere ->
+        let
+          scWithPat = intro pat sc
+          scWithBinds = intro mbWhere scWithPat
+        in
+        c Alt
+          <| sc -: l
+          <| sc -: pat
+          <| scWithBinds -: guardedAlts
+          <| scWithBinds -: mbWhere
+
 {-
 Note [Nested pattern scopes]
 ~~~~~~~~~~~~~~~~~~~~~~
