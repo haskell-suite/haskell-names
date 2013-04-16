@@ -114,11 +114,7 @@ printAnns =
     -- format one annotation
     one :: TestAnn a => a -> String
     one a =
-      flip F.foldMap (getAnn a) $ \(name, scpd) ->
-        printf "%s @ %s\n%s\n"
-          name
-          (prettyPrint $ sLoc scpd)
-          (show $ void scpd)
+      flip F.foldMap (getAnn a) $ uncurry formatAnn
     -- tie the knot
     go :: Rec TestAnn a => a -> String
     go a = one a ++ gfoldMap go a
@@ -137,3 +133,25 @@ annotationTest file = goldenVsFile file golden out run
 annotationTests = do
   testFiles <- find (return True) (extension ==? ".hs") "tests/annotations"
   return $ testGroup "annotations" $ map annotationTest testFiles
+
+-----------------------
+-- Formatting utilities
+-----------------------
+formatLoc :: SrcInfo l => l -> String
+formatLoc srcInfo =
+  let loc = getPointLoc srcInfo in
+  printf "%d:%d"
+    (srcLine   loc)
+    (srcColumn loc)
+
+formatScoped :: Scoped SrcSpan -> String
+formatScoped LocalValue { sDefLoc = loc } =
+  printf "a local value defined at %s" $ formatLoc loc
+formatScoped ScopeError { serr = ENotInScope {} } = "not in scope"
+
+formatAnn :: String -> Scoped SrcSpan -> String
+formatAnn name scpd =
+  printf "%-8s at %4s is %s\n"
+    name
+    (formatLoc $ sLoc scpd)
+    (formatScoped scpd)
