@@ -1,46 +1,23 @@
-x @ tests/annotations/FnBind.hs: (3:9) - (3:10)
-LocalValue {sLoc = (), sDefLoc = SrcLoc {srcFilename = "tests/annotations/FnBind.hs", srcLine = 3, srcColumn = 3}}
-+ @ tests/annotations/FnBind.hs: (3:11) - (3:12)
-ScopeError {sLoc = (), serr = ENotInScope (UnQual () (Symbol () "+"))}
-y @ tests/annotations/FnBind.hs: (3:13) - (3:14)
-LocalValue {sLoc = (), sDefLoc = SrcLoc {srcFilename = "tests/annotations/FnBind.hs", srcLine = 3, srcColumn = 5}}
-+ @ tests/annotations/FnBind.hs: (3:15) - (3:16)
-ScopeError {sLoc = (), serr = ENotInScope (UnQual () (Symbol () "+"))}
-z @ tests/annotations/FnBind.hs: (3:17) - (3:18)
-LocalValue {sLoc = (), sDefLoc = SrcLoc {srcFilename = "tests/annotations/FnBind.hs", srcLine = 6, srcColumn = 5}}
-+ @ tests/annotations/FnBind.hs: (3:19) - (3:20)
-ScopeError {sLoc = (), serr = ENotInScope (UnQual () (Symbol () "+"))}
-t @ tests/annotations/FnBind.hs: (3:21) - (3:22)
-LocalValue {sLoc = (), sDefLoc = SrcLoc {srcFilename = "tests/annotations/FnBind.hs", srcLine = 7, srcColumn = 5}}
-x @ tests/annotations/FnBind.hs: (6:9) - (6:10)
-LocalValue {sLoc = (), sDefLoc = SrcLoc {srcFilename = "tests/annotations/FnBind.hs", srcLine = 3, srcColumn = 3}}
-+ @ tests/annotations/FnBind.hs: (6:11) - (6:12)
-ScopeError {sLoc = (), serr = ENotInScope (UnQual () (Symbol () "+"))}
-t @ tests/annotations/FnBind.hs: (6:13) - (6:14)
-LocalValue {sLoc = (), sDefLoc = SrcLoc {srcFilename = "tests/annotations/FnBind.hs", srcLine = 7, srcColumn = 5}}
-y @ tests/annotations/FnBind.hs: (7:9) - (7:10)
-LocalValue {sLoc = (), sDefLoc = SrcLoc {srcFilename = "tests/annotations/FnBind.hs", srcLine = 3, srcColumn = 5}}
-+ @ tests/annotations/FnBind.hs: (7:11) - (7:12)
-ScopeError {sLoc = (), serr = ENotInScope (UnQual () (Symbol () "+"))}
-z @ tests/annotations/FnBind.hs: (7:13) - (7:14)
-LocalValue {sLoc = (), sDefLoc = SrcLoc {srcFilename = "tests/annotations/FnBind.hs", srcLine = 6, srcColumn = 5}}
-x @ tests/annotations/FnBind.hs: (9:13) - (9:14)
-LocalValue {sLoc = (), sDefLoc = SrcLoc {srcFilename = "tests/annotations/FnBind.hs", srcLine = 9, srcColumn = 6}}
-+ @ tests/annotations/FnBind.hs: (9:15) - (9:16)
-ScopeError {sLoc = (), serr = ENotInScope (UnQual () (Symbol () "+"))}
-y @ tests/annotations/FnBind.hs: (9:17) - (9:18)
-LocalValue {sLoc = (), sDefLoc = SrcLoc {srcFilename = "tests/annotations/FnBind.hs", srcLine = 9, srcColumn = 9}}
-+ @ tests/annotations/FnBind.hs: (9:19) - (9:20)
-ScopeError {sLoc = (), serr = ENotInScope (UnQual () (Symbol () "+"))}
-z @ tests/annotations/FnBind.hs: (9:21) - (9:22)
-LocalValue {sLoc = (), sDefLoc = SrcLoc {srcFilename = "tests/annotations/FnBind.hs", srcLine = 9, srcColumn = 2}}
-+ @ tests/annotations/FnBind.hs: (9:23) - (9:24)
-ScopeError {sLoc = (), serr = ENotInScope (UnQual () (Symbol () "+"))}
-t @ tests/annotations/FnBind.hs: (9:25) - (9:26)
-LocalValue {sLoc = (), sDefLoc = SrcLoc {srcFilename = "tests/annotations/FnBind.hs", srcLine = 11, srcColumn = 5}}
-y @ tests/annotations/FnBind.hs: (11:9) - (11:10)
-LocalValue {sLoc = (), sDefLoc = SrcLoc {srcFilename = "tests/annotations/FnBind.hs", srcLine = 9, srcColumn = 9}}
-+ @ tests/annotations/FnBind.hs: (11:11) - (11:12)
-ScopeError {sLoc = (), serr = ENotInScope (UnQual () (Symbol () "+"))}
-z @ tests/annotations/FnBind.hs: (11:13) - (11:14)
-LocalValue {sLoc = (), sDefLoc = SrcLoc {srcFilename = "tests/annotations/FnBind.hs", srcLine = 9, srcColumn = 2}}
+x        at  3:9 is a local value defined at 3:3
++        at 3:11 is not in scope
+y        at 3:13 is a local value defined at 3:5
++        at 3:15 is not in scope
+z        at 3:17 is a local value defined at 6:5
++        at 3:19 is not in scope
+t        at 3:21 is a local value defined at 7:5
+x        at  6:9 is a local value defined at 3:3
++        at 6:11 is not in scope
+t        at 6:13 is a local value defined at 7:5
+y        at  7:9 is a local value defined at 3:5
++        at 7:11 is not in scope
+z        at 7:13 is a local value defined at 6:5
+x        at 9:13 is a local value defined at 9:6
++        at 9:15 is not in scope
+y        at 9:17 is a local value defined at 9:9
++        at 9:19 is not in scope
+z        at 9:21 is a local value defined at 9:2
++        at 9:23 is not in scope
+t        at 9:25 is a local value defined at 11:5
+y        at 11:9 is a local value defined at 9:9
++        at 11:11 is not in scope
+z        at 11:13 is a local value defined at 9:2

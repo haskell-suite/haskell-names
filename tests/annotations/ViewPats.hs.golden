@@ -1,10 +1,5 @@
-y @ tests/annotations/ViewPats.hs: (4:4) - (4:5)
-ScopeError {sLoc = (), serr = ENotInScope (UnQual () (Ident () "y"))}
-x @ tests/annotations/ViewPats.hs: (4:15) - (4:16)
-LocalValue {sLoc = (), sDefLoc = SrcLoc {srcFilename = "tests/annotations/ViewPats.hs", srcLine = 4, srcColumn = 9}}
-x @ tests/annotations/ViewPats.hs: (5:3) - (5:4)
-LocalValue {sLoc = (), sDefLoc = SrcLoc {srcFilename = "tests/annotations/ViewPats.hs", srcLine = 4, srcColumn = 9}}
-y @ tests/annotations/ViewPats.hs: (6:3) - (6:4)
-LocalValue {sLoc = (), sDefLoc = SrcLoc {srcFilename = "tests/annotations/ViewPats.hs", srcLine = 4, srcColumn = 20}}
-z @ tests/annotations/ViewPats.hs: (7:3) - (7:4)
-LocalValue {sLoc = (), sDefLoc = SrcLoc {srcFilename = "tests/annotations/ViewPats.hs", srcLine = 4, srcColumn = 12}}
+y        at  4:4 is not in scope
+x        at 4:15 is a local value defined at 4:9
+x        at  5:3 is a local value defined at 4:9
+y        at  6:3 is a local value defined at 4:20
+z        at  7:3 is a local value defined at 4:12

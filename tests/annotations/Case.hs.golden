@@ -1,18 +1,9 @@
-x @ tests/annotations/Case.hs: (5:12) - (5:13)
-LocalValue {sLoc = (), sDefLoc = SrcLoc {srcFilename = "tests/annotations/Case.hs", srcLine = 5, srcColumn = 3}}
-Right @ tests/annotations/Case.hs: (6:3) - (6:8)
-ScopeError {sLoc = (), serr = ENotInScope (UnQual () (Ident () "Right"))}
-a @ tests/annotations/Case.hs: (6:20) - (6:21)
-LocalValue {sLoc = (), sDefLoc = SrcLoc {srcFilename = "tests/annotations/Case.hs", srcLine = 6, srcColumn = 10}}
-b @ tests/annotations/Case.hs: (6:22) - (6:23)
-LocalValue {sLoc = (), sDefLoc = SrcLoc {srcFilename = "tests/annotations/Case.hs", srcLine = 6, srcColumn = 12}}
-c @ tests/annotations/Case.hs: (6:24) - (6:25)
-LocalValue {sLoc = (), sDefLoc = SrcLoc {srcFilename = "tests/annotations/Case.hs", srcLine = 6, srcColumn = 14}}
-Left @ tests/annotations/Case.hs: (7:3) - (7:7)
-ScopeError {sLoc = (), serr = ENotInScope (UnQual () (Ident () "Left"))}
-Left @ tests/annotations/Case.hs: (8:3) - (8:7)
-ScopeError {sLoc = (), serr = ENotInScope (UnQual () (Ident () "Left"))}
-a @ tests/annotations/Case.hs: (8:13) - (8:14)
-ScopeError {sLoc = (), serr = ENotInScope (UnQual () (Ident () "a"))}
-y @ tests/annotations/Case.hs: (8:15) - (8:16)
-LocalValue {sLoc = (), sDefLoc = SrcLoc {srcFilename = "tests/annotations/Case.hs", srcLine = 8, srcColumn = 8}}
+x        at 5:12 is a local value defined at 5:3
+Right    at  6:3 is not in scope
+a        at 6:20 is a local value defined at 6:10
+b        at 6:22 is a local value defined at 6:12
+c        at 6:24 is a local value defined at 6:14
+Left     at  7:3 is not in scope
+Left     at  8:3 is not in scope
+a        at 8:13 is not in scope
+y        at 8:15 is a local value defined at 8:8
