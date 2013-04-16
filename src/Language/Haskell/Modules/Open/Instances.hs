@@ -111,6 +111,13 @@ instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (Exp l) where
           <| sc          -: l
           <| scWithBinds -: bnds
           <| scWithBinds -: body
+      Lambda l pats body ->
+        let (pats', scWithPats) = foldPats pats sc
+        in
+        c Lambda
+          <|  sc         -: l
+          <*> pats'
+          <|  scWithPats -: body
       _ -> defaultRtraverse e sc
 
 {-
