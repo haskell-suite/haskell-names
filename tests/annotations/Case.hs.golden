@@ -1,18 +1,18 @@
-x @ tests/annotations/Case.hs: (3:12) - (3:13)
-LocalValue {sLoc = (), sDefLoc = SrcLoc {srcFilename = "tests/annotations/Case.hs", srcLine = 3, srcColumn = 3}}
-Right @ tests/annotations/Case.hs: (4:3) - (4:8)
+x @ tests/annotations/Case.hs: (5:12) - (5:13)
+LocalValue {sLoc = (), sDefLoc = SrcLoc {srcFilename = "tests/annotations/Case.hs", srcLine = 5, srcColumn = 3}}
+Right @ tests/annotations/Case.hs: (6:3) - (6:8)
 ScopeError {sLoc = (), serr = ENotInScope (UnQual () (Ident () "Right"))}
-a @ tests/annotations/Case.hs: (4:20) - (4:21)
-LocalValue {sLoc = (), sDefLoc = SrcLoc {srcFilename = "tests/annotations/Case.hs", srcLine = 4, srcColumn = 10}}
-b @ tests/annotations/Case.hs: (4:22) - (4:23)
-LocalValue {sLoc = (), sDefLoc = SrcLoc {srcFilename = "tests/annotations/Case.hs", srcLine = 4, srcColumn = 12}}
-c @ tests/annotations/Case.hs: (4:24) - (4:25)
-LocalValue {sLoc = (), sDefLoc = SrcLoc {srcFilename = "tests/annotations/Case.hs", srcLine = 4, srcColumn = 14}}
-Left @ tests/annotations/Case.hs: (5:3) - (5:7)
+a @ tests/annotations/Case.hs: (6:20) - (6:21)
+LocalValue {sLoc = (), sDefLoc = SrcLoc {srcFilename = "tests/annotations/Case.hs", srcLine = 6, srcColumn = 10}}
+b @ tests/annotations/Case.hs: (6:22) - (6:23)
+LocalValue {sLoc = (), sDefLoc = SrcLoc {srcFilename = "tests/annotations/Case.hs", srcLine = 6, srcColumn = 12}}
+c @ tests/annotations/Case.hs: (6:24) - (6:25)
+LocalValue {sLoc = (), sDefLoc = SrcLoc {srcFilename = "tests/annotations/Case.hs", srcLine = 6, srcColumn = 14}}
+Left @ tests/annotations/Case.hs: (7:3) - (7:7)
 ScopeError {sLoc = (), serr = ENotInScope (UnQual () (Ident () "Left"))}
-Left @ tests/annotations/Case.hs: (6:3) - (6:7)
+Left @ tests/annotations/Case.hs: (8:3) - (8:7)
 ScopeError {sLoc = (), serr = ENotInScope (UnQual () (Ident () "Left"))}
-a @ tests/annotations/Case.hs: (6:13) - (6:14)
+a @ tests/annotations/Case.hs: (8:13) - (8:14)
 ScopeError {sLoc = (), serr = ENotInScope (UnQual () (Ident () "a"))}
-y @ tests/annotations/Case.hs: (6:15) - (6:16)
-LocalValue {sLoc = (), sDefLoc = SrcLoc {srcFilename = "tests/annotations/Case.hs", srcLine = 6, srcColumn = 8}}
+y @ tests/annotations/Case.hs: (8:15) - (8:16)
+LocalValue {sLoc = (), sDefLoc = SrcLoc {srcFilename = "tests/annotations/Case.hs", srcLine = 8, srcColumn = 8}}
