@@ -76,6 +76,7 @@ getDeclHeadName = fst . splitDeclHead . fromMaybe (error "getDeclHeadName") . ge
 class GetBound a l | a -> l where
     getBound :: a -> [Name l]
 
+-- XXX account for shadowing?
 instance (GetBound a l) => GetBound [a] l where
     getBound xs = concatMap getBound xs
 
