@@ -12,6 +12,7 @@ module Language.Haskell.Modules.Open.Instances where
 import Language.Haskell.Modules.Types
 import Language.Haskell.Modules.Open.Base
 import Language.Haskell.Modules.Open.Derived ()
+import Language.Haskell.Modules.SyntaxUtils
 import Language.Haskell.Exts.Annotated
 import qualified Data.Data as D
 import Control.Applicative
@@ -46,22 +47,25 @@ instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (Decl l) where
           <| scWithPat   -: mbWhere
       _ -> defaultRtraverse e sc
 
--- See Note [Nested pattern scopes]
-foldPats
-  :: ( Resolvable l
+-- | Chain a sequence of nodes where every node may introduce some
+-- variables into scope for the subsequent nodes. Examples: patterns (see
+-- note [Nested pattern scopes]), statements.
+chain
+  :: ( Resolvable (a l)
+     , GetBound (a l) l
      , Applicative w
      , SrcInfo l
      , D.Data l
      , ?alg :: Alg w)
-  => [Pat l] -> Scope -> (w [Pat l], Scope)
-foldPats pats sc =
+  => [a l] -> Scope -> (w [a l], Scope)
+chain pats sc =
   case pats of
     [] -> (pure [], sc)
     p:ps ->
       let
         sc' = intro p sc
         p' = alg p sc
-        (ps', sc'') = foldPats ps sc'
+        (ps', sc'') = chain ps sc'
       in ((:) <$> p' <*> ps', sc'')
 
 instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (Match l) where
@@ -71,7 +75,7 @@ instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (Match l) where
         -- f x y z = ...
         --   where ...
         let
-          (pats', scWithPats) = foldPats pats sc
+          (pats', scWithPats) = chain pats sc
           scWithWhere = intro mbWhere scWithPats
         in
         c Match
@@ -112,7 +116,7 @@ instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (Exp l) where
           <| scWithBinds -: bnds
           <| scWithBinds -: body
       Lambda l pats body ->
-        let (pats', scWithPats) = foldPats pats sc
+        let (pats', scWithPats) = chain pats sc
         in
         c Lambda
           <|  sc         -: l
