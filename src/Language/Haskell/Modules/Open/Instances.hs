@@ -115,6 +115,7 @@ instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (Exp l) where
           <| sc          -: l
           <| scWithBinds -: bnds
           <| scWithBinds -: body
+
       Lambda l pats body ->
         let (pats', scWithPats) = chain pats sc
         in
@@ -122,6 +123,7 @@ instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (Exp l) where
           <|  sc         -: l
           <*> pats'
           <|  scWithPats -: body
+
       ListComp l e stmts ->
         let (stmts', scWithStmts) = chain stmts sc
         in
@@ -129,7 +131,9 @@ instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (Exp l) where
           <|  sc -: l
           <|  scWithStmts -: e
           <*> stmts'
+
       ParComp {} -> error "haskell-names: parallel list comprehensions are not supported yet"
+
       _ -> defaultRtraverse e sc
 
 instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (Alt l) where
