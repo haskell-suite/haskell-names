@@ -147,6 +147,14 @@ instance (Data l) => GetBound (Match l) l where
     getBound (Match _ n _ _ _) = [n]
     getBound (InfixMatch _ _ n _ _ _) = [n]
 
+instance (Data l) => GetBound (Stmt l) l where
+  getBound e =
+    case e of
+      Generator _ pat _ -> getBound pat
+      LetStmt _ bnds    -> getBound bnds
+      RecStmt _ stmts   -> getBound stmts
+      Qualifier {} -> []
+
 getBoundSign :: Decl l -> [Name l]
 getBoundSign (TypeSig _ ns _) = ns
 getBoundSign _ = []
