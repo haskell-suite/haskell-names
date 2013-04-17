@@ -160,6 +160,10 @@ instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (GuardedRhs l) where
           <*> stmts'
           <|  scWithStmts -: exp
 
+instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable [Stmt l] where
+  rtraverse e sc =
+    fst $ chain e sc
+
 {-
 Note [Nested pattern scopes]
 ~~~~~~~~~~~~~~~~~~~~~~
