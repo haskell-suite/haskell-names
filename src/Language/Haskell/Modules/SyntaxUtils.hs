@@ -155,6 +155,12 @@ instance (Data l) => GetBound (Stmt l) l where
       RecStmt _ stmts   -> getBound stmts
       Qualifier {} -> []
 
+instance (Data l) => GetBound (QualStmt l) l where
+  getBound e =
+    case e of
+      QualStmt _ stmt -> getBound stmt
+      _ -> []
+
 getBoundSign :: Decl l -> [Name l]
 getBoundSign (TypeSig _ ns _) = ns
 getBoundSign _ = []
