@@ -138,6 +138,17 @@ instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (Alt l) where
           <| scWithBinds -: guardedAlts
           <| scWithBinds -: mbWhere
 
+instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (GuardedAlt l) where
+  rtraverse e sc =
+    case e of
+      GuardedAlt l stmts exp ->
+        let (stmts', scWithStmts) = chain stmts sc
+        in
+        c GuardedAlt
+          <|  sc -: l
+          <*> stmts'
+          <|  scWithStmts -: exp
+
 {-
 Note [Nested pattern scopes]
 ~~~~~~~~~~~~~~~~~~~~~~
