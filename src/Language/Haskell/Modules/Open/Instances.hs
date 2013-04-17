@@ -134,6 +134,14 @@ instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (Exp l) where
 
       ParComp {} -> error "haskell-names: parallel list comprehensions are not supported yet"
 
+      Proc l pat e ->
+        let scWithPat = intro pat sc
+        in
+        c Proc
+          <| sc -: l
+          <| sc -: pat
+          <| scWithPat -: e
+
       _ -> defaultRtraverse e sc
 
 instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (Alt l) where
