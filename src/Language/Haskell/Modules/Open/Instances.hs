@@ -122,6 +122,14 @@ instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (Exp l) where
           <|  sc         -: l
           <*> pats'
           <|  scWithPats -: body
+      ListComp l e stmts ->
+        let (stmts', scWithStmts) = chain stmts sc
+        in
+        c ListComp
+          <|  sc -: l
+          <|  scWithStmts -: e
+          <*> stmts'
+      ParComp {} -> error "haskell-names: parallel list comprehensions are not supported yet"
       _ -> defaultRtraverse e sc
 
 instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (Alt l) where
@@ -163,6 +171,12 @@ instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (GuardedRhs l) where
 instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable [Stmt l] where
   rtraverse e sc =
     fst $ chain e sc
+
+instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (QualStmt l) where
+  rtraverse e sc =
+    case e of
+      QualStmt {} -> defaultRtraverse e sc
+      _ -> error "haskell-names: TransformListComp is not supported yet"
 
 {-
 Note [Nested pattern scopes]
