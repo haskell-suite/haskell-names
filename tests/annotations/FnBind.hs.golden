@@ -1,23 +1,14 @@
 x        at  3:9 is a local value defined at 3:3
-+        at 3:11 is not in scope
-y        at 3:13 is a local value defined at 3:5
-+        at 3:15 is not in scope
-z        at 3:17 is a local value defined at 6:5
-+        at 3:19 is not in scope
-t        at 3:21 is a local value defined at 7:5
+y        at 3:11 is a local value defined at 3:5
+z        at 3:13 is a local value defined at 6:5
+t        at 3:15 is a local value defined at 7:5
 x        at  6:9 is a local value defined at 3:3
-+        at 6:11 is not in scope
-t        at 6:13 is a local value defined at 7:5
+t        at 6:11 is a local value defined at 7:5
 y        at  7:9 is a local value defined at 3:5
-+        at 7:11 is not in scope
-z        at 7:13 is a local value defined at 6:5
+z        at 7:11 is a local value defined at 6:5
 x        at 9:13 is a local value defined at 9:6
-+        at 9:15 is not in scope
-y        at 9:17 is a local value defined at 9:9
-+        at 9:19 is not in scope
-z        at 9:21 is a local value defined at 9:2
-+        at 9:23 is not in scope
-t        at 9:25 is a local value defined at 11:5
+y        at 9:15 is a local value defined at 9:9
+z        at 9:17 is a local value defined at 9:2
+t        at 9:19 is a local value defined at 11:5
 y        at 11:9 is a local value defined at 9:9
-+        at 11:11 is not in scope
-z        at 11:13 is a local value defined at 9:2
+z        at 11:11 is a local value defined at 9:2

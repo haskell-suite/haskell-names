@@ -6,4 +6,4 @@ a =
   in let
       z = 4
       y = 2
-  in x + y + z
+  in x y z
