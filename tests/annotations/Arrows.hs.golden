@@ -1,0 +1,6 @@
+y        at  5:8 is a local value defined at 4:3
+z        at 5:13 is a local value defined at 4:12
+y        at  6:8 is a local value defined at 4:3
+a        at 6:13 is a local value defined at 5:3
+y        at  7:3 is a local value defined at 4:3
+b        at  7:8 is a local value defined at 6:3
