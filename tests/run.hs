@@ -55,7 +55,9 @@ exportTest mods file =
 getInterface :: Map.Map Cabal.ModuleName Symbols -> FilePath -> IO Symbols
 getInterface mods file = do
   mod <- parseAndPrepare file
-  let mExps = snd <$> processExports (moduleTable mod) mod
+  let mExps = do
+        importedSyms <- snd <$> processImports (getImports mod)
+        snd <$> processExports (moduleTable mod <> importedSyms) mod
       exps = runIdentity $
         evalModuleT mExps [] (error "retrieve") mods
   return exps
