@@ -22,6 +22,9 @@ import Distribution.Verbosity
 import Distribution.HaskellSuite.Tool
 import Distribution.HaskellSuite.Cabal
 import Distribution.HaskellSuite.Helpers
+import Distribution.Simple.Compiler (PackageDB)
+import Distribution.Package (InstalledPackageId)
+
 import Paths_gen_iface
 
 data GenIfaceException
@@ -40,12 +43,14 @@ fromParseResult :: HSE.ParseResult a -> IO a
 fromParseResult (HSE.ParseOk x) = return x
 fromParseResult (HSE.ParseFailed loc msg) = throwIO $ ParseError loc msg
 
+main :: IO ()
 main =
   defaultMain theTool
 
 suffix :: String
 suffix = "names"
 
+theTool :: SimpleTool
 theTool =
   simpleTool
     "haskell-modules"
@@ -67,6 +72,13 @@ parse exts cppOpts file =
   -- FIXME: use parseFileWithMode?
   in return . fmap HSE.srcInfoSpan . fst =<< fromParseResult =<< parseFileWithComments (fixCppOpts cppOpts) mode file
 
+compile :: [Char]
+        -> [Extension]
+        -> CpphsOptions
+        -> [Distribution.Simple.Compiler.PackageDB]
+        -> [Distribution.Package.InstalledPackageId]
+        -> [FilePath]
+        -> IO ()
 compile buildDir exts cppOpts pkgdbs pkgids files = do
   moduleSet <- mapM (parse exts cppOpts) files
   let analysis = analyseModules moduleSet

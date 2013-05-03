@@ -11,6 +11,12 @@ Cabal-Version:          >= 1.10
 
 Executable gen-iface
   Default-Language: Haskell2010
+  ghc-options: -Wall -fno-warn-name-shadow
+  hs-source-dirs: src
+  Main-is:
+    gen-iface.hs
+  Other-modules:
+    Paths_gen_iface
   Build-depends:
     base,
     containers,
@@ -21,7 +27,3 @@ Executable gen-iface
     mtl,
     Cabal,
     hse-cpp
-  Main-is:
-    gen-iface.hs
-  Other-modules:
-    Paths_gen_iface
