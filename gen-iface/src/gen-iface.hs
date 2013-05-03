@@ -8,7 +8,6 @@ import Language.Haskell.Modules
 import Language.Haskell.Modules.Interfaces
 import Language.Haskell.Exts.Extension
 import Language.Haskell.Exts.SrcLoc
-import Language.Haskell.Exts.Annotated.CPP
 import Control.Monad
 import Control.Exception
 import qualified Data.Map as Map
@@ -25,6 +24,7 @@ import Distribution.HaskellSuite.Helpers
 import Distribution.Simple.Compiler (PackageDB)
 import Distribution.Package (InstalledPackageId)
 
+import Language.Haskell.Exts.Annotated.CPP
 import Paths_gen_iface
 
 data GenIfaceException
@@ -67,10 +67,21 @@ fixCppOpts opts =
   }
 
 parse :: [Extension] -> CpphsOptions -> FilePath -> IO (HSE.Module HSE.SrcSpan)
-parse exts cppOpts file =
-  let mode = defaultParseMode { UnAnn.parseFilename = file, extensions = exts, ignoreLanguagePragmas = False, ignoreLinePragmas = False }
-  -- FIXME: use parseFileWithMode?
-  in return . fmap HSE.srcInfoSpan . fst =<< fromParseResult =<< parseFileWithComments (fixCppOpts cppOpts) mode file
+parse exts cppOpts file = do
+    putStrLn $ "Parsing: " ++ file
+    -- FIXME: use parseFileWithMode?
+    x <- return . fmap HSE.srcInfoSpan . fst
+            =<< fromParseResult
+            =<< parseFileWithCommentsAndCPP (fixCppOpts cppOpts) mode file
+    putStrLn $ "Parsed: " ++ file
+    return x
+  where
+    mode = defaultParseMode
+             { UnAnn.parseFilename   = file
+             , extensions            = exts
+             , ignoreLanguagePragmas = False
+             , ignoreLinePragmas     = False
+             }
 
 compile :: [Char]
         -> [Extension]
