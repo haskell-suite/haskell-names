@@ -1,5 +1,5 @@
 {-# LANGUAGE RankNTypes, FlexibleInstances, FlexibleContexts, UndecidableInstances, DefaultSignatures, OverlappingInstances, TemplateHaskell, ScopedTypeVariables #-}
-{-# LANGUAGE ImplicitParams #-}
+{-# LANGUAGE ImplicitParams, KindSignatures #-}
 module Language.Haskell.Modules.Open.Base where
 
 import qualified Language.Haskell.Modules.GlobalSymbolTable as Global
@@ -12,8 +12,8 @@ import Data.List
 import Data.Lens.Common
 import Data.Lens.Template
 import Data.Generics.Traversable
-import Data.Proxy
 import Data.Typeable
+import GHC.Exts (Constraint)
 
 data NameContext = Binding | Reference | Other
 
@@ -34,11 +34,13 @@ newtype Alg w = Alg
 alg :: (?alg :: Alg w, Resolvable d) => d -> Scope -> w d
 alg = runAlg ?alg
 
+data ConstraintProxy (p :: * -> Constraint) = ConstraintProxy
+
 defaultRtraverse
   :: (GTraversable Resolvable a, Applicative f, ?alg :: Alg f)
   => a -> Scope -> f a
 defaultRtraverse a sc =
-  let ?c = Proxy :: Proxy Resolvable
+  let ?c = ConstraintProxy :: ConstraintProxy Resolvable
   in gtraverse (\a -> alg a sc) a
 
 -- We use Typeable here rather than a class-based approach.
