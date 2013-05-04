@@ -26,6 +26,7 @@ import Distribution.Package (InstalledPackageId)
 
 import Language.Haskell.Exts.Annotated.CPP
 import Paths_gen_iface
+import Language.Haskell.Modules.SyntaxUtils
 
 data GenIfaceException
   = ParseError HSE.SrcLoc String
@@ -108,9 +109,3 @@ retrieveModuleInfo :: [FilePath] -> ModuleName -> IO Symbols
 retrieveModuleInfo dirs name = do
   (base, rel) <- findModuleFile dirs [suffix] name
   readInterface $ base </> rel
-
-getModuleName :: HSE.Module l -> HSE.ModuleName l
-getModuleName (HSE.Module _ (Just (HSE.ModuleHead _ mn _ _)) _ _ _) = mn
-getModuleName (HSE.XmlPage _ mn _ _ _ _ _) = mn
-getModuleName (HSE.XmlHybrid _ (Just (HSE.ModuleHead _ mn _ _)) _ _ _ _ _ _ _) = mn
-getModuleName m = HSE.main_mod (HSE.ann m)
