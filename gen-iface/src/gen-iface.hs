@@ -69,12 +69,10 @@ fixCppOpts opts =
 
 parse :: [Extension] -> CpphsOptions -> FilePath -> IO (HSE.Module HSE.SrcSpan)
 parse exts cppOpts file = do
-    putStrLn $ "Parsing: " ++ file
     -- FIXME: use parseFileWithMode?
     x <- return . fmap HSE.srcInfoSpan . fst
             =<< fromParseResult
             =<< parseFileWithCommentsAndCPP (fixCppOpts cppOpts) mode file
-    putStrLn $ "Parsed: " ++ file
     return x
   where
     mode = defaultParseMode
