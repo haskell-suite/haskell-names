@@ -64,7 +64,7 @@ theTool =
 fixCppOpts :: CpphsOptions -> CpphsOptions
 fixCppOpts opts =
   opts {
-    defines = ("__GLASGOW_HASKELL__", "") : defines opts -- FIXME
+    defines = ("__GLASGOW_HASKELL__", "706") : defines opts -- FIXME
   }
 
 parse :: [Extension] -> CpphsOptions -> FilePath -> IO (HSE.Module HSE.SrcSpan)
