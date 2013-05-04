@@ -41,10 +41,12 @@ follows.
 3. `cd` into our fork of `base` and generate the configure scripts by calling
    `autoreconf`.
 4. Configure and build using our modified `cabal-install` as follows.
-   ~~~~
+   
+   ```
    cabal configure -v --haskell-suite -w gen-iface --user
    cabal build
-   ~~~~
+   ```
+   
    This should print a long list of parsed files and finally result in
    `.names` files for all modules in base. These `.names` files are JSON files
    that are placed in `dist/build/`. 
