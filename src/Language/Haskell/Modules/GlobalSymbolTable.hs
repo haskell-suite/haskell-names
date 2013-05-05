@@ -34,7 +34,7 @@ data Table =
   Table
     (Map.Map GName (Set.Set (SymValueInfo OrigName)))
     (Map.Map GName (Set.Set (SymTypeInfo  OrigName)))
-    deriving (Eq, Show, Data, Typeable)
+    deriving (Eq, Ord, Show, Data, Typeable)
 
 valLens :: Lens Table (Map.Map GName (Set.Set (SymValueInfo OrigName)))
 valLens = lens (\(Table vs _) -> vs) (\vs (Table _ ts) -> Table vs ts)

@@ -38,7 +38,7 @@ instance HasOrigName SymTypeInfo where
 -- | The set of symbols (entities) exported by a single module. Contains
 -- the sets of value-level and type-level entities.
 data Symbols = Symbols (Set.Set (SymValueInfo OrigName)) (Set.Set (SymTypeInfo OrigName))
-  deriving (Eq, Show, Data, Typeable)
+  deriving (Eq, Ord, Show, Data, Typeable)
 
 instance Monoid Symbols where
   mempty = Symbols mempty mempty
@@ -79,7 +79,7 @@ data Scoped l
     | Export      { sLoc :: l, exportSymbols :: Symbols }
     | None        { sLoc :: l }
     | ScopeError  { sLoc :: l, serr :: Error l }
-    deriving (Functor, Show, Typeable, Data)
+    deriving (Functor, Show, Typeable, Data, Eq, Ord)
 
 data Error l
   = ENotInScope (QName l) -- FIXME annotate with namespace (types/values)
@@ -93,7 +93,7 @@ data Error l
   | EModNotFound (ModuleName l)
   | EExportConflict [(NameS, [ExportSpec l])]
   | EInternal String
-  deriving (Data, Typeable, Show, Functor) -- FIXME write custom Show
+  deriving (Data, Typeable, Show, Functor, Eq, Ord) -- FIXME write custom Show
 
 instance (SrcInfo l) => SrcInfo (Scoped l) where
     toSrcInfo l1 ss l2 = None $ toSrcInfo l1 ss l2
