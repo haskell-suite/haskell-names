@@ -56,7 +56,7 @@ theTool =
   simpleTool
     "haskell-modules"
     version
-    [minBound..maxBound]
+    knownExtensions
     (return Nothing)
     compile
     [suffix]
