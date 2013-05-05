@@ -44,9 +44,10 @@ lookupValue :: QName l -> Scope -> Scoped l
 lookupValue qn sc =
   let l = ann qn in
 
-  either (\e -> ScopeError l e) id $
-  (LocalValue  l <$> (Local.lookupValue  qn $ getL lTable sc)) <|>
-  (GlobalValue l <$> (Global.lookupValue qn $ getL gTable sc))
-  where
-    x@Right{} <|> _ = x
-    _ <|> y = y
+  case Local.lookupValue  qn $ getL lTable sc of
+    Right r -> LocalValue l r
+    _ ->
+      case Global.lookupValue qn $ getL gTable sc of
+        Global.Result r -> GlobalValue l r
+        Global.Error e -> ScopeError l e
+        Global.Special -> None l

@@ -17,7 +17,7 @@ import Language.Haskell.Modules.Types
 import Language.Haskell.Modules.ScopeUtils
 import Language.Haskell.Modules.SyntaxUtils
 import Language.Haskell.Modules.ModuleSymbols
-import qualified Language.Haskell.Modules.GlobalSymbolTable as Global
+import Language.Haskell.Modules.GlobalSymbolTable as Global
 
 processExports
   :: (MonadModule m, ModuleInfo m ~ Symbols, Data l, Eq l)
@@ -50,23 +50,24 @@ resolveExportSpec tbl exp =
   case exp of
     EVar _ qn -> return $
       case Global.lookupValue qn tbl of
-        Left err ->
+        Global.Error err ->
           (scopeError err exp, mempty)
-        Right i ->
+        Global.Result i ->
           let s = mkVal i
           in ((\l -> Export l s) <$> exp, s)
+        Global.Special {} -> error "Global.Special in export list?"
     EAbs _ qn -> return $
       case Global.lookupType qn tbl of
-        Left err ->
+        Global.Error err ->
           (scopeError err exp, mempty)
-        Right i ->
+        Global.Result i ->
           let s = mkTy i
           in ((\l -> Export l s) <$> exp, s)
     EThingAll l qn -> return $
       case Global.lookupType qn tbl of
-        Left err ->
+        Global.Error err ->
           (scopeError err exp, mempty)
-        Right i ->
+        Global.Result i ->
           let
             subs = mconcat
               [ mkVal info
@@ -78,11 +79,12 @@ resolveExportSpec tbl exp =
             ( EThingAll (Export l s) ((\l -> GlobalType l i) <$> qn)
             , s
             )
+        Global.Special {} -> error "Global.Special in export list?"
     EThingWith l qn cns -> return $
       case Global.lookupType qn tbl of
-        Left err ->
+        Global.Error err ->
           (scopeError err exp, mempty)
-        Right i ->
+        Global.Result i ->
           let
             (cns', subs) =
               resolveCNames
@@ -95,6 +97,7 @@ resolveExportSpec tbl exp =
             ( EThingWith (Export l s) ((\l -> GlobalType l i) <$> qn) cns'
             , s
             )
+        Global.Special {} -> error "Global.Special in export list?"
     EModuleContents _ (ModuleName _ mod) ->
       -- FIXME ambiguity check
       let

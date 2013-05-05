@@ -5,6 +5,7 @@ module Language.Haskell.Modules.GlobalSymbolTable
   , GName
   , OrigName
   , empty
+  , Result(..)
   , lookupValue
   , addValue
   , lookupType
@@ -16,7 +17,7 @@ module Language.Haskell.Modules.GlobalSymbolTable
   , toSymbols
   ) where
 
-import Language.Haskell.Exts.Annotated
+import Language.Haskell.Exts.Annotated as HSE
 import Data.Monoid
 import qualified Data.Map as Map
 import qualified Data.Set as Set
@@ -56,7 +57,7 @@ instance Monoid Table where
 toGName :: QName l -> GName
 toGName (UnQual _ n) = GName "" (nameToString n)
 toGName (Qual _ (ModuleName _ m) n) = GName m (nameToString n)
-toGName (Special _ _) = error "toGName: Special"
+toGName (HSE.Special _ _) = error "toGName: Special"
 
 empty :: Table
 empty = Table Map.empty Map.empty
@@ -66,18 +67,25 @@ lookupL
   => Lens Table (Map.Map GName (Set.Set (i OrigName)))
   -> QName l
   -> Table
-  -> Either (Error l) (i OrigName)
+  -> Result l (i OrigName)
+lookupL lens (HSE.Special {}) _ =
+  Language.Haskell.Modules.GlobalSymbolTable.Special
 lookupL lens qn tbl =
   case Set.toList <$> (Map.lookup (toGName qn) $ getL lens tbl) of
-    Nothing -> Left $ ENotInScope qn
-    Just [] -> Left $ ENotInScope qn
-    Just [i] -> Right i
-    Just is -> Left $ EAmbiguous qn (map origName is)
+    Nothing -> Error $ ENotInScope qn
+    Just [] -> Error $ ENotInScope qn
+    Just [i] -> Result i
+    Just is -> Error $ EAmbiguous qn (map origName is)
 
-lookupValue :: QName l -> Table -> Either (Error l) (SymValueInfo OrigName)
+data Result l a
+  = Result a
+  | Error (Error l)
+  | Special
+
+lookupValue :: QName l -> Table -> Result l (SymValueInfo OrigName)
 lookupValue = lookupL valLens
 
-lookupType :: QName l -> Table -> Either (Error l) (SymTypeInfo OrigName)
+lookupType :: QName l -> Table -> Result l (SymTypeInfo OrigName)
 lookupType  = lookupL tyLens
 
 addL

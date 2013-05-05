@@ -150,6 +150,7 @@ formatScoped :: Scoped SrcSpan -> String
 formatScoped LocalValue { sDefLoc = loc } =
   printf "a local value defined at %s" $ formatLoc loc
 formatScoped ScopeError { serr = ENotInScope {} } = "not in scope"
+formatScoped None {} = "none"
 
 formatAnn :: String -> Scoped SrcSpan -> String
 formatAnn name scpd =
