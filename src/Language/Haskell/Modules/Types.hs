@@ -35,6 +35,8 @@ instance HasOrigName SymValueInfo where
 instance HasOrigName SymTypeInfo where
   origName = st_origName
 
+-- | The set of symbols (entities) exported by a single module. Contains
+-- the sets of value-level and type-level entities.
 data Symbols = Symbols (Set.Set (SymValueInfo OrigName)) (Set.Set (SymTypeInfo OrigName))
   deriving (Eq, Show, Data, Typeable)
 
