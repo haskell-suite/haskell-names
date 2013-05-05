@@ -19,14 +19,17 @@ import Control.Exception
 import Control.Applicative
 import Control.Monad
 
-data IfaceException = BadInterface FilePath
+data IfaceException =
+  -- | Interface could not be parsed. This tells you the file name of the
+  -- interface file and the parse error text.
+  BadInterface FilePath String
   deriving (Typeable, Show)
 instance Exception IfaceException
 
 readInterface :: FilePath -> IO Symbols
 readInterface path =
-  maybe (throwIO $ BadInterface path) return =<<
-    decode <$> BS.readFile path
+  either (throwIO . BadInterface path) return =<<
+    eitherDecode <$> BS.readFile path
 
 writeInterface :: FilePath -> Symbols -> IO ()
 writeInterface path iface =
