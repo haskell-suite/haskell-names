@@ -83,4 +83,4 @@ Test-suite test
     , Cabal
     , haskell-names
     , tagged
-
+    , traverse-with-class
