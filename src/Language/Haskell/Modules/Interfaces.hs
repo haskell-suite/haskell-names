@@ -5,6 +5,7 @@ module Language.Haskell.Modules.Interfaces
   ( readInterface
   , writeInterface
   , IfaceException(..)
+  , NamesDB(..)
   ) where
 
 import Language.Haskell.Modules.Types
@@ -18,6 +19,7 @@ import Data.Typeable
 import Control.Exception
 import Control.Applicative
 import Control.Monad
+import Distribution.HaskellSuite.PackageDB
 
 data IfaceException =
   -- | Interface could not be parsed. This tells you the file name of the
@@ -54,3 +56,11 @@ deriveJSON (drop 3) ''SymTypeInfo
 deriveJSON (drop 3) ''SymValueInfo
 deriveJSON id ''Assoc
 deriveJSON id ''Symbols
+
+newtype NamesDB = NamesDB FilePath
+instance IsPackageDB NamesDB where
+  dbName = return "haskell-names"
+  readPackageDB init (NamesDB db) = readDB init db
+  writePackageDB (NamesDB db) = writeDB db
+  globalDB = return Nothing
+  dbFromPath path = return $ NamesDB path

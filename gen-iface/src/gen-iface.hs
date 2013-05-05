@@ -12,6 +12,7 @@ import Control.Monad
 import Control.Exception
 import qualified Data.Map as Map
 import Data.Typeable
+import Data.Proxy
 import System.FilePath
 import Text.Printf
 
@@ -21,6 +22,7 @@ import Distribution.Verbosity
 import Distribution.HaskellSuite.Tool
 import Distribution.HaskellSuite.Cabal
 import Distribution.HaskellSuite.Helpers
+import Distribution.HaskellSuite.PackageDB
 import Distribution.Simple.Compiler (PackageDB)
 import Distribution.Package (InstalledPackageId)
 
@@ -51,13 +53,12 @@ main =
 suffix :: String
 suffix = "names"
 
-theTool :: SimpleTool
+theTool :: SimpleCompiler NamesDB
 theTool =
-  simpleTool
+  simpleCompiler
     "haskell-modules"
     version
     knownExtensions
-    (return Nothing)
     compile
     [suffix]
 
@@ -92,7 +93,7 @@ compile :: [Char]
 compile buildDir exts cppOpts pkgdbs pkgids files = do
   moduleSet <- mapM (parse exts cppOpts) files
   let analysis = analyseModules moduleSet
-  packages <- readPackagesInfo theTool pkgdbs pkgids
+  packages <- readPackagesInfo InitDB (Proxy :: Proxy NamesDB) pkgdbs pkgids
   modData <-
     evalModuleT analysis packages retrieveModuleInfo Map.empty
   forM_ modData $ \(mod, syms) -> do

@@ -26,4 +26,5 @@ Executable gen-iface
     filepath,
     mtl,
     Cabal,
-    hse-cpp
+    hse-cpp,
+    tagged
