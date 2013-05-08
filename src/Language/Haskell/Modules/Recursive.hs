@@ -6,7 +6,7 @@ import Data.Monoid
 import Data.Data (Data)
 import Control.Monad
 import Language.Haskell.Exts.Annotated
-import Distribution.HaskellSuite.Helpers
+import Distribution.HaskellSuite.Modules
 
 import Language.Haskell.Modules.Types
 import Language.Haskell.Modules.SyntaxUtils

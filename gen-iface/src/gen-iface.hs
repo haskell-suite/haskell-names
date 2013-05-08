@@ -10,19 +10,17 @@ import Language.Haskell.Exts.Extension
 import Language.Haskell.Exts.SrcLoc
 import Control.Monad
 import Control.Exception
-import qualified Data.Map as Map
 import Data.Typeable
 import Data.Proxy
 import System.FilePath
 import Text.Printf
 
+import Distribution.HaskellSuite
+import qualified Distribution.HaskellSuite.Compiler as Compiler
+
 import Distribution.ModuleName hiding (main)
 import Distribution.Simple.Utils
 import Distribution.Verbosity
-import Distribution.HaskellSuite.Tool
-import Distribution.HaskellSuite.Cabal
-import Distribution.HaskellSuite.Helpers
-import Distribution.HaskellSuite.PackageDB
 import Distribution.Simple.Compiler (PackageDB)
 import Distribution.Package (InstalledPackageId)
 
@@ -48,14 +46,14 @@ fromParseResult (HSE.ParseFailed loc msg) = throwIO $ ParseError loc msg
 
 main :: IO ()
 main =
-  defaultMain theTool
+  Compiler.main theTool
 
 suffix :: String
 suffix = "names"
 
-theTool :: SimpleCompiler NamesDB
+theTool :: Compiler.Simple NamesDB
 theTool =
-  simpleCompiler
+  Compiler.simple
     "haskell-modules"
     version
     knownExtensions
@@ -95,16 +93,9 @@ compile buildDir exts cppOpts pkgdbs pkgids files = do
   let analysis = analyseModules moduleSet
   packages <- readPackagesInfo InitDB (Proxy :: Proxy NamesDB) pkgdbs pkgids
   modData <-
-    evalModuleT analysis packages retrieveModuleInfo Map.empty
+    evalModuleT analysis packages "names" readInterface
   forM_ modData $ \(mod, syms) -> do
     let HSE.ModuleName _ modname = getModuleName mod
         ifaceFile = buildDir </> toFilePath (fromString modname) <.> suffix
     createDirectoryIfMissingVerbose silent True (dropFileName ifaceFile)
     writeInterface ifaceFile syms
-
--- This function says how we actually find and read the module
--- information, given the search path and the module name
-retrieveModuleInfo :: [FilePath] -> ModuleName -> IO Symbols
-retrieveModuleInfo dirs name = do
-  (base, rel) <- findModuleFile dirs [suffix] name
-  readInterface $ base </> rel

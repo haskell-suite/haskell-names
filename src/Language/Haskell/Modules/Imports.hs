@@ -16,7 +16,7 @@ import Data.Foldable (foldMap)
 import Control.Applicative
 import Control.Arrow
 import Control.Monad.Writer
-import Distribution.HaskellSuite.Helpers
+import Distribution.HaskellSuite.Modules
 import Language.Haskell.Exts.Annotated
 import Language.Haskell.Modules.Types
 import Language.Haskell.Modules.ScopeUtils

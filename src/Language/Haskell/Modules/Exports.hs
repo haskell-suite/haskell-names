@@ -11,7 +11,7 @@ import Control.Monad.Writer
 import Data.Data
 import Data.Lens.Common
 import Data.Foldable as F
-import Distribution.HaskellSuite.Helpers
+import Distribution.HaskellSuite.Modules
 import Language.Haskell.Exts.Annotated
 import Language.Haskell.Modules.Types
 import Language.Haskell.Modules.ScopeUtils

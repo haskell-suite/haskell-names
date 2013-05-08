@@ -19,7 +19,7 @@ import Data.Typeable
 import Control.Exception
 import Control.Applicative
 import Control.Monad
-import Distribution.HaskellSuite.PackageDB
+import Distribution.HaskellSuite.Packages
 
 data IfaceException =
   -- | Interface could not be parsed. This tells you the file name of the
