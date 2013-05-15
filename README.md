@@ -1,11 +1,11 @@
-Haskell-Names
+haskell-names
 =============
 
-Name resolution for Haskell-Src-Exts AST
+Name resolution for haskell-src-exts AST
 
 
 Developing
-==========
+----------
 
 We require quite a few different (forks of) packages to make use of
 `haskell-names`. They are
