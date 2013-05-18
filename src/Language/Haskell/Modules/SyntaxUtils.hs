@@ -1,9 +1,23 @@
 {-# LANGUAGE MultiParamTypeClasses, FunctionalDependencies, FlexibleInstances, UndecidableInstances #-}
-module Language.Haskell.Modules.SyntaxUtils(
-    dropAnn, setAnn, getModuleName, getImports, getExportSpecList, splitDeclHead, getDeclHeadName, getModuleDecls,
-    isTypeDecl, GetBound(..), opName, isCon, nameToString, specialConToString,
-    qNameToName, unCName,
-    ) where
+module Language.Haskell.Modules.SyntaxUtils
+  ( dropAnn
+  , setAnn
+  , getModuleName
+  , getImports
+  , getExportSpecList
+  , splitDeclHead
+  , getDeclHeadName
+  , getModuleDecls
+  , isTypeDecl
+  , GetBound(..)
+  , opName
+  , isCon
+  , nameToString
+  , specialConToString
+  , qNameToName
+  , unCName
+  , getErrors
+  ) where
 import Data.Char
 import Data.Data
 import Data.Maybe
