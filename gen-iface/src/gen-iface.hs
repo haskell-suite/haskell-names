@@ -12,6 +12,8 @@ import Control.Monad
 import Control.Exception
 import Data.Typeable
 import Data.Proxy
+import qualified Data.Foldable as F
+import qualified Data.Set as Set
 import System.FilePath
 import Text.Printf
 
@@ -97,5 +99,10 @@ compile buildDir exts cppOpts pkgdbs pkgids files = do
   forM_ modData $ \(mod, syms) -> do
     let HSE.ModuleName _ modname = getModuleName mod
         ifaceFile = buildDir </> toFilePath (fromString modname) <.> suffix
+        errors = Set.unions
+          [ F.foldMap getErrors $ getImports mod
+          , F.foldMap getErrors $ getExportSpecList mod
+          ]
+    F.for_ errors $ \e -> printf "Warning: %s\n" (show e)
     createDirectoryIfMissingVerbose silent True (dropFileName ifaceFile)
     writeInterface ifaceFile syms
