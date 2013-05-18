@@ -18,11 +18,15 @@ module Language.Haskell.Modules.SyntaxUtils
   , unCName
   , getErrors
   ) where
+import Prelude hiding (concatMap, foldl')
 import Data.Char
 import Data.Data
 import Data.Maybe
 import Data.Generics.Uniplate.Data
+import Data.Foldable
+import qualified Data.Set as Set
 import Language.Haskell.Exts.Annotated
+import Language.Haskell.Modules.Types
 
 dropAnn :: (Functor a) => a l -> a ()
 dropAnn = fmap (const ())
@@ -220,3 +224,9 @@ specialConToString (UnboxedSingleCon _)   = "#"
 unCName :: CName l -> Name l
 unCName (VarName _ n) = n
 unCName (ConName _ n) = n
+
+getErrors :: (Ord l, Foldable a) => a (Scoped l) -> Set.Set (Error l)
+getErrors = foldl' f Set.empty
+  where
+    f errors (ScopeError _ e) = Set.insert e errors
+    f errors _ = errors
