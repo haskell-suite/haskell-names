@@ -23,8 +23,6 @@ We require quite a few different (forks of) packages to make use of
   Haskell source files that use the CPP extension.
 - [`haskell-packages`](https://github.com/feuerbach/haskell-packages), 
   which implements a minimal package management tool analogous to `ghc-pkg`.
-- [`traverse-with-class`](https://github.com/feuerbach/traverse-with-class), 
-  which is a new take on generic traversal similar to `Data.Data`.
 - [`haskell-names`](https://github.com/feuerbach/haskell-packages), 
   which implements a name resolution for Haskell modules.
 
