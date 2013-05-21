@@ -58,6 +58,7 @@ theTool =
   Compiler.simple
     "haskell-modules"
     version
+    knownLanguages
     knownExtensions
     compile
     [suffix]
