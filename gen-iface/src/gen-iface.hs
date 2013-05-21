@@ -84,14 +84,16 @@ parse exts cppOpts file = do
              , ignoreLinePragmas     = False
              }
 
+-- FIXME use the language argument
 compile :: [Char]
+        -> Maybe Language
         -> [Extension]
         -> CpphsOptions
         -> [Distribution.Simple.Compiler.PackageDB]
         -> [Distribution.Package.InstalledPackageId]
         -> [FilePath]
         -> IO ()
-compile buildDir exts cppOpts pkgdbs pkgids files = do
+compile buildDir mbLang exts cppOpts pkgdbs pkgids files = do
   moduleSet <- mapM (parse exts cppOpts) files
   let analysis = analyseModules moduleSet
   packages <- readPackagesInfo InitDB (Proxy :: Proxy NamesDB) pkgdbs pkgids
