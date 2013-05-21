@@ -56,7 +56,7 @@ suffix = "names"
 theTool :: Compiler.Simple NamesDB
 theTool =
   Compiler.simple
-    "haskell-modules"
+    "haskell-names"
     version
     knownLanguages
     knownExtensions
