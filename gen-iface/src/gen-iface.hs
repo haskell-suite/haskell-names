@@ -96,7 +96,7 @@ compile :: [Char]
 compile buildDir mbLang exts cppOpts pkgdbs pkgids files = do
   moduleSet <- mapM (parse exts cppOpts) files
   let analysis = analyseModules moduleSet
-  packages <- readPackagesInfo InitDB (Proxy :: Proxy NamesDB) pkgdbs pkgids
+  packages <- readPackagesInfo (Proxy :: Proxy NamesDB) pkgdbs pkgids
   modData <-
     evalModuleT analysis packages "names" readInterface
   forM_ modData $ \(mod, syms) -> do
