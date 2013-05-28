@@ -23,7 +23,7 @@ import Language.Haskell.Modules.Open
 import Language.Haskell.Modules.ModuleSymbols
 import Language.Haskell.Modules.SyntaxUtils
 import qualified Language.Haskell.Modules.GlobalSymbolTable as Global
-import Distribution.HaskellSuite.Helpers
+import Distribution.HaskellSuite
 import qualified Distribution.ModuleName as Cabal
 
 import Data.Generics.Traversable
@@ -58,9 +58,7 @@ getInterface mods file = do
   let mExps = do
         importedSyms <- snd <$> processImports (getImports mod)
         snd <$> processExports (moduleTable mod <> importedSyms) mod
-      exps = runIdentity $
-        evalModuleT mExps [] (error "retrieve") mods
-  return exps
+  fst <$> runModuleT mExps [] (error "retrieve") (error "retrieve") mods
 
 exportTests = do
   mods <- getModules
@@ -83,9 +81,7 @@ getGlobalTable :: Map.Map Cabal.ModuleName Symbols -> FilePath -> IO Global.Tabl
 getGlobalTable mods file = do
   mod <- parseAndPrepare file
   let mImps = snd <$> processImports (getImports mod)
-      imps = runIdentity $
-        evalModuleT mImps [] (error "retrieve") mods
-  return imps
+  fst <$> runModuleT mImps [] (error "retrieve") (error "retrieve") mods
 
 importTests = do
   mods <- getModules
