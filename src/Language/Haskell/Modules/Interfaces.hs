@@ -16,6 +16,8 @@ import Data.Aeson.TH
 import Data.Monoid
 import Data.Char
 import Data.Typeable
+import Data.Either
+import qualified Data.Set as Set
 import Control.Exception
 import Control.Applicative
 import Control.Monad
@@ -52,17 +54,93 @@ instance FromJSON GName where
       v .: "name"
   parseJSON _ = mzero
 
-deriveJSON (drop 3) ''SymValueInfo
-deriveJSON (drop 3) ''SymTypeInfo
-deriveJSON id ''Assoc
-instance ToJSON Symbols where
-  toJSON (Symbols vals types) = object ["values" .= vals, "types" .= types]
-instance FromJSON Symbols where
-  parseJSON (Object v) =
-    Symbols <$>
-      v .: "values" <*>
-      v .: "types"
+instance ToJSON name => ToJSON (SymValueInfo name) where
+  toJSON i =
+    object $
+      [("entity", toJSON $ valueEntity i)
+      ,("origin", toJSON $ sv_origName i)
+      ,("fixity", toJSON $ sv_fixity i)
+      ] ++ additionalInfo i
+    where
+      additionalInfo i = case i of
+        SymValue {} -> []
+        SymMethod { sv_className = cls } ->
+          [("class", toJSON cls)]
+        SymSelector { sv_typeName = ty } ->
+          [("type", toJSON ty)]
+        SymConstructor { sv_typeName = ty } ->
+          [("type", toJSON ty)]
+
+      valueEntity :: SymValueInfo a -> String
+      valueEntity i = case i of
+        SymValue {} -> "value"
+        SymMethod {} -> "method"
+        SymSelector {} -> "selector"
+        SymConstructor {} -> "constructor"
+
+instance FromJSON name => FromJSON (SymValueInfo name) where
+  parseJSON (Object v) = do
+    entity <- v .: "entity"
+    name   <- v .: "origin"
+    fixity <- v .: "fixity"
+
+    case entity :: String of
+      "value" -> return $ SymValue name fixity
+      "method" -> SymMethod name fixity <$> v .: "class"
+      "selector" -> SymSelector name fixity <$> v .: "type"
+      "constructor" -> SymConstructor name fixity <$> v .: "type"
+      _ -> mzero
+
   parseJSON _ = mzero
+
+instance ToJSON name => ToJSON (SymTypeInfo name) where
+  toJSON i =
+    object $
+      [("entity", toJSON $ typeEntity i)
+      ,("origin", toJSON $ st_origName i)
+      ,("fixity", toJSON $ st_fixity i)
+      ]
+    where
+      typeEntity :: SymTypeInfo a -> String
+      typeEntity i = case i of
+        SymType {} -> "type"
+        SymData {} -> "data"
+        SymTypeFam {} -> "typeFamily"
+        SymDataFam {} -> "dataFamily"
+        SymClass   {} -> "class"
+
+instance FromJSON name => FromJSON (SymTypeInfo name) where
+  parseJSON (Object v) = do
+    entity <- v .: "entity"
+    name   <- v .: "origin"
+    fixity <- v .: "fixity"
+
+    case entity :: String of
+      "type" -> return $ SymType name fixity
+      "data" -> return $ SymData name fixity
+      "typeFamily" -> return $ SymTypeFam name fixity
+      "dataFamily" -> return $ SymDataFam name fixity
+      "class" -> return $ SymClass name fixity
+      _ -> mzero
+
+  parseJSON _ = mzero
+
+-- FIXME
+deriveJSON id ''Assoc
+
+instance ToJSON Symbols where
+  toJSON (Symbols vals types) =
+    toJSON $ map toJSON (Set.toList vals) ++ map toJSON (Set.toList types)
+instance FromJSON Symbols where
+  parseJSON a =
+    let
+      eithersM =
+        parseJSON a >>=
+          mapM (\x -> (Left <$> parseJSON x) <|> (Right <$> parseJSON x))
+      toSymbols eithers =
+        let (vals, tys) = partitionEithers eithers
+        in Symbols (Set.fromList vals) (Set.fromList tys)
+    in toSymbols <$> eithersM
 
 newtype NamesDB = NamesDB FilePath
 instance IsPackageDB NamesDB where
