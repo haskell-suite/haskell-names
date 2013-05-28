@@ -33,8 +33,8 @@ groupModules modules =
       )
 
 scopeSCC
-  :: (MonadModule m, ModuleInfo m ~ Symbols)
-  => [Module SrcSpan] -> m [(Module (Scoped SrcSpan), Symbols)]
+  :: (MonadModule m, ModuleInfo m ~ Symbols, Data l, SrcInfo l, Eq l)
+  => [Module l] -> m [(Module (Scoped l), Symbols)]
 scopeSCC mods = do
   modData <- findFixPoint mods
   return $ flip map (zip mods modData) $
@@ -85,7 +85,7 @@ findFixPoint mods = go mods (map (const mempty) mods) where
       else go mods syms'
 
 analyseModules
-  :: (MonadModule m, ModuleInfo m ~ Symbols)
-  => [Module SrcSpan] -> m [(Module (Scoped SrcSpan), Symbols)]
+  :: (MonadModule m, ModuleInfo m ~ Symbols, Data l, SrcInfo l, Eq l)
+  => [Module l] -> m [(Module (Scoped l), Symbols)]
 analyseModules =
   liftM concat . mapM scopeSCC . groupModules
