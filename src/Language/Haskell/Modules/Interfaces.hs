@@ -52,10 +52,17 @@ instance FromJSON GName where
       v .: "name"
   parseJSON _ = mzero
 
-deriveJSON (drop 3) ''SymTypeInfo
 deriveJSON (drop 3) ''SymValueInfo
+deriveJSON (drop 3) ''SymTypeInfo
 deriveJSON id ''Assoc
-deriveJSON id ''Symbols
+instance ToJSON Symbols where
+  toJSON (Symbols vals types) = object ["values" .= vals, "types" .= types]
+instance FromJSON Symbols where
+  parseJSON (Object v) =
+    Symbols <$>
+      v .: "values" <*>
+      v .: "types"
+  parseJSON _ = mzero
 
 newtype NamesDB = NamesDB FilePath
 instance IsPackageDB NamesDB where
