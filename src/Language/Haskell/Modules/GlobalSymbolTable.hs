@@ -55,8 +55,8 @@ instance Monoid Table where
       j = Map.unionWith Set.union
 
 toGName :: QName l -> GName
-toGName (UnQual _ n) = GName Nothing "" (nameToString n)
-toGName (Qual _ (ModuleName _ m) n) = GName Nothing m (nameToString n)
+toGName (UnQual _ n) = GName "" (nameToString n)
+toGName (Qual _ (ModuleName _ m) n) = GName m (nameToString n)
 toGName (HSE.Special _ _) = error "toGName: Special"
 
 empty :: Table

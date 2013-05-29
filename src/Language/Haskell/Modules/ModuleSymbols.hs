@@ -40,6 +40,7 @@ getTopDeclSymbols
   -> Decl l
   -> [Either (SymValueInfo OrigName) (SymTypeInfo OrigName)]
 getTopDeclSymbols mdl d =
+  map (either (Left . fmap toOrig) (Right . fmap toOrig)) $
   case d of
     TypeDecl _ dh _ ->
         let tn = hname dh
@@ -85,5 +86,6 @@ getTopDeclSymbols mdl d =
             [ Left  (SymValue       { sv_origName = qname fn, sv_fixity = Nothing }) ]
     _ ->    []
   where ModuleName _ smdl = mdl
-        qname = GName Nothing smdl . nameToString
+        qname = GName smdl . nameToString
         hname = fst . splitDeclHead
+        toOrig = OrigName Nothing

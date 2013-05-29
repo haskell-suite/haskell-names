@@ -108,7 +108,7 @@ resolveExportSpec tbl exp =
           -> Set.Set i
         filterByPrefix prefix m =
           Set.unions
-            [ i | (GName _ prefix' _, i) <- Map.toList m, prefix' == prefix ]
+            [ i | (GName prefix' _, i) <- Map.toList m, prefix' == prefix ]
 
         filterEntities
           :: Ord i

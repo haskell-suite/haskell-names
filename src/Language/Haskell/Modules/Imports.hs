@@ -210,8 +210,8 @@ resolveImportSpec mod isHiding syms spec =
           n'
           cns'
   where
-    (~~) :: GName -> Name l -> Bool
-    GName _ _ n ~~ n' = n == nameToString n'
+    (~~) :: OrigName -> Name l -> Bool
+    OrigName _ (GName _ n) ~~ n' = n == nameToString n'
 
     isConstructor :: SymValueInfo n -> Bool
     isConstructor SymConstructor {} = True

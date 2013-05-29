@@ -66,11 +66,18 @@ type ModuleNameS = String
 
 -- | Possibly qualified name. If the name is not qualified,
 -- 'ModuleNameS' is the empty string.
-data GName = GName (Maybe PackageId) ModuleNameS NameS
+data GName = GName ModuleNameS NameS
   deriving (Eq, Ord, Show, Data, Typeable)
 -- | Qualified name, where 'ModuleNameS' points to the module where the
 -- name was originally defined. The module part is never empty.
-type OrigName = GName
+--
+-- Also contains name and version of the package where it was defined. If
+-- it's 'Nothing', then the entity is defined in the "current" package.
+data OrigName = OrigName
+  { origPackage :: (Maybe PackageId)
+  , origGName :: GName
+  }
+  deriving (Eq, Ord, Show, Data, Typeable)
 
 data Scoped l
     = GlobalValue { sLoc :: l, sVInfo :: SymValueInfo OrigName }

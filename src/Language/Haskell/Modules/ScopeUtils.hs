@@ -36,9 +36,9 @@ qualifySymbols pkg (Symbols vals tys) =
     (Set.map (fmap qualify) vals)
     (Set.map (fmap qualify) tys)
   where
-    qualify (GName Nothing mod name) =
-      GName (Just pkg) mod name
-    qualify gname = gname
+    qualify (OrigName Nothing gname) =
+      OrigName (Just pkg) gname
+    qualify orig = orig
 
 computeSymbolTable
   :: Bool
@@ -56,10 +56,10 @@ computeSymbolTable qual (ModuleName _ mod) syms =
     renamed = renameSyms mod
     unqualified = renameSyms ""
     renameSyms mod = (map (rename mod) vs, map (rename mod) ts)
-    rename :: HasOrigName i => ModuleNameS -> i GName -> (GName, i GName)
+    rename :: HasOrigName i => ModuleNameS -> i OrigName -> (GName, i OrigName)
     rename m v =
-      let GName pkg _ n = origName v
-      in (GName pkg m n, v)
+      let OrigName _pkg (GName _ n) = origName v
+      in (GName m n, v)
 
 resolveCName
   :: Symbols
@@ -72,7 +72,7 @@ resolveCName syms parent notFound cn =
     vs =
       [ info
       | info <- Set.toList $ syms^.valSyms
-      , let GName _ _ name = sv_origName info
+      , let GName _ name = origGName $ sv_origName info
       , nameToString (unCName cn) == name
       , Just p <- return $ sv_parent info
       , p == parent

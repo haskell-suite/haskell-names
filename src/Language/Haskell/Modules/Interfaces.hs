@@ -40,20 +40,21 @@ writeInterface path iface =
   BS.writeFile path $
     encode iface `mappend` BS.pack [fromIntegral $ ord '\n']
 
-instance ToJSON GName where
-  toJSON (GName pkg m n) =
+instance ToJSON OrigName where
+  toJSON (OrigName pkg (GName m n)) =
     object
       [("module", toJSON m)
       ,("name", toJSON n)
       ,("package", toJSON pkg)
       ]
 
-instance FromJSON GName where
+instance FromJSON OrigName where
   parseJSON (Object v) =
-    GName <$>
+    OrigName <$>
       v .: "package" <*>
-      v .: "module" <*>
-      v .: "name"
+      (GName <$>
+        v .: "module" <*>
+        v .: "name")
   parseJSON _ = mzero
 
 instance ToJSON name => ToJSON (SymValueInfo name) where
