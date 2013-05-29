@@ -9,6 +9,7 @@ import Language.Haskell.Modules.Types
 import Language.Haskell.Modules.SyntaxUtils
 import Language.Haskell.Exts.Annotated
 import qualified Language.Haskell.Modules.GlobalSymbolTable as Global
+import Distribution.Package (PackageId)
 
 scopeError :: Functor f => Error l -> f l -> f (Scoped l)
 scopeError e f = (\l -> ScopeError l e) <$> f
@@ -27,6 +28,17 @@ sv_parent (SymSelector { sv_typeName = n }) = Just n
 sv_parent (SymConstructor { sv_typeName = n }) = Just n
 sv_parent (SymMethod { sv_className = n }) = Just n
 sv_parent _ = Nothing
+
+-- | Annotate all local symbols with the package name and version
+qualifySymbols :: PackageId -> Symbols -> Symbols
+qualifySymbols pkg (Symbols vals tys) =
+  Symbols
+    (Set.map (fmap qualify) vals)
+    (Set.map (fmap qualify) tys)
+  where
+    qualify (GName Nothing mod name) =
+      GName (Just pkg) mod name
+    qualify gname = gname
 
 computeSymbolTable
   :: Bool
