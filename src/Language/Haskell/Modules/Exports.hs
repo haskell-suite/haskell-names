@@ -128,17 +128,3 @@ resolveExportSpec tbl exp =
   where
     allValueInfos =
       Set.toList $ Map.foldl' Set.union Set.empty $ Global.values tbl
-
--- Used to detect conflicts
-type SymbolSet a = (Map.Map NameS [a], Map.Map NameS [a])
-
-type Accum a = State (SymbolSet a)
-
-addSymbols :: a -> Symbols -> Accum a ()
-addSymbols a syms = do
-    F.mapM_ (add fstLens) $ syms^.valSyms
-    F.mapM_ (add sndLens) $ syms^.tySyms
-  where
-    add lens i = do
-      let GName _ _ n = origName i
-      modify $ modL lens (Map.insertWith (++) n [a])
