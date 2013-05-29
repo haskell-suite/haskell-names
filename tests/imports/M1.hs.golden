@@ -5,13 +5,19 @@ Table (
           "Constructor1"
       , fromList
           [ SymConstructor
-              { sv_origName = GName
-                                "Library"
-                                "Constructor1"
+              { sv_origName = OrigName
+                                { origPackage = Nothing
+                                , origGName = GName
+                                                "Library"
+                                                "Constructor1"
+                                }
               , sv_fixity = Nothing
-              , sv_typeName = GName
-                                "Library"
-                                "DataType"
+              , sv_typeName = OrigName
+                                { origPackage = Nothing
+                                , origGName = GName
+                                                "Library"
+                                                "DataType"
+                                }
               }
           ]
       )
@@ -20,13 +26,19 @@ Table (
           "Constructor2"
       , fromList
           [ SymConstructor
-              { sv_origName = GName
-                                "Library"
-                                "Constructor2"
+              { sv_origName = OrigName
+                                { origPackage = Nothing
+                                , origGName = GName
+                                                "Library"
+                                                "Constructor2"
+                                }
               , sv_fixity = Nothing
-              , sv_typeName = GName
-                                "Library"
-                                "DataType"
+              , sv_typeName = OrigName
+                                { origPackage = Nothing
+                                , origGName = GName
+                                                "Library"
+                                                "DataType"
+                                }
               }
           ]
       )
@@ -35,13 +47,19 @@ Table (
           "DataTypeWithSelectors"
       , fromList
           [ SymConstructor
-              { sv_origName = GName
-                                "Library"
-                                "DataTypeWithSelectors"
+              { sv_origName = OrigName
+                                { origPackage = Nothing
+                                , origGName = GName
+                                                "Library"
+                                                "DataTypeWithSelectors"
+                                }
               , sv_fixity = Nothing
-              , sv_typeName = GName
-                                "Library"
-                                "DataTypeWithSelectors"
+              , sv_typeName = OrigName
+                                { origPackage = Nothing
+                                , origGName = GName
+                                                "Library"
+                                                "DataTypeWithSelectors"
+                                }
               }
           ]
       )
@@ -50,13 +68,19 @@ Table (
           "Newtype"
       , fromList
           [ SymConstructor
-              { sv_origName = GName
-                                "Library"
-                                "Newtype"
+              { sv_origName = OrigName
+                                { origPackage = Nothing
+                                , origGName = GName
+                                                "Library"
+                                                "Newtype"
+                                }
               , sv_fixity = Nothing
-              , sv_typeName = GName
-                                "Library"
-                                "Newtype"
+              , sv_typeName = OrigName
+                                { origPackage = Nothing
+                                , origGName = GName
+                                                "Library"
+                                                "Newtype"
+                                }
               }
           ]
       )
@@ -65,13 +89,19 @@ Table (
           "NewtypeWithSelectors"
       , fromList
           [ SymConstructor
-              { sv_origName = GName
-                                "Library"
-                                "NewtypeWithSelectors"
+              { sv_origName = OrigName
+                                { origPackage = Nothing
+                                , origGName = GName
+                                                "Library"
+                                                "NewtypeWithSelectors"
+                                }
               , sv_fixity = Nothing
-              , sv_typeName = GName
-                                "Library"
-                                "NewtypeWithSelectors"
+              , sv_typeName = OrigName
+                                { origPackage = Nothing
+                                , origGName = GName
+                                                "Library"
+                                                "NewtypeWithSelectors"
+                                }
               }
           ]
       )
@@ -80,9 +110,12 @@ Table (
           "function"
       , fromList
           [ SymValue
-              { sv_origName = GName
-                                "Library"
-                                "function"
+              { sv_origName = OrigName
+                                { origPackage = Nothing
+                                , origGName = GName
+                                                "Library"
+                                                "function"
+                                }
               , sv_fixity = Nothing
               }
           ]
@@ -92,13 +125,19 @@ Table (
           "method1"
       , fromList
           [ SymMethod
-              { sv_origName = GName
-                                "Library"
-                                "method1"
+              { sv_origName = OrigName
+                                { origPackage = Nothing
+                                , origGName = GName
+                                                "Library"
+                                                "method1"
+                                }
               , sv_fixity = Nothing
-              , sv_className = GName
-                                 "Library"
-                                 "Class"
+              , sv_className = OrigName
+                                 { origPackage = Nothing
+                                 , origGName = GName
+                                                 "Library"
+                                                 "Class"
+                                 }
               }
           ]
       )
@@ -107,13 +146,19 @@ Table (
           "method2"
       , fromList
           [ SymMethod
-              { sv_origName = GName
-                                "Library"
-                                "method2"
+              { sv_origName = OrigName
+                                { origPackage = Nothing
+                                , origGName = GName
+                                                "Library"
+                                                "method2"
+                                }
               , sv_fixity = Nothing
-              , sv_className = GName
-                                 "Library"
-                                 "Class"
+              , sv_className = OrigName
+                                 { origPackage = Nothing
+                                 , origGName = GName
+                                                 "Library"
+                                                 "Class"
+                                 }
               }
           ]
       )
@@ -122,13 +167,19 @@ Table (
           "selector1"
       , fromList
           [ SymSelector
-              { sv_origName = GName
-                                "Library"
-                                "selector1"
+              { sv_origName = OrigName
+                                { origPackage = Nothing
+                                , origGName = GName
+                                                "Library"
+                                                "selector1"
+                                }
               , sv_fixity = Nothing
-              , sv_typeName = GName
-                                "Library"
-                                "DataTypeWithSelectors"
+              , sv_typeName = OrigName
+                                { origPackage = Nothing
+                                , origGName = GName
+                                                "Library"
+                                                "DataTypeWithSelectors"
+                                }
               }
           ]
       )
@@ -137,13 +188,19 @@ Table (
           "selector2"
       , fromList
           [ SymSelector
-              { sv_origName = GName
-                                "Library"
-                                "selector2"
+              { sv_origName = OrigName
+                                { origPackage = Nothing
+                                , origGName = GName
+                                                "Library"
+                                                "selector2"
+                                }
               , sv_fixity = Nothing
-              , sv_typeName = GName
-                                "Library"
-                                "DataTypeWithSelectors"
+              , sv_typeName = OrigName
+                                { origPackage = Nothing
+                                , origGName = GName
+                                                "Library"
+                                                "DataTypeWithSelectors"
+                                }
               }
           ]
       )
@@ -152,13 +209,19 @@ Table (
           "unNewtype"
       , fromList
           [ SymSelector
-              { sv_origName = GName
-                                "Library"
-                                "unNewtype"
+              { sv_origName = OrigName
+                                { origPackage = Nothing
+                                , origGName = GName
+                                                "Library"
+                                                "unNewtype"
+                                }
               , sv_fixity = Nothing
-              , sv_typeName = GName
-                                "Library"
-                                "NewtypeWithSelectors"
+              , sv_typeName = OrigName
+                                { origPackage = Nothing
+                                , origGName = GName
+                                                "Library"
+                                                "NewtypeWithSelectors"
+                                }
               }
           ]
       )
@@ -167,13 +230,19 @@ Table (
           "Constructor1"
       , fromList
           [ SymConstructor
-              { sv_origName = GName
-                                "Library"
-                                "Constructor1"
+              { sv_origName = OrigName
+                                { origPackage = Nothing
+                                , origGName = GName
+                                                "Library"
+                                                "Constructor1"
+                                }
               , sv_fixity = Nothing
-              , sv_typeName = GName
-                                "Library"
-                                "DataType"
+              , sv_typeName = OrigName
+                                { origPackage = Nothing
+                                , origGName = GName
+                                                "Library"
+                                                "DataType"
+                                }
               }
           ]
       )
@@ -182,13 +251,19 @@ Table (
           "Constructor2"
       , fromList
           [ SymConstructor
-              { sv_origName = GName
-                                "Library"
-                                "Constructor2"
+              { sv_origName = OrigName
+                                { origPackage = Nothing
+                                , origGName = GName
+                                                "Library"
+                                                "Constructor2"
+                                }
               , sv_fixity = Nothing
-              , sv_typeName = GName
-                                "Library"
-                                "DataType"
+              , sv_typeName = OrigName
+                                { origPackage = Nothing
+                                , origGName = GName
+                                                "Library"
+                                                "DataType"
+                                }
               }
           ]
       )
@@ -197,13 +272,19 @@ Table (
           "DataTypeWithSelectors"
       , fromList
           [ SymConstructor
-              { sv_origName = GName
-                                "Library"
-                                "DataTypeWithSelectors"
+              { sv_origName = OrigName
+                                { origPackage = Nothing
+                                , origGName = GName
+                                                "Library"
+                                                "DataTypeWithSelectors"
+                                }
               , sv_fixity = Nothing
-              , sv_typeName = GName
-                                "Library"
-                                "DataTypeWithSelectors"
+              , sv_typeName = OrigName
+                                { origPackage = Nothing
+                                , origGName = GName
+                                                "Library"
+                                                "DataTypeWithSelectors"
+                                }
               }
           ]
       )
@@ -212,13 +293,19 @@ Table (
           "Newtype"
       , fromList
           [ SymConstructor
-              { sv_origName = GName
-                                "Library"
-                                "Newtype"
+              { sv_origName = OrigName
+                                { origPackage = Nothing
+                                , origGName = GName
+                                                "Library"
+                                                "Newtype"
+                                }
               , sv_fixity = Nothing
-              , sv_typeName = GName
-                                "Library"
-                                "Newtype"
+              , sv_typeName = OrigName
+                                { origPackage = Nothing
+                                , origGName = GName
+                                                "Library"
+                                                "Newtype"
+                                }
               }
           ]
       )
@@ -227,13 +314,19 @@ Table (
           "NewtypeWithSelectors"
       , fromList
           [ SymConstructor
-              { sv_origName = GName
-                                "Library"
-                                "NewtypeWithSelectors"
+              { sv_origName = OrigName
+                                { origPackage = Nothing
+                                , origGName = GName
+                                                "Library"
+                                                "NewtypeWithSelectors"
+                                }
               , sv_fixity = Nothing
-              , sv_typeName = GName
-                                "Library"
-                                "NewtypeWithSelectors"
+              , sv_typeName = OrigName
+                                { origPackage = Nothing
+                                , origGName = GName
+                                                "Library"
+                                                "NewtypeWithSelectors"
+                                }
               }
           ]
       )
@@ -242,9 +335,12 @@ Table (
           "function"
       , fromList
           [ SymValue
-              { sv_origName = GName
-                                "Library"
-                                "function"
+              { sv_origName = OrigName
+                                { origPackage = Nothing
+                                , origGName = GName
+                                                "Library"
+                                                "function"
+                                }
               , sv_fixity = Nothing
               }
           ]
@@ -254,13 +350,19 @@ Table (
           "method1"
       , fromList
           [ SymMethod
-              { sv_origName = GName
-                                "Library"
-                                "method1"
+              { sv_origName = OrigName
+                                { origPackage = Nothing
+                                , origGName = GName
+                                                "Library"
+                                                "method1"
+                                }
               , sv_fixity = Nothing
-              , sv_className = GName
-                                 "Library"
-                                 "Class"
+              , sv_className = OrigName
+                                 { origPackage = Nothing
+                                 , origGName = GName
+                                                 "Library"
+                                                 "Class"
+                                 }
               }
           ]
       )
@@ -269,13 +371,19 @@ Table (
           "method2"
       , fromList
           [ SymMethod
-              { sv_origName = GName
-                                "Library"
-                                "method2"
+              { sv_origName = OrigName
+                                { origPackage = Nothing
+                                , origGName = GName
+                                                "Library"
+                                                "method2"
+                                }
               , sv_fixity = Nothing
-              , sv_className = GName
-                                 "Library"
-                                 "Class"
+              , sv_className = OrigName
+                                 { origPackage = Nothing
+                                 , origGName = GName
+                                                 "Library"
+                                                 "Class"
+                                 }
               }
           ]
       )
@@ -284,13 +392,19 @@ Table (
           "selector1"
       , fromList
           [ SymSelector
-              { sv_origName = GName
-                                "Library"
-                                "selector1"
+              { sv_origName = OrigName
+                                { origPackage = Nothing
+                                , origGName = GName
+                                                "Library"
+                                                "selector1"
+                                }
               , sv_fixity = Nothing
-              , sv_typeName = GName
-                                "Library"
-                                "DataTypeWithSelectors"
+              , sv_typeName = OrigName
+                                { origPackage = Nothing
+                                , origGName = GName
+                                                "Library"
+                                                "DataTypeWithSelectors"
+                                }
               }
           ]
       )
@@ -299,13 +413,19 @@ Table (
           "selector2"
       , fromList
           [ SymSelector
-              { sv_origName = GName
-                                "Library"
-                                "selector2"
+              { sv_origName = OrigName
+                                { origPackage = Nothing
+                                , origGName = GName
+                                                "Library"
+                                                "selector2"
+                                }
               , sv_fixity = Nothing
-              , sv_typeName = GName
-                                "Library"
-                                "DataTypeWithSelectors"
+              , sv_typeName = OrigName
+                                { origPackage = Nothing
+                                , origGName = GName
+                                                "Library"
+                                                "DataTypeWithSelectors"
+                                }
               }
           ]
       )
@@ -314,13 +434,19 @@ Table (
           "unNewtype"
       , fromList
           [ SymSelector
-              { sv_origName = GName
-                                "Library"
-                                "unNewtype"
+              { sv_origName = OrigName
+                                { origPackage = Nothing
+                                , origGName = GName
+                                                "Library"
+                                                "unNewtype"
+                                }
               , sv_fixity = Nothing
-              , sv_typeName = GName
-                                "Library"
-                                "NewtypeWithSelectors"
+              , sv_typeName = OrigName
+                                { origPackage = Nothing
+                                , origGName = GName
+                                                "Library"
+                                                "NewtypeWithSelectors"
+                                }
               }
           ]
       )
@@ -331,9 +457,12 @@ Table (
           "Class"
       , fromList
           [ SymClass
-              { st_origName = GName
-                                "Library"
-                                "Class"
+              { st_origName = OrigName
+                                { origPackage = Nothing
+                                , origGName = GName
+                                                "Library"
+                                                "Class"
+                                }
               , st_fixity = Nothing
               }
           ]
@@ -343,9 +472,12 @@ Table (
           "DataType"
       , fromList
           [ SymData
-              { st_origName = GName
-                                "Library"
-                                "DataType"
+              { st_origName = OrigName
+                                { origPackage = Nothing
+                                , origGName = GName
+                                                "Library"
+                                                "DataType"
+                                }
               , st_fixity = Nothing
               }
           ]
@@ -355,9 +487,12 @@ Table (
           "DataTypeWithSelectors"
       , fromList
           [ SymData
-              { st_origName = GName
-                                "Library"
-                                "DataTypeWithSelectors"
+              { st_origName = OrigName
+                                { origPackage = Nothing
+                                , origGName = GName
+                                                "Library"
+                                                "DataTypeWithSelectors"
+                                }
               , st_fixity = Nothing
               }
           ]
@@ -367,9 +502,12 @@ Table (
           "Newtype"
       , fromList
           [ SymData
-              { st_origName = GName
-                                "Library"
-                                "Newtype"
+              { st_origName = OrigName
+                                { origPackage = Nothing
+                                , origGName = GName
+                                                "Library"
+                                                "Newtype"
+                                }
               , st_fixity = Nothing
               }
           ]
@@ -379,9 +517,12 @@ Table (
           "NewtypeWithSelectors"
       , fromList
           [ SymData
-              { st_origName = GName
-                                "Library"
-                                "NewtypeWithSelectors"
+              { st_origName = OrigName
+                                { origPackage = Nothing
+                                , origGName = GName
+                                                "Library"
+                                                "NewtypeWithSelectors"
+                                }
               , st_fixity = Nothing
               }
           ]
@@ -391,9 +532,12 @@ Table (
           "TypeSynonym"
       , fromList
           [ SymType
-              { st_origName = GName
-                                "Library"
-                                "TypeSynonym"
+              { st_origName = OrigName
+                                { origPackage = Nothing
+                                , origGName = GName
+                                                "Library"
+                                                "TypeSynonym"
+                                }
               , st_fixity = Nothing
               }
           ]
@@ -403,9 +547,12 @@ Table (
           "Class"
       , fromList
           [ SymClass
-              { st_origName = GName
-                                "Library"
-                                "Class"
+              { st_origName = OrigName
+                                { origPackage = Nothing
+                                , origGName = GName
+                                                "Library"
+                                                "Class"
+                                }
               , st_fixity = Nothing
               }
           ]
@@ -415,9 +562,12 @@ Table (
           "DataType"
       , fromList
           [ SymData
-              { st_origName = GName
-                                "Library"
-                                "DataType"
+              { st_origName = OrigName
+                                { origPackage = Nothing
+                                , origGName = GName
+                                                "Library"
+                                                "DataType"
+                                }
               , st_fixity = Nothing
               }
           ]
@@ -427,9 +577,12 @@ Table (
           "DataTypeWithSelectors"
       , fromList
           [ SymData
-              { st_origName = GName
-                                "Library"
-                                "DataTypeWithSelectors"
+              { st_origName = OrigName
+                                { origPackage = Nothing
+                                , origGName = GName
+                                                "Library"
+                                                "DataTypeWithSelectors"
+                                }
               , st_fixity = Nothing
               }
           ]
@@ -439,9 +592,12 @@ Table (
           "Newtype"
       , fromList
           [ SymData
-              { st_origName = GName
-                                "Library"
-                                "Newtype"
+              { st_origName = OrigName
+                                { origPackage = Nothing
+                                , origGName = GName
+                                                "Library"
+                                                "Newtype"
+                                }
               , st_fixity = Nothing
               }
           ]
@@ -451,9 +607,12 @@ Table (
           "NewtypeWithSelectors"
       , fromList
           [ SymData
-              { st_origName = GName
-                                "Library"
-                                "NewtypeWithSelectors"
+              { st_origName = OrigName
+                                { origPackage = Nothing
+                                , origGName = GName
+                                                "Library"
+                                                "NewtypeWithSelectors"
+                                }
               , st_fixity = Nothing
               }
           ]
@@ -463,9 +622,12 @@ Table (
           "TypeSynonym"
       , fromList
           [ SymType
-              { st_origName = GName
-                                "Library"
-                                "TypeSynonym"
+              { st_origName = OrigName
+                                { origPackage = Nothing
+                                , origGName = GName
+                                                "Library"
+                                                "TypeSynonym"
+                                }
               , st_fixity = Nothing
               }
           ]

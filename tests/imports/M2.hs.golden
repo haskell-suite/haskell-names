@@ -5,13 +5,19 @@ Table (
           "Constructor1"
       , fromList
           [ SymConstructor
-              { sv_origName = GName
-                                "Library"
-                                "Constructor1"
+              { sv_origName = OrigName
+                                { origPackage = Nothing
+                                , origGName = GName
+                                                "Library"
+                                                "Constructor1"
+                                }
               , sv_fixity = Nothing
-              , sv_typeName = GName
-                                "Library"
-                                "DataType"
+              , sv_typeName = OrigName
+                                { origPackage = Nothing
+                                , origGName = GName
+                                                "Library"
+                                                "DataType"
+                                }
               }
           ]
       )
@@ -20,13 +26,19 @@ Table (
           "Constructor2"
       , fromList
           [ SymConstructor
-              { sv_origName = GName
-                                "Library"
-                                "Constructor2"
+              { sv_origName = OrigName
+                                { origPackage = Nothing
+                                , origGName = GName
+                                                "Library"
+                                                "Constructor2"
+                                }
               , sv_fixity = Nothing
-              , sv_typeName = GName
-                                "Library"
-                                "DataType"
+              , sv_typeName = OrigName
+                                { origPackage = Nothing
+                                , origGName = GName
+                                                "Library"
+                                                "DataType"
+                                }
               }
           ]
       )
@@ -35,9 +47,12 @@ Table (
           "function"
       , fromList
           [ SymValue
-              { sv_origName = GName
-                                "Library"
-                                "function"
+              { sv_origName = OrigName
+                                { origPackage = Nothing
+                                , origGName = GName
+                                                "Library"
+                                                "function"
+                                }
               , sv_fixity = Nothing
               }
           ]
@@ -47,13 +62,19 @@ Table (
           "Constructor1"
       , fromList
           [ SymConstructor
-              { sv_origName = GName
-                                "Library"
-                                "Constructor1"
+              { sv_origName = OrigName
+                                { origPackage = Nothing
+                                , origGName = GName
+                                                "Library"
+                                                "Constructor1"
+                                }
               , sv_fixity = Nothing
-              , sv_typeName = GName
-                                "Library"
-                                "DataType"
+              , sv_typeName = OrigName
+                                { origPackage = Nothing
+                                , origGName = GName
+                                                "Library"
+                                                "DataType"
+                                }
               }
           ]
       )
@@ -62,13 +83,19 @@ Table (
           "Constructor2"
       , fromList
           [ SymConstructor
-              { sv_origName = GName
-                                "Library"
-                                "Constructor2"
+              { sv_origName = OrigName
+                                { origPackage = Nothing
+                                , origGName = GName
+                                                "Library"
+                                                "Constructor2"
+                                }
               , sv_fixity = Nothing
-              , sv_typeName = GName
-                                "Library"
-                                "DataType"
+              , sv_typeName = OrigName
+                                { origPackage = Nothing
+                                , origGName = GName
+                                                "Library"
+                                                "DataType"
+                                }
               }
           ]
       )
@@ -77,9 +104,12 @@ Table (
           "function"
       , fromList
           [ SymValue
-              { sv_origName = GName
-                                "Library"
-                                "function"
+              { sv_origName = OrigName
+                                { origPackage = Nothing
+                                , origGName = GName
+                                                "Library"
+                                                "function"
+                                }
               , sv_fixity = Nothing
               }
           ]
@@ -91,9 +121,12 @@ Table (
           "DataType"
       , fromList
           [ SymData
-              { st_origName = GName
-                                "Library"
-                                "DataType"
+              { st_origName = OrigName
+                                { origPackage = Nothing
+                                , origGName = GName
+                                                "Library"
+                                                "DataType"
+                                }
               , st_fixity = Nothing
               }
           ]
@@ -103,9 +136,12 @@ Table (
           "DataType"
       , fromList
           [ SymData
-              { st_origName = GName
-                                "Library"
-                                "DataType"
+              { st_origName = OrigName
+                                { origPackage = Nothing
+                                , origGName = GName
+                                                "Library"
+                                                "DataType"
+                                }
               , st_fixity = Nothing
               }
           ]

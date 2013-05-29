@@ -1,9 +1,12 @@
 Symbols (
   fromList
     [ SymValue
-        { sv_origName = GName
-                          "M1"
-                          "a"
+        { sv_origName = OrigName
+                          { origPackage = Nothing
+                          , origGName = GName
+                                          "M1"
+                                          "a"
+                          }
         , sv_fixity = Nothing
         }
     ] ) (

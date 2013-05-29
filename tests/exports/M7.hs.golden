@@ -1,86 +1,137 @@
 Symbols (
   fromList
     [ SymMethod
-        { sv_origName = GName
-                          "M7"
-                          "x"
+        { sv_origName = OrigName
+                          { origPackage = Nothing
+                          , origGName = GName
+                                          "M7"
+                                          "x"
+                          }
         , sv_fixity = Nothing
-        , sv_className = GName
-                           "M7"
-                           "Bar"
+        , sv_className = OrigName
+                           { origPackage = Nothing
+                           , origGName = GName
+                                           "M7"
+                                           "Bar"
+                           }
         }
     , SymSelector
-        { sv_origName = GName
-                          "M7"
-                          "c"
+        { sv_origName = OrigName
+                          { origPackage = Nothing
+                          , origGName = GName
+                                          "M7"
+                                          "c"
+                          }
         , sv_fixity = Nothing
-        , sv_typeName = GName
-                          "M7"
-                          "Foo"
+        , sv_typeName = OrigName
+                          { origPackage = Nothing
+                          , origGName = GName
+                                          "M7"
+                                          "Foo"
+                          }
         }
     , SymSelector
-        { sv_origName = GName
-                          "M7"
-                          "unN"
+        { sv_origName = OrigName
+                          { origPackage = Nothing
+                          , origGName = GName
+                                          "M7"
+                                          "unN"
+                          }
         , sv_fixity = Nothing
-        , sv_typeName = GName
-                          "M7"
-                          "N"
+        , sv_typeName = OrigName
+                          { origPackage = Nothing
+                          , origGName = GName
+                                          "M7"
+                                          "N"
+                          }
         }
     , SymConstructor
-        { sv_origName = GName
-                          "M7"
-                          "Foo1"
+        { sv_origName = OrigName
+                          { origPackage = Nothing
+                          , origGName = GName
+                                          "M7"
+                                          "Foo1"
+                          }
         , sv_fixity = Nothing
-        , sv_typeName = GName
-                          "M7"
-                          "Foo"
+        , sv_typeName = OrigName
+                          { origPackage = Nothing
+                          , origGName = GName
+                                          "M7"
+                                          "Foo"
+                          }
         }
     , SymConstructor
-        { sv_origName = GName
-                          "M7"
-                          "Foo2"
+        { sv_origName = OrigName
+                          { origPackage = Nothing
+                          , origGName = GName
+                                          "M7"
+                                          "Foo2"
+                          }
         , sv_fixity = Nothing
-        , sv_typeName = GName
-                          "M7"
-                          "Foo"
+        , sv_typeName = OrigName
+                          { origPackage = Nothing
+                          , origGName = GName
+                                          "M7"
+                                          "Foo"
+                          }
         }
     , SymConstructor
-        { sv_origName = GName
-                          "M7"
-                          "Foo3"
+        { sv_origName = OrigName
+                          { origPackage = Nothing
+                          , origGName = GName
+                                          "M7"
+                                          "Foo3"
+                          }
         , sv_fixity = Nothing
-        , sv_typeName = GName
-                          "M7"
-                          "Foo"
+        , sv_typeName = OrigName
+                          { origPackage = Nothing
+                          , origGName = GName
+                                          "M7"
+                                          "Foo"
+                          }
         }
     , SymConstructor
-        { sv_origName = GName
-                          "M7"
-                          "N"
+        { sv_origName = OrigName
+                          { origPackage = Nothing
+                          , origGName = GName
+                                          "M7"
+                                          "N"
+                          }
         , sv_fixity = Nothing
-        , sv_typeName = GName
-                          "M7"
-                          "N"
+        , sv_typeName = OrigName
+                          { origPackage = Nothing
+                          , origGName = GName
+                                          "M7"
+                                          "N"
+                          }
         }
     ] ) (
   fromList
     [ SymData
-        { st_origName = GName
-                          "M7"
-                          "Foo"
+        { st_origName = OrigName
+                          { origPackage = Nothing
+                          , origGName = GName
+                                          "M7"
+                                          "Foo"
+                          }
         , st_fixity = Nothing
         }
     , SymData
-        { st_origName = GName
-                          "M7"
-                          "N"
+        { st_origName = OrigName
+                          { origPackage = Nothing
+                          , origGName = GName
+                                          "M7"
+                                          "N"
+                          }
         , st_fixity = Nothing
         }
     , SymClass
-        { st_origName = GName
-                          "M7"
-                          "Bar"
+        { st_origName = OrigName
+                          { origPackage = Nothing
+                          , origGName = GName
+                                          "M7"
+                                          "Bar"
+                          }
         , st_fixity = Nothing
         }
     ] )

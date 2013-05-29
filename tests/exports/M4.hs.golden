@@ -2,9 +2,12 @@ Symbols (
   fromList [] ) (
   fromList
     [ SymData
-        { st_origName = GName
-                          "M4"
-                          "A"
+        { st_origName = OrigName
+                          { origPackage = Nothing
+                          , origGName = GName
+                                          "M4"
+                                          "A"
+                          }
         , st_fixity = Nothing
         }
     ] )
