@@ -85,18 +85,11 @@ parse exts cppOpts file = do
              }
 
 -- FIXME use the language argument
-compile :: [Char]
-        -> Maybe Language
-        -> [Extension]
-        -> CpphsOptions
-        -> [Distribution.Simple.Compiler.PackageDB]
-        -> [Distribution.Package.InstalledPackageId]
-        -> [FilePath]
-        -> IO ()
-compile buildDir mbLang exts cppOpts pkgdbs pkgids files = do
+compile :: Compiler.CompileFn
+compile buildDir mbLang exts cppOpts pkgName pkgdbs deps files = do
   moduleSet <- mapM (parse exts cppOpts) files
   let analysis = analyseModules moduleSet
-  packages <- readPackagesInfo (Proxy :: Proxy NamesDB) pkgdbs pkgids
+  packages <- readPackagesInfo (Proxy :: Proxy NamesDB) pkgdbs deps
   modData <-
     evalModuleT analysis packages "names" readInterface
   forM_ modData $ \(mod, syms) -> do
@@ -108,4 +101,4 @@ compile buildDir mbLang exts cppOpts pkgdbs pkgids files = do
           ]
     F.for_ errors $ \e -> printf "Warning: %s\n" (show e)
     createDirectoryIfMissingVerbose silent True (dropFileName ifaceFile)
-    writeInterface ifaceFile syms
+    writeInterface ifaceFile $ qualifySymbols pkgName syms
