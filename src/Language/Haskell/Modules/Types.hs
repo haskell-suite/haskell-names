@@ -8,6 +8,7 @@ import Data.Monoid
 import Data.Lens.Common
 import qualified Data.Set as Set
 import {-# SOURCE #-} qualified Language.Haskell.Modules.GlobalSymbolTable as Global
+import Distribution.Package (PackageId)
 
 type SymFixity = (Assoc (), Int)
 
@@ -62,7 +63,7 @@ type ModuleNameS = String
 
 -- | Possibly qualified name. If the name is not qualified,
 -- 'ModuleNameS' is the empty string.
-data GName = GName ModuleNameS NameS
+data GName = GName (Maybe PackageId) ModuleNameS NameS
   deriving (Eq, Ord, Show, Data, Typeable)
 -- | Qualified name, where 'ModuleNameS' points to the module where the
 -- name was originally defined. The module part is never empty.

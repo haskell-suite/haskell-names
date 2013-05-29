@@ -85,5 +85,5 @@ getTopDeclSymbols mdl d =
             [ Left  (SymValue       { sv_origName = qname fn, sv_fixity = Nothing }) ]
     _ ->    []
   where ModuleName _ smdl = mdl
-        qname = GName smdl . nameToString
+        qname = GName Nothing smdl . nameToString
         hname = fst . splitDeclHead

@@ -108,7 +108,7 @@ resolveExportSpec tbl exp =
           -> Set.Set i
         filterByPrefix prefix m =
           Set.unions
-            [ i | (GName prefix' _, i) <- Map.toList m, prefix' == prefix ]
+            [ i | (GName _ prefix' _, i) <- Map.toList m, prefix' == prefix ]
 
         filterEntities
           :: Ord i
@@ -140,5 +140,5 @@ addSymbols a syms = do
     F.mapM_ (add sndLens) $ syms^.tySyms
   where
     add lens i = do
-      let GName _ n = origName i
+      let GName _ _ n = origName i
       modify $ modL lens (Map.insertWith (++) n [a])

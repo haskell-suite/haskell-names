@@ -35,6 +35,7 @@ Library
     , tagged
     , traverse-with-class
     , type-eq
+    , Cabal
   Hs-source-dirs:       src
   Ghc-options:          -Wall -fno-warn-name-shadowing
 

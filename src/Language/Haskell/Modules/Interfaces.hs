@@ -41,15 +41,17 @@ writeInterface path iface =
     encode iface `mappend` BS.pack [fromIntegral $ ord '\n']
 
 instance ToJSON GName where
-  toJSON (GName m n) =
+  toJSON (GName pkg m n) =
     object
       [("module", toJSON m)
       ,("name", toJSON n)
+      ,("package", toJSON pkg)
       ]
 
 instance FromJSON GName where
   parseJSON (Object v) =
     GName <$>
+      v .: "package" <*>
       v .: "module" <*>
       v .: "name"
   parseJSON _ = mzero
