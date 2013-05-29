@@ -1,4 +1,5 @@
-{-# LANGUAGE DeriveDataTypeable, DeriveFunctor #-}
+{-# LANGUAGE DeriveDataTypeable, DeriveFunctor, DeriveFoldable,
+             DeriveTraversable #-}
 module Language.Haskell.Modules.Types where
 
 import Language.Haskell.Exts.Annotated
@@ -9,6 +10,8 @@ import Data.Lens.Common
 import qualified Data.Set as Set
 import {-# SOURCE #-} qualified Language.Haskell.Modules.GlobalSymbolTable as Global
 import Distribution.Package (PackageId)
+import Data.Foldable
+import Data.Traversable
 
 type SymFixity = (Assoc (), Int)
 
@@ -17,7 +20,7 @@ data SymValueInfo name
     | SymMethod      { sv_origName :: name, sv_fixity :: Maybe SymFixity, sv_className :: name }
     | SymSelector    { sv_origName :: name, sv_fixity :: Maybe SymFixity, sv_typeName :: name }
     | SymConstructor { sv_origName :: name, sv_fixity :: Maybe SymFixity, sv_typeName :: name }
-    deriving (Eq, Ord, Show, Data, Typeable)
+    deriving (Eq, Ord, Show, Data, Typeable, Functor, Foldable, Traversable)
 
 data SymTypeInfo name
     = SymType        { st_origName :: name, st_fixity :: Maybe SymFixity }
@@ -25,7 +28,7 @@ data SymTypeInfo name
     | SymTypeFam     { st_origName :: name, st_fixity :: Maybe SymFixity }
     | SymDataFam     { st_origName :: name, st_fixity :: Maybe SymFixity }
     | SymClass       { st_origName :: name, st_fixity :: Maybe SymFixity }
-    deriving (Eq, Ord, Show, Data, Typeable)
+    deriving (Eq, Ord, Show, Data, Typeable, Functor, Foldable, Traversable)
 
 class HasOrigName i where
   origName :: i n -> n
