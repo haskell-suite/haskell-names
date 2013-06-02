@@ -5,7 +5,8 @@
     UndecidableInstances, OverlappingInstances, ScopedTypeVariables,
     TypeOperators, GADTs #-}
 module Language.Haskell.Modules.Annotated
-  ( annotate
+  ( Scoped(..)
+  , annotate
   ) where
 
 import Language.Haskell.Modules.Types
