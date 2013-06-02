@@ -1,9 +1,20 @@
 module Language.Haskell.Modules
-  ( analyseModules
+  (
+  -- * Core functions
+    analyseModules
   , qualifySymbols
-  , module Language.Haskell.Modules.Types
+  -- * Types
+  , SymValueInfo(..)
+  , SymTypeInfo(..)
+  , Symbols(..)
+  , NameS
+  , ModuleNameS
+  , GName(..)
+  , OrigName(..)
+  , Error(..)
+  , SymFixity
   ) where
 
-import Language.Haskell.Modules.Types hiding (Scoped)
+import Language.Haskell.Modules.Types
 import Language.Haskell.Modules.Recursive
 import Language.Haskell.Modules.ScopeUtils
