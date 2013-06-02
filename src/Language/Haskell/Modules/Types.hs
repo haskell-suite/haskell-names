@@ -72,7 +72,7 @@ data GName = GName ModuleNameS NameS
 -- name was originally defined. The module part is never empty.
 --
 -- Also contains name and version of the package where it was defined. If
--- it's 'Nothing', then the entity is defined in the "current" package.
+-- it's 'Nothing', then the entity is defined in the \"current\" package.
 data OrigName = OrigName
   { origPackage :: (Maybe PackageId)
   , origGName :: GName
