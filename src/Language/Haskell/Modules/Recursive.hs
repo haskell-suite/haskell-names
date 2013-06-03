@@ -5,8 +5,10 @@ import Data.Graph(stronglyConnComp, flattenSCC)
 import Data.Monoid
 import Data.Data (Data)
 import Control.Monad
+import Control.Applicative
 import Language.Haskell.Exts.Annotated
 import Distribution.HaskellSuite.Modules
+import Data.Maybe
 
 import Language.Haskell.Modules.Types
 import Language.Haskell.Modules.SyntaxUtils
@@ -99,3 +101,16 @@ computeInterfaces
   => [Module l] -> m ()
 computeInterfaces =
   mapM_ findFixPoint . groupModules
+
+-- | Like 'computeInterfaces', but also return a list of interfaces, one
+-- per module and in the same order
+getInterfaces
+  :: (MonadModule m, ModuleInfo m ~ Symbols, Data l, SrcInfo l, Eq l)
+  => [Module l] -> m [Symbols]
+getInterfaces mods = do
+  computeInterfaces mods
+  forM mods $ \mod ->
+    let modName = getModuleName mod in
+    fromMaybe (error $ msg modName) `liftM` lookupInCache modName
+  where
+    msg modName = "getInterfaces: module " ++ modToString modName ++ " is not in the cache"
