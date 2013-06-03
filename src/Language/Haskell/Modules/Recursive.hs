@@ -1,5 +1,9 @@
 {-# LANGUAGE TypeFamilies #-}
-module Language.Haskell.Modules.Recursive(analyseModules) where
+module Language.Haskell.Modules.Recursive
+  ( analyseModules
+  , computeInterfaces
+  , getInterfaces
+  ) where
 
 import Data.Graph(stronglyConnComp, flattenSCC)
 import Data.Monoid
