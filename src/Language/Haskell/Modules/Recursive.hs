@@ -89,3 +89,13 @@ analyseModules
   => [Module l] -> m [(Module (Scoped l), Symbols)]
 analyseModules =
   liftM concat . mapM scopeSCC . groupModules
+
+-- | 'computeInterfaces' takes a list of possibly recursive modules and
+-- computes the interface of each module. The computed interfaces are
+-- written into the @m@'s cache and are available to further computations
+-- in this monad.
+computeInterfaces
+  :: (MonadModule m, ModuleInfo m ~ Symbols, Data l, SrcInfo l, Eq l)
+  => [Module l] -> m ()
+computeInterfaces =
+  mapM_ findFixPoint . groupModules
