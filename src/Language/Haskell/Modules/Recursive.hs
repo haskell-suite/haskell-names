@@ -1,8 +1,8 @@
 {-# LANGUAGE TypeFamilies #-}
 module Language.Haskell.Modules.Recursive
-  ( analyseModules
-  , computeInterfaces
+  ( computeInterfaces
   , getInterfaces
+  , annotateModule
   ) where
 
 import Data.Graph(stronglyConnComp, flattenSCC)
@@ -38,63 +38,52 @@ groupModules modules =
       , map (dropAnn . importModule) $ getImports m
       )
 
-scopeSCC
+-- | Annotate a module with scoping information. This assumes that all
+-- module dependencies have been resolved and cached — usually you need
+-- to run 'computeInterfaces' first, unless you have one module in
+-- isolation.
+annotateModule
   :: (MonadModule m, ModuleInfo m ~ Symbols, Data l, SrcInfo l, Eq l)
-  => [Module l] -> m [(Module (Scoped l), Symbols)]
-scopeSCC mods = do
-  modData <- findFixPoint mods
-  return $ flip map (zip mods modData) $
-    \(Module lm mh os is ds, (imp, exp, tbl, syms)) ->
+  => Module l -> m (Module (Scoped l))
+annotateModule mod@(Module lm mh os is ds) = do
+  (imp, impTbl) <- processImports $ getImports mod
+  let ownTbl = moduleTable mod
+      tbl = impTbl <> ownTbl
+  (exp, syms) <- processExports tbl mod
+
+  let
+    lm' = none lm
+    os' = fmap noScope os
+    is' = imp
+    ds' = annotate (Scope tbl Local.empty Reference) `map` ds
+
+    mh' = flip fmap mh $ \(ModuleHead lh n mw me) ->
       let
-        lm' = none lm
-        os' = fmap noScope os
-        is' = imp
-        ds' = annotate (Scope tbl Local.empty Reference) `map` ds
+        lh' = none lh
+        n'  = noScope n
+        mw' = fmap noScope mw
+        me' = exp
+      in ModuleHead lh' n' mw' me'
 
-        mh' = flip fmap mh $ \(ModuleHead lh n mw me) ->
-          let
-            lh' = none lh
-            n'  = noScope n
-            mw' = fmap noScope mw
-            me' = exp
-          in ModuleHead lh' n' mw' me'
+  return $ Module lm' mh' os' is' ds'
 
-      in (Module lm' mh' os' is' ds', syms)
-
--- Input: a list of mutually recursive modules (typically, a strongly
--- connected component in the dependency graph).
---
--- Output: a list consisting of, per each module and in the same order,
--- the annotated import and export declarations, the module's global symbol
--- table and the set of exported symbols.
+-- | Compute interfaces for a set of mutually recursive modules and write
+-- the results to the cache
 findFixPoint
   :: (Eq l, Data l, MonadModule m, ModuleInfo m ~ Symbols)
-  => [Module l]
-  -> m [ ( [ImportDecl (Scoped l)]
-         , Maybe (ExportSpecList (Scoped l))
-         , Global.Table
-         , Symbols
-         )
-       ]
+  => [Module l] -> m ()
 findFixPoint mods = go mods (map (const mempty) mods) where
   go mods syms = do
     forM_ (zip syms mods) $ \(s,m) -> insertInCache (getModuleName m) s
-    new <- forM mods $ \m -> do
+    syms' <- forM mods $ \m -> do
       (imp, impTbl) <- processImports $ getImports m
       let ownTbl = moduleTable m
           tbl = impTbl <> ownTbl
       (exp, syms) <- processExports tbl m
-      return (imp, exp, tbl, syms)
-    let syms' = map (\(_,_,_,x) -> x) new
+      return syms
     if syms' == syms
-      then return new
+      then return ()
       else go mods syms'
-
-analyseModules
-  :: (MonadModule m, ModuleInfo m ~ Symbols, Data l, SrcInfo l, Eq l)
-  => [Module l] -> m [(Module (Scoped l), Symbols)]
-analyseModules =
-  liftM concat . mapM scopeSCC . groupModules
 
 -- | 'computeInterfaces' takes a list of possibly recursive modules and
 -- computes the interface of each module. The computed interfaces are
