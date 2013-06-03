@@ -2,6 +2,8 @@ module Language.Haskell.Modules
   (
   -- * Core functions
     analyseModules
+  , computeInterfaces
+  , getInterfaces
   , qualifySymbols
   -- * Types
   , SymValueInfo(..)
