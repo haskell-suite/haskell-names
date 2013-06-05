@@ -13,7 +13,6 @@ import Control.Exception
 import Data.Typeable
 import Data.Proxy
 import qualified Data.Foldable as F
-import qualified Data.Set as Set
 import System.FilePath
 import Text.Printf
 
@@ -23,8 +22,6 @@ import qualified Distribution.HaskellSuite.Compiler as Compiler
 import Distribution.ModuleName hiding (main)
 import Distribution.Simple.Utils
 import Distribution.Verbosity
-import Distribution.Simple.Compiler (PackageDB)
-import Distribution.Package (InstalledPackageId)
 
 import Language.Haskell.Exts.Annotated.CPP
 import Paths_gen_iface
@@ -87,18 +84,20 @@ parse exts cppOpts file = do
 -- FIXME use the language argument
 compile :: Compiler.CompileFn
 compile buildDir mbLang exts cppOpts pkgName pkgdbs deps files = do
+
   moduleSet <- mapM (parse exts cppOpts) files
-  let analysis = analyseModules moduleSet
+
   packages <- readPackagesInfo (Proxy :: Proxy NamesDB) pkgdbs deps
-  modData <-
-    evalModuleT analysis packages "names" readInterface
-  forM_ modData $ \(mod, syms) -> do
+
+  (ifaces, errors) <- evalModuleT (getInterfaces moduleSet) packages "names" readInterface
+
+  F.for_ errors $ \e -> printf "Warning: %s\n" (show e)
+
+  forM_ (zip moduleSet ifaces) $ \(mod, syms) -> do
+
     let HSE.ModuleName _ modname = getModuleName mod
         ifaceFile = buildDir </> toFilePath (fromString modname) <.> suffix
-        errors = Set.unions
-          [ F.foldMap getErrors $ getImports mod
-          , F.foldMap getErrors $ getExportSpecList mod
-          ]
-    F.for_ errors $ \e -> printf "Warning: %s\n" (show e)
+
     createDirectoryIfMissingVerbose silent True (dropFileName ifaceFile)
+
     writeInterface ifaceFile $ qualifySymbols pkgName syms
