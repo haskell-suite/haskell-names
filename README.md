@@ -65,9 +65,12 @@ to `cabal install`, for instance
 
     cabal install --haskell-suite -w gen-iface mtl
 
+This assumes that the `gen-iface` executable is in your `PATH`. You can specify
+the full path to `gen-iface` after `-w`, too.
+
 #### Core packages
 
-Core packages, such as `ghc-prim` and `base` are highly GHC-specific and need to
+Core packages, such as `ghc-prim` and `base`, are highly GHC-specific and need to
 be tweaked a bit before they can be processed by haskell-names. Get our modified
 versions:
 
