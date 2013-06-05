@@ -48,22 +48,24 @@ getTopDeclSymbols mdl d =
     TypeFamDecl _ dh _ ->
         let tn = hname dh
         in  [ Right (SymTypeFam     { st_origName = qname tn, st_fixity = Nothing })]
-    DataDecl _ _ _ dh _ _ ->
+    DataDecl _ dataOrNew _ dh _ _ ->
         let dn = hname dh
             dq = qname dn
             (cs, fs) = partition isCon $ getBound d
             as = cs ++ nub fs  -- Ignore multiple selectors for now
-        in    Right (SymData        { st_origName = dq,       st_fixity = Nothing }) :
+            dataOrNewCon = case dataOrNew of DataType {} -> SymData; NewType {} -> SymNewType
+        in    Right (dataOrNewCon dq Nothing) :
             [ if isCon cn then
               Left  (SymConstructor { sv_origName = qname cn, sv_fixity = Nothing, sv_typeName = dq }) else
               Left  (SymSelector    { sv_origName = qname cn, sv_fixity = Nothing, sv_typeName = dq })
             | cn <- as ]
-    GDataDecl _ _ _ dh _ _ _ ->
+    GDataDecl _ dataOrNew _ dh _ _ _ ->
         let dn = hname dh
             cq = qname dn
             (cs, fs) = partition isCon $ getBound d
             as = cs ++ nub fs  -- Ignore multiple selectors for now
-        in    Right (SymData        { st_origName = cq,       st_fixity = Nothing }) :
+            dataOrNewCon = case dataOrNew of DataType {} -> SymData; NewType {} -> SymNewType
+        in    Right (dataOrNewCon cq Nothing) :
             [ if isCon cn then
               Left  (SymConstructor { sv_origName = qname cn, sv_fixity = Nothing, sv_typeName = cq }) else
               Left  (SymSelector    { sv_origName = qname cn, sv_fixity = Nothing, sv_typeName = cq })

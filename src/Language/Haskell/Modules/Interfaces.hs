@@ -108,6 +108,7 @@ instance ToJSON name => ToJSON (SymTypeInfo name) where
       typeEntity i = case i of
         SymType {} -> "type"
         SymData {} -> "data"
+        SymNewType {} -> "newtype"
         SymTypeFam {} -> "typeFamily"
         SymDataFam {} -> "dataFamily"
         SymClass   {} -> "class"
@@ -121,6 +122,7 @@ instance FromJSON name => FromJSON (SymTypeInfo name) where
     case entity :: String of
       "type" -> return $ SymType name fixity
       "data" -> return $ SymData name fixity
+      "newtype" -> return $ SymNewType name fixity
       "typeFamily" -> return $ SymTypeFam name fixity
       "dataFamily" -> return $ SymDataFam name fixity
       "class" -> return $ SymClass name fixity

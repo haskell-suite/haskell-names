@@ -25,6 +25,7 @@ data SymValueInfo name
 data SymTypeInfo name
     = SymType        { st_origName :: name, st_fixity :: Maybe SymFixity }
     | SymData        { st_origName :: name, st_fixity :: Maybe SymFixity }
+    | SymNewType     { st_origName :: name, st_fixity :: Maybe SymFixity }
     | SymTypeFam     { st_origName :: name, st_fixity :: Maybe SymFixity }
     | SymDataFam     { st_origName :: name, st_fixity :: Maybe SymFixity }
     | SymClass       { st_origName :: name, st_fixity :: Maybe SymFixity }
