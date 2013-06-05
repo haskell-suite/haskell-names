@@ -77,7 +77,7 @@ versions:
 * [ghc-prim](https://github.com/haskell-suite/ghc-prim)
 * [base](https://github.com/haskell-suite/base)
 
-Note that Cabal's new dependency solver won't let you to install `ghc-prim`
+Note that Cabal's new dependency solver won't let you install `ghc-prim`
 or `base` easily. There are two ways to work around this:
 
 1. Use the old solver:
