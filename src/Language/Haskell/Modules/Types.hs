@@ -10,8 +10,10 @@ import Data.Lens.Common
 import qualified Data.Set as Set
 import {-# SOURCE #-} qualified Language.Haskell.Modules.GlobalSymbolTable as Global
 import Distribution.Package (PackageId)
-import Data.Foldable
+import Distribution.Text
+import Data.Foldable as F
 import Data.Traversable
+import Text.Printf
 
 type SymFixity = (Assoc (), Int)
 
@@ -69,16 +71,25 @@ type ModuleNameS = String
 -- 'ModuleNameS' is the empty string.
 data GName = GName ModuleNameS NameS
   deriving (Eq, Ord, Show, Data, Typeable)
+
+ppGName :: GName -> String
+ppGName (GName mod name) = printf "%s.%s" mod name
+
 -- | Qualified name, where 'ModuleNameS' points to the module where the
 -- name was originally defined. The module part is never empty.
 --
 -- Also contains name and version of the package where it was defined. If
 -- it's 'Nothing', then the entity is defined in the \"current\" package.
 data OrigName = OrigName
-  { origPackage :: (Maybe PackageId)
+  { origPackage :: Maybe PackageId
   , origGName :: GName
   }
   deriving (Eq, Ord, Show, Data, Typeable)
+
+ppOrigName :: OrigName -> String
+ppOrigName (OrigName mbPkg gname) =
+  maybe "" (\pkgid -> printf "%s:" $ display pkgid) mbPkg ++
+  ppGName gname
 
 data Scoped l
     = GlobalValue { sLoc :: l, sVInfo :: SymValueInfo OrigName }
@@ -106,6 +117,34 @@ data Error l
   | EExportConflict [(NameS, [ExportSpec l])]
   | EInternal String
   deriving (Data, Typeable, Show, Functor, Eq, Ord) -- FIXME write custom Show
+
+ppError :: (Show l, SrcInfo l) => Error l -> String
+ppError e =
+  case e of
+    ENotInScope qn -> printf "%s: not in scope: %s\n"
+      (ppLoc qn)
+      (prettyPrint qn)
+    EAmbiguous qn names ->
+      printf "%s: ambiguous name %s\nIt may refer to:\n"
+        (ppLoc qn)
+        (prettyPrint qn)
+      ++
+        F.concat (map (printf "  %s\n" . ppOrigName) names)
+    EModNotFound mod ->
+      printf "%s: module not found: %s\n"
+        (ppLoc mod)
+        (prettyPrint mod)
+    ENotExported mbParent name mod ->
+      printf "%s: %s does not export %s\n"
+        (ppLoc name)
+        (prettyPrint mod)
+        (prettyPrint name)
+        -- FIXME: make use of mbParent
+    _ -> printf "%s\n" $ show e
+
+  where
+    ppLoc :: (Annotated a, SrcInfo l) => a l -> String
+    ppLoc = prettyPrint . getPointLoc . ann
 
 instance (SrcInfo l) => SrcInfo (Scoped l) where
     toSrcInfo l1 ss l2 = None $ toSrcInfo l1 ss l2

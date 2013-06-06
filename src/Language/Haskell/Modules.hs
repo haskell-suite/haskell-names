@@ -12,8 +12,11 @@ module Language.Haskell.Modules
   , NameS
   , ModuleNameS
   , GName(..)
+  , ppGName
   , OrigName(..)
+  , ppOrigName
   , Error(..)
+  , ppError
   , SymFixity
   ) where
 

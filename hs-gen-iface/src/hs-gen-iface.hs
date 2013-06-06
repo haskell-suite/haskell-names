@@ -91,7 +91,7 @@ compile buildDir mbLang exts cppOpts pkgName pkgdbs deps files = do
 
   (ifaces, errors) <- evalModuleT (getInterfaces moduleSet) packages "names" readInterface
 
-  F.for_ errors $ \e -> printf "Warning: %s\n" (show e)
+  F.for_ errors $ \e -> printf "Warning: %s" (ppError e)
 
   forM_ (zip moduleSet ifaces) $ \(mod, syms) -> do
 
