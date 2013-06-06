@@ -37,7 +37,7 @@ resolveExportSpecList
   -> ExportSpecList l
   -> m (ExportSpecList (Scoped l), Symbols)
 resolveExportSpecList tbl (ExportSpecList l specs) =
-  liftM (first (ExportSpecList $ None l)) $
+  liftM (first $ ExportSpecList $ none l) $
   runWriterT $
   mapM (WriterT . resolveExportSpec tbl) specs
 
@@ -54,7 +54,7 @@ resolveExportSpec tbl exp =
           (scopeError err exp, mempty)
         Global.Result i ->
           let s = mkVal i
-          in ((\l -> Export l s) <$> exp, s)
+          in (Scoped (Export s) <$> exp, s)
         Global.Special {} -> error "Global.Special in export list?"
     EAbs _ qn -> return $
       case Global.lookupType qn tbl of
@@ -62,7 +62,7 @@ resolveExportSpec tbl exp =
           (scopeError err exp, mempty)
         Global.Result i ->
           let s = mkTy i
-          in ((\l -> Export l s) <$> exp, s)
+          in (Scoped (Export s) <$> exp, s)
     EThingAll l qn -> return $
       case Global.lookupType qn tbl of
         Global.Error err ->
@@ -76,7 +76,7 @@ resolveExportSpec tbl exp =
               , n' == st_origName i ]
             s = mkTy i <> subs
           in
-            ( EThingAll (Export l s) ((\l -> GlobalType l i) <$> qn)
+            ( EThingAll (Scoped (Export s) l) (Scoped (GlobalType i) <$> qn)
             , s
             )
         Global.Special {} -> error "Global.Special in export list?"
@@ -94,7 +94,7 @@ resolveExportSpec tbl exp =
                 cns
             s = mkTy i <> subs
           in
-            ( EThingWith (Export l s) ((\l -> GlobalType l i) <$> qn) cns'
+            ( EThingWith (Scoped (Export s) l) (Scoped (GlobalType i) <$> qn) cns'
             , s
             )
         Global.Special {} -> error "Global.Special in export list?"
@@ -124,7 +124,7 @@ resolveExportSpec tbl exp =
 
         s = Symbols eVals eTyps
       in
-        return ((\l -> Export l s) <$> exp, s)
+        return (Scoped (Export s) <$> exp, s)
   where
     allValueInfos =
       Set.toList $ Map.foldl' Set.union Set.empty $ Global.values tbl

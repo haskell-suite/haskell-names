@@ -54,14 +54,15 @@ resolveImportDecl syms (ImportDecl l mod qual src pkg mbAs mbSpecList) =
       (fmap fst &&& maybe syms snd) $
         resolveImportSpecList mod syms <$> mbSpecList
     tbl = computeSymbolTable qual (fromMaybe mod mbAs) impSyms
-    newAnn =
+    info =
       case mbSpecList' of
-        Just sl | ScopeError _ e <- ann sl -> ScopeError l e
-        _ -> Import l tbl
+        Just sl | Scoped (ScopeError e) _ <- ann sl ->
+          ScopeError e
+        _ -> Import tbl
   in
     (ImportDecl
-      newAnn
-      ((\l -> ImportPart l syms) <$> mod)
+      (Scoped info l)
+      (Scoped (ImportPart syms) <$> mod)
       qual
       src
       pkg
@@ -78,7 +79,7 @@ resolveImportSpecList mod allSyms (ImportSpecList l isHiding specs) =
   let specs' = map (resolveImportSpec mod isHiding allSyms) specs
       mentionedSyms = mconcat $ rights $ map ann2syms specs'
       importedSyms = computeImportedSymbols isHiding allSyms mentionedSyms
-      newAnn = ImportPart l importedSyms
+      newAnn = Scoped (ImportPart importedSyms) l
   in
     (ImportSpecList newAnn isHiding specs', importedSyms)
 
@@ -150,7 +151,7 @@ resolveImportSpec mod isHiding syms spec =
               then
                 scopeError (ENotExported Nothing n mod) spec
               else
-                (\l -> Export l (Symbols vlMatches tyMatches)) <$> spec
+                Scoped (Export (Symbols vlMatches tyMatches)) <$> spec
       | otherwise ->
           let
             matches = mconcat
@@ -182,11 +183,13 @@ resolveImportSpec mod isHiding syms spec =
             n
         in
           case ann n' of
-            e@ScopeError{} -> IThingAll e n'
+            e@(Scoped ScopeError{} _) -> IThingAll e n'
             _ ->
               IThingAll
-                (ImportPart l
-                  (subs <> foldMap mkTy matches))
+                (Scoped
+                  (ImportPart (subs <> foldMap mkTy matches))
+                  l
+                )
                 n'
 
     IThingWith l n cns ->
@@ -206,7 +209,10 @@ resolveImportSpec mod isHiding syms spec =
             cns
       in
         IThingWith
-          (ImportPart l (cnSyms <> foldMap mkTy matches))
+          (Scoped
+            (ImportPart (cnSyms <> foldMap mkTy matches))
+            l
+          )
           n'
           cns'
   where
@@ -223,8 +229,8 @@ resolveImportSpec mod isHiding syms spec =
 ann2syms :: Annotated a => a (Scoped l) -> Either (Error l) (Symbols)
 ann2syms a =
   case ann a of
-    ScopeError _ e -> Left e
-    ImportPart _ syms -> Right syms
+    Scoped (ScopeError e) _ -> Left e
+    Scoped (ImportPart syms) _ -> Right syms
     _ -> Left $ EInternal "ann2syms"
 
 checkUnique
@@ -236,6 +242,6 @@ checkUnique
 checkUnique notFound syms@(Symbols vs ts) f =
   case Set.size vs + Set.size ts of
     0 -> scopeError notFound f
-    1 -> fmap (\l -> ImportPart l syms) f
+    1 -> Scoped (ImportPart syms) <$> f
     -- there should be no clashes, and it should be checked elsewhere
     _ -> scopeError (EInternal "ambiguous import") f

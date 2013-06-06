@@ -228,5 +228,5 @@ unCName (ConName _ n) = n
 getErrors :: (Ord l, Foldable a) => a (Scoped l) -> Set.Set (Error l)
 getErrors = foldl' f Set.empty
   where
-    f errors (ScopeError _ e) = Set.insert e errors
+    f errors (Scoped (ScopeError e) _) = Set.insert e errors
     f errors _ = errors

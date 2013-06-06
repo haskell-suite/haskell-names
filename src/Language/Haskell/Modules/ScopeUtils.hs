@@ -12,16 +12,16 @@ import qualified Language.Haskell.Modules.GlobalSymbolTable as Global
 import Distribution.Package (PackageId)
 
 scopeError :: Functor f => Error l -> f l -> f (Scoped l)
-scopeError e f = (\l -> ScopeError l e) <$> f
+scopeError e f = Scoped (ScopeError e) <$> f
 
 none :: l -> Scoped l
-none = None
+none = Scoped None
 
 binder :: l -> Scoped l
-binder = Binder
+binder = Scoped Binder
 
 noScope :: (Annotated a) => a l -> a (Scoped l)
-noScope = fmap None
+noScope = fmap none
 
 sv_parent :: SymValueInfo n -> Maybe n
 sv_parent (SymSelector { sv_typeName = n }) = Just n
@@ -80,7 +80,7 @@ resolveCName syms parent notFound cn =
   in
     case vs of
       [] -> (scopeError (notFound cn) cn, mempty)
-      [i] -> ((\l -> GlobalValue l i) <$> cn, mkVal i)
+      [i] -> (Scoped (GlobalValue i) <$> cn, mkVal i)
       _ -> (scopeError (EInternal "resolveCName") cn, mempty)
 
 resolveCNames

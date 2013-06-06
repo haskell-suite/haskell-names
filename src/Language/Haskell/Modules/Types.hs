@@ -91,18 +91,21 @@ ppOrigName (OrigName mbPkg gname) =
   maybe "" (\pkgid -> printf "%s:" $ display pkgid) mbPkg ++
   ppGName gname
 
-data Scoped l
-    = GlobalValue { sLoc :: l, sVInfo :: SymValueInfo OrigName }
-    | GlobalType  { sLoc :: l, sTInfo :: SymTypeInfo  OrigName }
-    | LocalValue  { sLoc :: l, sDefLoc :: SrcLoc }
-    | TypeVar     { sLoc :: l, sDefLoc :: SrcLoc }
-    | Binder      { sLoc :: l }
-    | Import      { sLoc :: l, importTable :: Global.Table }
-    | ImportPart  { sLoc :: l, importSymbols :: Symbols }
-    | Export      { sLoc :: l, exportSymbols :: Symbols }
-    | None        { sLoc :: l }
-    | ScopeError  { sLoc :: l, serr :: Error l }
-    deriving (Functor, Show, Typeable, Data, Eq, Ord)
+data Scoped l = Scoped (NameInfo l) l
+  deriving (Functor, Foldable, Traversable, Show, Typeable, Data, Eq, Ord)
+
+data NameInfo l
+    = GlobalValue (SymValueInfo OrigName)
+    | GlobalType  (SymTypeInfo  OrigName)
+    | LocalValue  SrcLoc
+    | TypeVar     SrcLoc
+    | Binder
+    | Import      Global.Table
+    | ImportPart  Symbols
+    | Export      Symbols
+    | None
+    | ScopeError  (Error l)
+    deriving (Functor, Foldable, Traversable, Show, Typeable, Data, Eq, Ord)
 
 data Error l
   = ENotInScope (QName l) -- FIXME annotate with namespace (types/values)
@@ -116,7 +119,7 @@ data Error l
   | EModNotFound (ModuleName l)
   | EExportConflict [(NameS, [ExportSpec l])]
   | EInternal String
-  deriving (Data, Typeable, Show, Functor, Eq, Ord) -- FIXME write custom Show
+  deriving (Data, Typeable, Show, Functor, Foldable, Traversable, Eq, Ord)
 
 ppError :: (Show l, SrcInfo l) => Error l -> String
 ppError e =
@@ -147,9 +150,12 @@ ppError e =
     ppLoc = prettyPrint . getPointLoc . ann
 
 instance (SrcInfo l) => SrcInfo (Scoped l) where
-    toSrcInfo l1 ss l2 = None $ toSrcInfo l1 ss l2
-    fromSrcInfo = None . fromSrcInfo
+    toSrcInfo l1 ss l2 = Scoped None $ toSrcInfo l1 ss l2
+    fromSrcInfo = Scoped None . fromSrcInfo
     getPointLoc = getPointLoc . sLoc
     fileName = fileName . sLoc
     startLine = startLine . sLoc
     startColumn = startColumn . sLoc
+
+sLoc :: Scoped l -> l
+sLoc (Scoped _ l) = l

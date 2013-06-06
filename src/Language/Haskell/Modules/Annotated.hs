@@ -6,6 +6,7 @@
     TypeOperators, GADTs #-}
 module Language.Haskell.Modules.Annotated
   ( Scoped(..)
+  , NameInfo(..)
   , annotate
   ) where
 
@@ -27,7 +28,7 @@ annotate
   :: forall a l .
      (Resolvable (a (Scoped l)), Functor a, Typeable l)
   => Scope -> a l -> a (Scoped l)
-annotate sc = annotateRec (Proxy :: Proxy l) sc . fmap None
+annotate sc = annotateRec (Proxy :: Proxy l) sc . fmap (Scoped None)
 
 annotateRec
   :: forall a l .
@@ -42,13 +43,13 @@ annotateRec _ sc a = go sc a where
       = rmap go sc a
 
 lookupValue :: QName l -> Scope -> Scoped l
-lookupValue qn sc =
-  let l = ann qn in
-
-  case Local.lookupValue  qn $ getL lTable sc of
-    Right r -> LocalValue l r
-    _ ->
-      case Global.lookupValue qn $ getL gTable sc of
-        Global.Result r -> GlobalValue l r
-        Global.Error e -> ScopeError l e
-        Global.Special -> None l
+lookupValue qn sc = Scoped nameInfo (ann qn)
+  where
+    nameInfo =
+      case Local.lookupValue qn $ getL lTable sc of
+        Right r -> LocalValue r
+        _ ->
+          case Global.lookupValue qn $ getL gTable sc of
+            Global.Result r -> GlobalValue r
+            Global.Error e -> ScopeError e
+            Global.Special -> None
