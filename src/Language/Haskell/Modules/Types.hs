@@ -125,11 +125,10 @@ data Error l
       (Name l)         -- the name which is not exported
       (ModuleName l)
   | EModNotFound (ModuleName l)
-  | EExportConflict [(NameS, [ExportSpec l])]
   | EInternal String
   deriving (Data, Typeable, Show, Functor, Foldable, Traversable, Eq, Ord)
 
-ppError :: (Show l, SrcInfo l) => Error l -> String
+ppError :: SrcInfo l => Error l -> String
 ppError e =
   case e of
     ENotInScope qn -> printf "%s: not in scope: %s\n"
@@ -141,17 +140,25 @@ ppError e =
         (prettyPrint qn)
       ++
         F.concat (map (printf "  %s\n" . ppOrigName) names)
-    EModNotFound mod ->
-      printf "%s: module not found: %s\n"
-        (ppLoc mod)
-        (prettyPrint mod)
+    ETypeAsClass qn ->
+      printf "%s: type %s is used where a class is expected\n"
+        (ppLoc qn)
+        (prettyPrint qn)
+    EClassAsType qn ->
+      printf "%s: class %s is used where a type is expected\n"
+        (ppLoc qn)
+        (prettyPrint qn)
     ENotExported mbParent name mod ->
       printf "%s: %s does not export %s\n"
         (ppLoc name)
         (prettyPrint mod)
         (prettyPrint name)
         -- FIXME: make use of mbParent
-    _ -> printf "%s\n" $ show e
+    EModNotFound mod ->
+      printf "%s: module not found: %s\n"
+        (ppLoc mod)
+        (prettyPrint mod)
+    EInternal s -> printf "Internal error: %s\n"
 
   where
     ppLoc :: (Annotated a, SrcInfo l) => a l -> String
