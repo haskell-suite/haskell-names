@@ -11,7 +11,7 @@ To install a released version:
 
 1. Install haskell-src-exts from [our git repository][hse]
 2. Install Cabal and cabal-install from [our git repository][cabal]
-3. `cabal install haskell-names gen-iface`
+3. `cabal install haskell-names hs-gen-iface`
 
 If you're building a development version, then you might also need to install
 development versions of [haskell-packages][hp] and [hse-cpp][].
@@ -24,7 +24,7 @@ development versions of [haskell-packages][hp] and [hse-cpp][].
 Module interfaces
 -----------------
 
-`gen-iface` is a «compiler» that generates interfaces for Haskell modules.
+`hs-gen-iface` is a «compiler» that generates interfaces for Haskell modules.
 
 An interface is a JSON file that lists all entities (types, classes, functions
 etc.) exported by every module. For example, here are a couple of entries from
@@ -59,14 +59,14 @@ belong to.
 
 ### Generating interfaces
 
-Thanks to haskell-packages, `gen-iface` is fully integrated with Cabal. To
-produce and install interface files, pass `--haskell-suite -w gen-iface` flags
+Thanks to haskell-packages, `hs-gen-iface` is fully integrated with Cabal. To
+produce and install interface files, pass `--haskell-suite -w hs-gen-iface` flags
 to `cabal install`, for instance
 
-    cabal install --haskell-suite -w gen-iface mtl
+    cabal install --haskell-suite -w hs-gen-iface mtl
 
-This assumes that the `gen-iface` executable is in your `PATH`. You can specify
-the full path to `gen-iface` after `-w`, too.
+This assumes that the `hs-gen-iface` executable is in your `PATH`. You can specify
+the full path to `hs-gen-iface` after `-w`, too.
 
 #### Core packages
 
@@ -82,11 +82,11 @@ or `base` easily. There are two ways to work around this:
 
 1. Use the old solver:
 
-        cabal install --haskell-suite -w gen-iface --solver=topdown
+        cabal install --haskell-suite -w hs-gen-iface --solver=topdown
 
 2. Invoke all the steps manually:
 
-        cabal configure --haskell-suite -w gen-iface
+        cabal configure --haskell-suite -w hs-gen-iface
         cabal build
         cabal install --only
 
