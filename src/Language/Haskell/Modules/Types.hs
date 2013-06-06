@@ -91,20 +91,28 @@ ppOrigName (OrigName mbPkg gname) =
   maybe "" (\pkgid -> printf "%s:" $ display pkgid) mbPkg ++
   ppGName gname
 
+-- | A pair of the name information and original annotation. Used as an
+-- annotation type for AST.
 data Scoped l = Scoped (NameInfo l) l
   deriving (Functor, Foldable, Traversable, Show, Typeable, Data, Eq, Ord)
 
 data NameInfo l
-    = GlobalValue (SymValueInfo OrigName)
-    | GlobalType  (SymTypeInfo  OrigName)
-    | LocalValue  SrcLoc
-    | TypeVar     SrcLoc
-    | Binder
+    = GlobalValue (SymValueInfo OrigName) -- ^ global value
+    | GlobalType  (SymTypeInfo  OrigName) -- ^ global type
+    | LocalValue  SrcLoc -- ^ local value, and location where it is bound
+    | TypeVar     SrcLoc -- ^ type variable, and location where it is bound
+    | Binder -- ^ here the name is bound
     | Import      Global.Table
+      -- ^ @import@ declaration, and the table of symbols that it
+      -- introduces
     | ImportPart  Symbols
+      -- ^ part of an @import@ declaration
     | Export      Symbols
+      -- ^ @export@ declaration, and the symbols it exports
     | None
+      -- ^ no annotation
     | ScopeError  (Error l)
+      -- ^ scope error
     deriving (Functor, Foldable, Traversable, Show, Typeable, Data, Eq, Ord)
 
 data Error l
