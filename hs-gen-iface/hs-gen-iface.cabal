@@ -1,4 +1,4 @@
-Name:                   gen-iface
+Name:                   hs-gen-iface
 Version:                0.1
 License:                BSD3
 Author:                 Roman Cheplyaka
@@ -9,14 +9,14 @@ Stability:              Experimental
 Build-Type:             Simple
 Cabal-Version:          >= 1.10
 
-Executable gen-iface
+Executable hs-gen-iface
   Default-Language: Haskell2010
   ghc-options: -Wall -fno-warn-name-shadowing
   hs-source-dirs: src
   Main-is:
-    gen-iface.hs
+    hs-gen-iface.hs
   Other-modules:
-    Paths_gen_iface
+    Paths_hs_gen_iface
   Build-depends:
     base,
     containers,

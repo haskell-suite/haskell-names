@@ -24,7 +24,7 @@ import Distribution.Simple.Utils
 import Distribution.Verbosity
 
 import Language.Haskell.Exts.Annotated.CPP
-import Paths_gen_iface
+import Paths_hs_gen_iface
 import Language.Haskell.Modules.SyntaxUtils
 
 data GenIfaceException
