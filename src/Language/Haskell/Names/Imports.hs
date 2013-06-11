@@ -12,7 +12,7 @@ import Data.Monoid
 import Data.Maybe
 import Data.Either
 import Data.Lens.Common
-import Data.Foldable (foldMap)
+import Data.Foldable (foldMap, fold)
 import Control.Applicative
 import Control.Arrow
 import Control.Monad.Writer
@@ -26,11 +26,41 @@ import Language.Haskell.Names.SyntaxUtils
 instance ModName (ModuleName l) where
   modToString (ModuleName _ s) = s
 
+preludeName :: String
+preludeName = "Prelude"
+
 processImports
   :: (MonadModule m, ModuleInfo m ~ Symbols)
-  => [ImportDecl l]
+  => ExtensionSet
+  -> [ImportDecl l]
   -> m ([ImportDecl (Scoped l)], Global.Table)
-processImports = runWriterT . mapM (WriterT . processImport)
+processImports exts importDecls = do
+
+  (annotated, tbl) <- runWriterT $ mapM (WriterT . processImport) importDecls
+
+  let
+    isPreludeImported = not . null $
+      [ () | ImportDecl { importModule = ModuleName _ modName } <- importDecls
+           , modName == preludeName ]
+
+    importPrelude =
+      ImplicitPrelude `Set.member` exts &&
+      not isPreludeImported
+
+  tbl' <-
+    if not importPrelude
+      then return tbl
+      else do
+        -- FIXME currently we don't have a way to signal an error when
+        -- Prelude cannot be found
+        syms <- fold `liftM` getModuleInfo preludeName
+        return $
+          computeSymbolTable
+            False -- not qualified
+            (ModuleName () preludeName)
+            syms
+
+  return (annotated, tbl')
 
 processImport
   :: (MonadModule m, ModuleInfo m ~ Symbols)
@@ -41,7 +71,7 @@ processImport imp = do
   case mbi of
     Nothing ->
       let e = EModNotFound (importModule imp)
-      in return $ (scopeError e imp, Global.empty)
+      in return (scopeError e imp, Global.empty)
     Just syms -> return $ resolveImportDecl syms imp
 
 resolveImportDecl

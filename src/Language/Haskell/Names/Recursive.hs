@@ -46,9 +46,10 @@ groupModules modules =
 -- isolation.
 annotateModule
   :: (MonadModule m, ModuleInfo m ~ Symbols, Data l, SrcInfo l, Eq l)
-  => Module l -> m (Module (Scoped l))
-annotateModule mod@(Module lm mh os is ds) = do
-  (imp, impTbl) <- processImports $ getImports mod
+  => Language -> [Extension] -> Module l -> m (Module (Scoped l))
+annotateModule lang exts mod@(Module lm mh os is ds) = do
+  let extSet = moduleExtensions lang exts mod
+  (imp, impTbl) <- processImports extSet $ getImports mod
   let ownTbl = moduleTable mod
       tbl = impTbl <> ownTbl
   (exp, syms) <- processExports tbl mod
@@ -73,12 +74,15 @@ annotateModule mod@(Module lm mh os is ds) = do
 -- the results to the cache. Return the set of import/export errors.
 findFixPoint
   :: (Ord l, Data l, MonadModule m, ModuleInfo m ~ Symbols)
-  => [Module l] -> m (Set.Set (Error l))
+  => [(Module l, ExtensionSet)]
+      -- ^ module and all extensions with which it is to be compiled.
+      -- Use 'moduleExtensions' to build this list.
+  -> m (Set.Set (Error l))
 findFixPoint mods = go mods (map (const mempty) mods) where
   go mods syms = do
-    forM_ (zip syms mods) $ \(s,m) -> insertInCache (getModuleName m) s
-    (syms', errors) <- liftM unzip $ forM mods $ \m -> do
-      (imp, impTbl) <- processImports $ getImports m
+    forM_ (zip syms mods) $ \(s,(m, _)) -> insertInCache (getModuleName m) s
+    (syms', errors) <- liftM unzip $ forM mods $ \(m, extSet) -> do
+      (imp, impTbl) <- processImports extSet $ getImports m
       let ownTbl = moduleTable m
           tbl = impTbl <> ownTbl
       (exp, syms) <- processExports tbl m
@@ -97,17 +101,19 @@ findFixPoint mods = go mods (map (const mempty) mods) where
 -- if there are errors, the interfaces may be incomplete.
 computeInterfaces
   :: (MonadModule m, ModuleInfo m ~ Symbols, Data l, SrcInfo l, Ord l)
-  => [Module l] -> m (Set.Set (Error l))
-computeInterfaces =
-  liftM fold . mapM findFixPoint . groupModules
+  => Language -> [Extension] -> [Module l] -> m (Set.Set (Error l))
+computeInterfaces lang exts =
+  liftM fold . mapM findFixPoint . map supplyExtensions . groupModules
+    where
+    supplyExtensions = map $ \m -> (m, moduleExtensions lang exts m)
 
 -- | Like 'computeInterfaces', but also returns a list of interfaces, one
 -- per module and in the same order
 getInterfaces
   :: (MonadModule m, ModuleInfo m ~ Symbols, Data l, SrcInfo l, Ord l)
-  => [Module l] -> m ([Symbols], Set.Set (Error l))
-getInterfaces mods = do
-  errs <- computeInterfaces mods
+  => Language -> [Extension] -> [Module l] -> m ([Symbols], Set.Set (Error l))
+getInterfaces lang exts mods = do
+  errs <- computeInterfaces lang exts mods
   ifaces <- forM mods $ \mod ->
     let modName = getModuleName mod in
     fromMaybe (error $ msg modName) `liftM` lookupInCache modName
