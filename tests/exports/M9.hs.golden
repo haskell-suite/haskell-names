@@ -188,7 +188,7 @@ Symbols (
                           }
         , st_fixity = Nothing
         }
-    , SymData
+    , SymNewType
         { st_origName = OrigName
                           { origPackage = Nothing
                           , origGName = GName
@@ -197,7 +197,7 @@ Symbols (
                           }
         , st_fixity = Nothing
         }
-    , SymData
+    , SymNewType
         { st_origName = OrigName
                           { origPackage = Nothing
                           , origGName = GName

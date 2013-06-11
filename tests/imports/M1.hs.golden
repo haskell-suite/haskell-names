@@ -501,7 +501,7 @@ Table (
           ""
           "Newtype"
       , fromList
-          [ SymData
+          [ SymNewType
               { st_origName = OrigName
                                 { origPackage = Nothing
                                 , origGName = GName
@@ -516,7 +516,7 @@ Table (
           ""
           "NewtypeWithSelectors"
       , fromList
-          [ SymData
+          [ SymNewType
               { st_origName = OrigName
                                 { origPackage = Nothing
                                 , origGName = GName
@@ -591,7 +591,7 @@ Table (
           "Library"
           "Newtype"
       , fromList
-          [ SymData
+          [ SymNewType
               { st_origName = OrigName
                                 { origPackage = Nothing
                                 , origGName = GName
@@ -606,7 +606,7 @@ Table (
           "Library"
           "NewtypeWithSelectors"
       , fromList
-          [ SymData
+          [ SymNewType
               { st_origName = OrigName
                                 { origPackage = Nothing
                                 , origGName = GName
