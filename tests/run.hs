@@ -37,33 +37,29 @@ parseAndPrepare file =
   return . fmap srcInfoSpan . fromParseResult =<< parseFile file
 
 getModules = do
-  libraryIface <- getInterface mempty "tests/exports/Library.hs"
+  [libraryIface] <-
+    (\m -> evalModuleT (fst <$> getInterfaces [m]) [] (error "retrieve") (error "retrieve"))
+    =<< parseAndPrepare "tests/exports/Library.hs"
   return $ Map.singleton (convertModuleName "Library") libraryIface
 
 -----------------------------------------------------
 -- Export test: parse a source file, dump its symbols
 -----------------------------------------------------
-exportTest mods file =
+exportTest file iface =
   goldenVsFile file golden out run
   where
     golden = file <.> "golden"
     out = file <.> "out"
-    run = do
-      exps <- getInterface mods file
-      writeFile out $ ppShow exps
-
-getInterface :: Map.Map Cabal.ModuleName Symbols -> FilePath -> IO Symbols
-getInterface mods file = do
-  mod <- parseAndPrepare file
-  let mExps = do
-        importedSyms <- snd <$> processImports (getImports mod)
-        snd <$> processExports (moduleTable mod <> importedSyms) mod
-  fst <$> runModuleT mExps [] (error "retrieve") (error "retrieve") mods
+    run = writeFile out $ ppShow iface
 
 exportTests = do
   mods <- getModules
   testFiles <- find (return True) (extension ==? ".hs") "tests/exports"
-  return $ testGroup "exports" $ map (exportTest mods) testFiles
+  parsed <- mapM parseAndPrepare testFiles
+  ifaces <-
+    fst <$> runModuleT (fst <$> getInterfaces parsed) [] (error "retrieve") (error "retrieve") mods
+
+  return $ testGroup "exports" $ zipWith exportTest testFiles ifaces
 
 ----------------------------------------------------------
 -- Import test: parse a source file, dump its global table
