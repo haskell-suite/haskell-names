@@ -142,15 +142,15 @@ formatLoc srcInfo =
     (srcLine   loc)
     (srcColumn loc)
 
-formatScoped :: Scoped SrcSpan -> String
-formatScoped LocalValue { sDefLoc = loc } =
+formatInfo :: NameInfo SrcSpan -> String
+formatInfo (LocalValue loc) =
   printf "a local value defined at %s" $ formatLoc loc
-formatScoped ScopeError { serr = ENotInScope {} } = "not in scope"
-formatScoped None {} = "none"
+formatInfo (ScopeError (ENotInScope {})) = "not in scope"
+formatInfo None = "none"
 
 formatAnn :: String -> Scoped SrcSpan -> String
-formatAnn name scpd =
+formatAnn name (Scoped info loc) =
   printf "%-8s at %4s is %s\n"
     name
-    (formatLoc $ sLoc scpd)
-    (formatScoped scpd)
+    (formatLoc loc)
+    (formatInfo info)
