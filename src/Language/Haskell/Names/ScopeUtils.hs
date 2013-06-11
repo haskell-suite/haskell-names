@@ -1,14 +1,14 @@
-module Language.Haskell.Modules.ScopeUtils where
+module Language.Haskell.Names.ScopeUtils where
 
 import Control.Applicative
 import Control.Arrow
 import qualified Data.Set as Set
 import Data.Monoid
 import Data.Lens.Common
-import Language.Haskell.Modules.Types
-import Language.Haskell.Modules.SyntaxUtils
+import Language.Haskell.Names.Types
+import Language.Haskell.Names.SyntaxUtils
 import Language.Haskell.Exts.Annotated
-import qualified Language.Haskell.Modules.GlobalSymbolTable as Global
+import qualified Language.Haskell.Names.GlobalSymbolTable as Global
 import Distribution.Package (PackageId)
 
 scopeError :: Functor f => Error l -> f l -> f (Scoped l)

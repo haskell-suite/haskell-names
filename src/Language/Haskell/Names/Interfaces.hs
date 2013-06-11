@@ -1,14 +1,14 @@
 -- | Reading 'ModuleSummary' from and writing to interface files
 {-# LANGUAGE DeriveDataTypeable, OverloadedStrings, TemplateHaskell #-}
 {-# OPTIONS_GHC -fno-warn-orphans -fno-warn-name-shadowing #-}
-module Language.Haskell.Modules.Interfaces
+module Language.Haskell.Names.Interfaces
   ( readInterface
   , writeInterface
   , IfaceException(..)
   , NamesDB(..)
   ) where
 
-import Language.Haskell.Modules.Types
+import Language.Haskell.Names.Types
 import Language.Haskell.Exts.Annotated
 import qualified Data.ByteString.Lazy as BS
 import Data.Aeson

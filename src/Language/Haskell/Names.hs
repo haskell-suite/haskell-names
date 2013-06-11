@@ -1,4 +1,4 @@
-module Language.Haskell.Modules
+module Language.Haskell.Names
   (
   -- * Core functions
     computeInterfaces
@@ -20,6 +20,6 @@ module Language.Haskell.Modules
   , SymFixity
   ) where
 
-import Language.Haskell.Modules.Types
-import Language.Haskell.Modules.Recursive
-import Language.Haskell.Modules.ScopeUtils
+import Language.Haskell.Names.Types
+import Language.Haskell.Names.Recursive
+import Language.Haskell.Names.ScopeUtils

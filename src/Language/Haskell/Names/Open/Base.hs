@@ -1,10 +1,10 @@
 {-# LANGUAGE RankNTypes, FlexibleInstances, FlexibleContexts, UndecidableInstances, DefaultSignatures, OverlappingInstances, TemplateHaskell, ScopedTypeVariables #-}
 {-# LANGUAGE ImplicitParams, KindSignatures #-}
-module Language.Haskell.Modules.Open.Base where
+module Language.Haskell.Names.Open.Base where
 
-import qualified Language.Haskell.Modules.GlobalSymbolTable as Global
-import qualified Language.Haskell.Modules.LocalSymbolTable as Local
-import Language.Haskell.Modules.SyntaxUtils
+import qualified Language.Haskell.Names.GlobalSymbolTable as Global
+import qualified Language.Haskell.Names.LocalSymbolTable as Local
+import Language.Haskell.Names.SyntaxUtils
 import Language.Haskell.Exts.Annotated
 import Control.Applicative
 import Control.Monad.Identity

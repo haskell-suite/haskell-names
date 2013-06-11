@@ -1,6 +1,6 @@
 {-# LANGUAGE DeriveDataTypeable #-}
 -- | This module is designed to be imported qualified.
-module Language.Haskell.Modules.GlobalSymbolTable
+module Language.Haskell.Names.GlobalSymbolTable
   ( Table
   , GName
   , OrigName
@@ -27,8 +27,8 @@ import Control.Arrow
 import Control.Applicative hiding (empty)
 import Data.Lens.Common
 
-import Language.Haskell.Modules.Types
-import Language.Haskell.Modules.SyntaxUtils
+import Language.Haskell.Names.Types
+import Language.Haskell.Names.SyntaxUtils
 
 -- | Global symbol table — contains global names
 data Table =
@@ -69,7 +69,7 @@ lookupL
   -> Table
   -> Result l (i OrigName)
 lookupL lens (HSE.Special {}) _ =
-  Language.Haskell.Modules.GlobalSymbolTable.Special
+  Language.Haskell.Names.GlobalSymbolTable.Special
 lookupL lens qn tbl =
   case Set.toList <$> (Map.lookup (toGName qn) $ getL lens tbl) of
     Nothing -> Error $ ENotInScope qn

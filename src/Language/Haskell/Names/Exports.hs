@@ -1,5 +1,5 @@
 {-# LANGUAGE TypeFamilies, NoMonoLocalBinds #-}
-module Language.Haskell.Modules.Exports where
+module Language.Haskell.Names.Exports where
 
 import qualified Data.Map as Map
 import qualified Data.Set as Set
@@ -13,11 +13,11 @@ import Data.Lens.Common
 import Data.Foldable as F
 import Distribution.HaskellSuite.Modules
 import Language.Haskell.Exts.Annotated
-import Language.Haskell.Modules.Types
-import Language.Haskell.Modules.ScopeUtils
-import Language.Haskell.Modules.SyntaxUtils
-import Language.Haskell.Modules.ModuleSymbols
-import Language.Haskell.Modules.GlobalSymbolTable as Global
+import Language.Haskell.Names.Types
+import Language.Haskell.Names.ScopeUtils
+import Language.Haskell.Names.SyntaxUtils
+import Language.Haskell.Names.ModuleSymbols
+import Language.Haskell.Names.GlobalSymbolTable as Global
 
 processExports
   :: (MonadModule m, ModuleInfo m ~ Symbols, Data l, Eq l)

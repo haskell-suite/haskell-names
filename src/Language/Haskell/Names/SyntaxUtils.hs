@@ -1,5 +1,5 @@
 {-# LANGUAGE MultiParamTypeClasses, FunctionalDependencies, FlexibleInstances, UndecidableInstances #-}
-module Language.Haskell.Modules.SyntaxUtils
+module Language.Haskell.Names.SyntaxUtils
   ( dropAnn
   , setAnn
   , getModuleName
@@ -26,7 +26,7 @@ import Data.Generics.Uniplate.Data
 import Data.Foldable
 import qualified Data.Set as Set
 import Language.Haskell.Exts.Annotated
-import Language.Haskell.Modules.Types
+import Language.Haskell.Names.Types
 
 dropAnn :: (Functor a) => a l -> a ()
 dropAnn = fmap (const ())

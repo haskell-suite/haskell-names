@@ -1,20 +1,20 @@
 -- This module uses the open recursion interface
--- ("Language.Haskell.Modules.Open") to annotate the AST with binding
+-- ("Language.Haskell.Names.Open") to annotate the AST with binding
 -- information.
 {-# LANGUAGE FlexibleContexts, MultiParamTypeClasses, ImplicitParams,
     UndecidableInstances, OverlappingInstances, ScopedTypeVariables,
     TypeOperators, GADTs #-}
-module Language.Haskell.Modules.Annotated
+module Language.Haskell.Names.Annotated
   ( Scoped(..)
   , NameInfo(..)
   , annotate
   ) where
 
-import Language.Haskell.Modules.Types
-import Language.Haskell.Modules.Open.Base
-import Language.Haskell.Modules.Open.Instances ()
-import qualified Language.Haskell.Modules.GlobalSymbolTable as Global
-import qualified Language.Haskell.Modules.LocalSymbolTable as Local
+import Language.Haskell.Names.Types
+import Language.Haskell.Names.Open.Base
+import Language.Haskell.Names.Open.Instances ()
+import qualified Language.Haskell.Names.GlobalSymbolTable as Global
+import qualified Language.Haskell.Names.LocalSymbolTable as Local
 import Language.Haskell.Exts.Annotated
 import Data.Proxy
 import Data.Lens.Common

@@ -1,5 +1,5 @@
 -- | This module is designed to be imported qualified.
-module Language.Haskell.Modules.LocalSymbolTable
+module Language.Haskell.Names.LocalSymbolTable
   ( Table
   , empty
   , lookupValue
@@ -8,8 +8,8 @@ module Language.Haskell.Modules.LocalSymbolTable
 
 import qualified Data.Map as Map
 import Language.Haskell.Exts.Annotated
-import Language.Haskell.Modules.SyntaxUtils
-import Language.Haskell.Modules.Types
+import Language.Haskell.Names.SyntaxUtils
+import Language.Haskell.Names.Types
 
 -- | Local symbol table — contains locally bound names
 newtype Table = Table (Map.Map NameS SrcLoc)

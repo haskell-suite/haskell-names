@@ -1,5 +1,5 @@
 {-# LANGUAGE TypeFamilies #-}
-module Language.Haskell.Modules.Recursive
+module Language.Haskell.Names.Recursive
   ( computeInterfaces
   , getInterfaces
   , annotateModule
@@ -16,16 +16,16 @@ import Distribution.HaskellSuite.Modules
 import Data.Maybe
 import Data.Foldable
 
-import Language.Haskell.Modules.Types
-import Language.Haskell.Modules.SyntaxUtils
-import Language.Haskell.Modules.ScopeUtils
-import Language.Haskell.Modules.ModuleSymbols
-import Language.Haskell.Modules.Exports
-import Language.Haskell.Modules.Imports
-import qualified Language.Haskell.Modules.GlobalSymbolTable as Global
-import qualified Language.Haskell.Modules.LocalSymbolTable  as Local
-import Language.Haskell.Modules.Open.Base
-import Language.Haskell.Modules.Annotated
+import Language.Haskell.Names.Types
+import Language.Haskell.Names.SyntaxUtils
+import Language.Haskell.Names.ScopeUtils
+import Language.Haskell.Names.ModuleSymbols
+import Language.Haskell.Names.Exports
+import Language.Haskell.Names.Imports
+import qualified Language.Haskell.Names.GlobalSymbolTable as Global
+import qualified Language.Haskell.Names.LocalSymbolTable  as Local
+import Language.Haskell.Names.Open.Base
+import Language.Haskell.Names.Annotated
 
 -- | Take a set of modules and return a list of sets, where each sets for
 -- a strongly connected component in the import graph.

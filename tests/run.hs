@@ -15,14 +15,14 @@ import Text.Printf
 import qualified Data.Foldable as F
 
 import Language.Haskell.Exts.Annotated
-import Language.Haskell.Modules
-import Language.Haskell.Modules.Exports
-import Language.Haskell.Modules.Imports
-import Language.Haskell.Modules.Annotated
-import Language.Haskell.Modules.Open
-import Language.Haskell.Modules.ModuleSymbols
-import Language.Haskell.Modules.SyntaxUtils
-import qualified Language.Haskell.Modules.GlobalSymbolTable as Global
+import Language.Haskell.Names
+import Language.Haskell.Names.Exports
+import Language.Haskell.Names.Imports
+import Language.Haskell.Names.Annotated
+import Language.Haskell.Names.Open
+import Language.Haskell.Names.ModuleSymbols
+import Language.Haskell.Names.SyntaxUtils
+import qualified Language.Haskell.Names.GlobalSymbolTable as Global
 import Distribution.HaskellSuite
 import qualified Distribution.ModuleName as Cabal
 

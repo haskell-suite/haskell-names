@@ -1,4 +1,4 @@
-module Language.Haskell.Modules.ModuleSymbols
+module Language.Haskell.Names.ModuleSymbols
   ( moduleSymbols
   , moduleTable
   )
@@ -13,10 +13,10 @@ import Data.Data
 import qualified Data.Set as Set
 import Language.Haskell.Exts.Annotated
 
-import Language.Haskell.Modules.Types
-import qualified Language.Haskell.Modules.GlobalSymbolTable as Global
-import Language.Haskell.Modules.SyntaxUtils
-import Language.Haskell.Modules.ScopeUtils
+import Language.Haskell.Names.Types
+import qualified Language.Haskell.Names.GlobalSymbolTable as Global
+import Language.Haskell.Names.SyntaxUtils
+import Language.Haskell.Names.ScopeUtils
 
 moduleTable :: (Eq l, Data l) => Module l -> Global.Table
 moduleTable m =

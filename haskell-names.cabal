@@ -39,24 +39,24 @@ Library
   Hs-source-dirs:       src
   Ghc-options:          -Wall -fno-warn-name-shadowing
 
-  Exposed-modules:      Language.Haskell.Modules
-                        Language.Haskell.Modules.Open
-                        Language.Haskell.Modules.Annotated
-                        Language.Haskell.Modules.Interfaces
-                        Language.Haskell.Modules.GlobalSymbolTable
-                        Language.Haskell.Modules.LocalSymbolTable
-                        Language.Haskell.Modules.Imports
-                        Language.Haskell.Modules.Exports
-                        Language.Haskell.Modules.ModuleSymbols
-                        Language.Haskell.Modules.SyntaxUtils
+  Exposed-modules:      Language.Haskell.Names
+                        Language.Haskell.Names.Open
+                        Language.Haskell.Names.Annotated
+                        Language.Haskell.Names.Interfaces
+                        Language.Haskell.Names.GlobalSymbolTable
+                        Language.Haskell.Names.LocalSymbolTable
+                        Language.Haskell.Names.Imports
+                        Language.Haskell.Names.Exports
+                        Language.Haskell.Names.ModuleSymbols
+                        Language.Haskell.Names.SyntaxUtils
 
   Other-modules:
-                        Language.Haskell.Modules.Open.Base
-                        Language.Haskell.Modules.Open.Instances
-                        Language.Haskell.Modules.Open.Derived
-                        Language.Haskell.Modules.Recursive
-                        Language.Haskell.Modules.Types
-                        Language.Haskell.Modules.ScopeUtils
+                        Language.Haskell.Names.Open.Base
+                        Language.Haskell.Names.Open.Instances
+                        Language.Haskell.Names.Open.Derived
+                        Language.Haskell.Names.Recursive
+                        Language.Haskell.Names.Types
+                        Language.Haskell.Names.ScopeUtils
 
 Test-suite test
   Default-Language: Haskell2010

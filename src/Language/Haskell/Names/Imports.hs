@@ -1,6 +1,6 @@
 {-# LANGUAGE TypeFamilies #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-} -- ModName (ModuleName l)
-module Language.Haskell.Modules.Imports
+module Language.Haskell.Names.Imports
   ( processImport
   , processImports
   )
@@ -18,10 +18,10 @@ import Control.Arrow
 import Control.Monad.Writer
 import Distribution.HaskellSuite.Modules
 import Language.Haskell.Exts.Annotated
-import Language.Haskell.Modules.Types
-import Language.Haskell.Modules.ScopeUtils
-import qualified Language.Haskell.Modules.GlobalSymbolTable as Global
-import Language.Haskell.Modules.SyntaxUtils
+import Language.Haskell.Names.Types
+import Language.Haskell.Names.ScopeUtils
+import qualified Language.Haskell.Names.GlobalSymbolTable as Global
+import Language.Haskell.Names.SyntaxUtils
 
 instance ModName (ModuleName l) where
   modToString (ModuleName _ s) = s

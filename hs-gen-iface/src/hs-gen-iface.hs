@@ -4,8 +4,8 @@ module Main where
 import qualified Language.Haskell.Exts.Annotated as HSE
 import qualified Language.Haskell.Exts as UnAnn
 import Language.Haskell.Exts (defaultParseMode, ParseMode(..))
-import Language.Haskell.Modules
-import Language.Haskell.Modules.Interfaces
+import Language.Haskell.Names
+import Language.Haskell.Names.Interfaces
 import Language.Haskell.Exts.Extension
 import Language.Haskell.Exts.SrcLoc
 import Control.Monad
@@ -25,7 +25,7 @@ import Distribution.Verbosity
 
 import Language.Haskell.Exts.Annotated.CPP
 import Paths_hs_gen_iface
-import Language.Haskell.Modules.SyntaxUtils
+import Language.Haskell.Names.SyntaxUtils
 
 data GenIfaceException
   = ParseError HSE.SrcLoc String

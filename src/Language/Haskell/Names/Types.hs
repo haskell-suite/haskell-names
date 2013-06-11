@@ -1,6 +1,6 @@
 {-# LANGUAGE DeriveDataTypeable, DeriveFunctor, DeriveFoldable,
              DeriveTraversable #-}
-module Language.Haskell.Modules.Types where
+module Language.Haskell.Names.Types where
 
 import Language.Haskell.Exts.Annotated
 import Data.Typeable
@@ -8,7 +8,7 @@ import Data.Data
 import Data.Monoid
 import Data.Lens.Common
 import qualified Data.Set as Set
-import {-# SOURCE #-} qualified Language.Haskell.Modules.GlobalSymbolTable as Global
+import {-# SOURCE #-} qualified Language.Haskell.Names.GlobalSymbolTable as Global
 import Distribution.Package (PackageId)
 import Distribution.Text
 import Data.Foldable as F

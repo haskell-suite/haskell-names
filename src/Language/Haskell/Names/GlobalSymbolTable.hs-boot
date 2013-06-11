@@ -1,4 +1,4 @@
-module Language.Haskell.Modules.GlobalSymbolTable where
+module Language.Haskell.Names.GlobalSymbolTable where
 
 import Data.Data
 
