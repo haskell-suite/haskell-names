@@ -17,11 +17,13 @@ module Language.Haskell.Names.SyntaxUtils
   , qNameToName
   , unCName
   , getErrors
+  , moduleExtensions
   ) where
 import Prelude hiding (concatMap, foldl')
 import Data.Char
 import Data.Data
 import Data.Maybe
+import Data.Either
 import Data.Generics.Uniplate.Data
 import Data.Foldable
 import qualified Data.Set as Set
@@ -230,3 +232,44 @@ getErrors = foldl' f Set.empty
   where
     f errors (Scoped (ScopeError e) _) = Set.insert e errors
     f errors _ = errors
+
+-- | Compute the extension set for the given module, based on the global
+-- preferences (e.g. specified on the command line) and module's LANGUAGE
+-- pragmas.
+moduleExtensions
+  :: Language    -- ^ base ("default") language
+  -> [Extension] -- ^ global extensions
+  -> Module l
+  -> ExtensionSet
+moduleExtensions globalLang globalExts mod =
+  let
+    (mbModLang, modExts) = getModuleExtensions mod
+    lang = fromMaybe globalLang mbModLang
+    kexts = toExtensionList lang (globalExts ++ modExts)
+  in Set.fromList kexts
+
+getModuleExtensions :: Module l -> (Maybe Language, [Extension])
+getModuleExtensions mod =
+  let
+    names =
+      [ name
+      | let
+          pragmas =
+            case mod of
+              Module _ _ pragmas _ _ -> pragmas
+              XmlPage _ _ pragmas _ _ _ _ -> pragmas
+              XmlHybrid _ _ pragmas _ _ _ _ _ _ -> pragmas
+      , LanguagePragma _ names <- pragmas
+      , Ident _ name <- names
+      ]
+
+    classified :: [Either Language Extension]
+    classified =
+      flip map names $ \name ->
+        case (parseExtension name, classifyLanguage name) of
+          (e, UnknownLanguage {}) -> Right e
+          (_, l) -> Left l
+
+    (langs, exts) = partitionEithers classified
+  in
+    (if null langs then Nothing else Just $ last langs, exts)

@@ -15,6 +15,8 @@ import Data.Foldable as F
 import Data.Traversable
 import Text.Printf
 
+type ExtensionSet = Set.Set KnownExtension
+
 type SymFixity = (Assoc (), Int)
 
 data SymValueInfo name
