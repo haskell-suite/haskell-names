@@ -46,7 +46,10 @@ groupModules modules =
 -- isolation.
 annotateModule
   :: (MonadModule m, ModuleInfo m ~ Symbols, Data l, SrcInfo l, Eq l)
-  => Language -> [Extension] -> Module l -> m (Module (Scoped l))
+  => Language -- ^ base language
+  -> [Extension] -- ^ global extensions (e.g. specified on the command line)
+  -> Module l -- ^ input module
+  -> m (Module (Scoped l)) -- ^ output (annotated) module
 annotateModule lang exts mod@(Module lm mh os is ds) = do
   let extSet = moduleExtensions lang exts mod
   (imp, impTbl) <- processImports extSet $ getImports mod
@@ -101,7 +104,10 @@ findFixPoint mods = go mods (map (const mempty) mods) where
 -- if there are errors, the interfaces may be incomplete.
 computeInterfaces
   :: (MonadModule m, ModuleInfo m ~ Symbols, Data l, SrcInfo l, Ord l)
-  => Language -> [Extension] -> [Module l] -> m (Set.Set (Error l))
+  => Language -- ^ base language
+  -> [Extension] -- ^ global extensions (e.g. specified on the command line)
+  -> [Module l] -- ^ input modules
+  -> m (Set.Set (Error l)) -- ^ errors in export or import lists
 computeInterfaces lang exts =
   liftM fold . mapM findFixPoint . map supplyExtensions . groupModules
     where
@@ -111,7 +117,10 @@ computeInterfaces lang exts =
 -- per module and in the same order
 getInterfaces
   :: (MonadModule m, ModuleInfo m ~ Symbols, Data l, SrcInfo l, Ord l)
-  => Language -> [Extension] -> [Module l] -> m ([Symbols], Set.Set (Error l))
+  => Language -- ^ base language
+  -> [Extension] -- ^ global extensions (e.g. specified on the command line)
+  -> [Module l] -- ^ input modules
+  -> m ([Symbols], Set.Set (Error l)) -- ^ output modules, and errors in export or import lists
 getInterfaces lang exts mods = do
   errs <- computeInterfaces lang exts mods
   ifaces <- forM mods $ \mod ->
