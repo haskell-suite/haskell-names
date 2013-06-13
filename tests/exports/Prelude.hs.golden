@@ -4,7 +4,7 @@ Symbols (
         { sv_origName = OrigName
                           { origPackage = Nothing
                           , origGName = GName
-                                          "Library"
+                                          "Prelude"
                                           "function"
                           }
         , sv_fixity = Nothing
@@ -13,14 +13,14 @@ Symbols (
         { sv_origName = OrigName
                           { origPackage = Nothing
                           , origGName = GName
-                                          "Library"
+                                          "Prelude"
                                           "method1"
                           }
         , sv_fixity = Nothing
         , sv_className = OrigName
                            { origPackage = Nothing
                            , origGName = GName
-                                           "Library"
+                                           "Prelude"
                                            "Class"
                            }
         }
@@ -28,14 +28,14 @@ Symbols (
         { sv_origName = OrigName
                           { origPackage = Nothing
                           , origGName = GName
-                                          "Library"
+                                          "Prelude"
                                           "method2"
                           }
         , sv_fixity = Nothing
         , sv_className = OrigName
                            { origPackage = Nothing
                            , origGName = GName
-                                           "Library"
+                                           "Prelude"
                                            "Class"
                            }
         }
@@ -43,14 +43,14 @@ Symbols (
         { sv_origName = OrigName
                           { origPackage = Nothing
                           , origGName = GName
-                                          "Library"
+                                          "Prelude"
                                           "selector1"
                           }
         , sv_fixity = Nothing
         , sv_typeName = OrigName
                           { origPackage = Nothing
                           , origGName = GName
-                                          "Library"
+                                          "Prelude"
                                           "DataTypeWithSelectors"
                           }
         }
@@ -58,14 +58,14 @@ Symbols (
         { sv_origName = OrigName
                           { origPackage = Nothing
                           , origGName = GName
-                                          "Library"
+                                          "Prelude"
                                           "selector2"
                           }
         , sv_fixity = Nothing
         , sv_typeName = OrigName
                           { origPackage = Nothing
                           , origGName = GName
-                                          "Library"
+                                          "Prelude"
                                           "DataTypeWithSelectors"
                           }
         }
@@ -73,14 +73,14 @@ Symbols (
         { sv_origName = OrigName
                           { origPackage = Nothing
                           , origGName = GName
-                                          "Library"
+                                          "Prelude"
                                           "unNewtype"
                           }
         , sv_fixity = Nothing
         , sv_typeName = OrigName
                           { origPackage = Nothing
                           , origGName = GName
-                                          "Library"
+                                          "Prelude"
                                           "NewtypeWithSelectors"
                           }
         }
@@ -88,14 +88,14 @@ Symbols (
         { sv_origName = OrigName
                           { origPackage = Nothing
                           , origGName = GName
-                                          "Library"
+                                          "Prelude"
                                           "Constructor1"
                           }
         , sv_fixity = Nothing
         , sv_typeName = OrigName
                           { origPackage = Nothing
                           , origGName = GName
-                                          "Library"
+                                          "Prelude"
                                           "DataType"
                           }
         }
@@ -103,14 +103,14 @@ Symbols (
         { sv_origName = OrigName
                           { origPackage = Nothing
                           , origGName = GName
-                                          "Library"
+                                          "Prelude"
                                           "Constructor2"
                           }
         , sv_fixity = Nothing
         , sv_typeName = OrigName
                           { origPackage = Nothing
                           , origGName = GName
-                                          "Library"
+                                          "Prelude"
                                           "DataType"
                           }
         }
@@ -118,14 +118,14 @@ Symbols (
         { sv_origName = OrigName
                           { origPackage = Nothing
                           , origGName = GName
-                                          "Library"
+                                          "Prelude"
                                           "DataTypeWithSelectors"
                           }
         , sv_fixity = Nothing
         , sv_typeName = OrigName
                           { origPackage = Nothing
                           , origGName = GName
-                                          "Library"
+                                          "Prelude"
                                           "DataTypeWithSelectors"
                           }
         }
@@ -133,14 +133,14 @@ Symbols (
         { sv_origName = OrigName
                           { origPackage = Nothing
                           , origGName = GName
-                                          "Library"
+                                          "Prelude"
                                           "Newtype"
                           }
         , sv_fixity = Nothing
         , sv_typeName = OrigName
                           { origPackage = Nothing
                           , origGName = GName
-                                          "Library"
+                                          "Prelude"
                                           "Newtype"
                           }
         }
@@ -148,14 +148,14 @@ Symbols (
         { sv_origName = OrigName
                           { origPackage = Nothing
                           , origGName = GName
-                                          "Library"
+                                          "Prelude"
                                           "NewtypeWithSelectors"
                           }
         , sv_fixity = Nothing
         , sv_typeName = OrigName
                           { origPackage = Nothing
                           , origGName = GName
-                                          "Library"
+                                          "Prelude"
                                           "NewtypeWithSelectors"
                           }
         }
@@ -165,7 +165,7 @@ Symbols (
         { st_origName = OrigName
                           { origPackage = Nothing
                           , origGName = GName
-                                          "Library"
+                                          "Prelude"
                                           "TypeSynonym"
                           }
         , st_fixity = Nothing
@@ -174,7 +174,7 @@ Symbols (
         { st_origName = OrigName
                           { origPackage = Nothing
                           , origGName = GName
-                                          "Library"
+                                          "Prelude"
                                           "DataType"
                           }
         , st_fixity = Nothing
@@ -183,7 +183,7 @@ Symbols (
         { st_origName = OrigName
                           { origPackage = Nothing
                           , origGName = GName
-                                          "Library"
+                                          "Prelude"
                                           "DataTypeWithSelectors"
                           }
         , st_fixity = Nothing
@@ -192,7 +192,7 @@ Symbols (
         { st_origName = OrigName
                           { origPackage = Nothing
                           , origGName = GName
-                                          "Library"
+                                          "Prelude"
                                           "Newtype"
                           }
         , st_fixity = Nothing
@@ -201,7 +201,7 @@ Symbols (
         { st_origName = OrigName
                           { origPackage = Nothing
                           , origGName = GName
-                                          "Library"
+                                          "Prelude"
                                           "NewtypeWithSelectors"
                           }
         , st_fixity = Nothing
@@ -210,7 +210,7 @@ Symbols (
         { st_origName = OrigName
                           { origPackage = Nothing
                           , origGName = GName
-                                          "Library"
+                                          "Prelude"
                                           "Class"
                           }
         , st_fixity = Nothing

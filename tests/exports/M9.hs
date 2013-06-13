@@ -1,3 +1,3 @@
-module M9 (module Library) where
+module M9 (module Prelude) where
 
-import Library
+import Prelude

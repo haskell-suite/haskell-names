@@ -1,3 +1,3 @@
 module M1 where
 
-import Library
+import Prelude

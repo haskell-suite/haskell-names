@@ -1,4 +1,4 @@
-module Library where
+module Prelude where
 
 data DataType = Constructor1 | Constructor2
 

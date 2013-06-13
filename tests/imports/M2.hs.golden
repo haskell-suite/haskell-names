@@ -8,14 +8,14 @@ Table (
               { sv_origName = OrigName
                                 { origPackage = Nothing
                                 , origGName = GName
-                                                "Library"
+                                                "Prelude"
                                                 "Constructor1"
                                 }
               , sv_fixity = Nothing
               , sv_typeName = OrigName
                                 { origPackage = Nothing
                                 , origGName = GName
-                                                "Library"
+                                                "Prelude"
                                                 "DataType"
                                 }
               }
@@ -29,14 +29,14 @@ Table (
               { sv_origName = OrigName
                                 { origPackage = Nothing
                                 , origGName = GName
-                                                "Library"
+                                                "Prelude"
                                                 "Constructor2"
                                 }
               , sv_fixity = Nothing
               , sv_typeName = OrigName
                                 { origPackage = Nothing
                                 , origGName = GName
-                                                "Library"
+                                                "Prelude"
                                                 "DataType"
                                 }
               }
@@ -50,7 +50,7 @@ Table (
               { sv_origName = OrigName
                                 { origPackage = Nothing
                                 , origGName = GName
-                                                "Library"
+                                                "Prelude"
                                                 "function"
                                 }
               , sv_fixity = Nothing
@@ -58,56 +58,56 @@ Table (
           ]
       )
     , ( GName
-          "Library"
+          "Prelude"
           "Constructor1"
       , fromList
           [ SymConstructor
               { sv_origName = OrigName
                                 { origPackage = Nothing
                                 , origGName = GName
-                                                "Library"
+                                                "Prelude"
                                                 "Constructor1"
                                 }
               , sv_fixity = Nothing
               , sv_typeName = OrigName
                                 { origPackage = Nothing
                                 , origGName = GName
-                                                "Library"
+                                                "Prelude"
                                                 "DataType"
                                 }
               }
           ]
       )
     , ( GName
-          "Library"
+          "Prelude"
           "Constructor2"
       , fromList
           [ SymConstructor
               { sv_origName = OrigName
                                 { origPackage = Nothing
                                 , origGName = GName
-                                                "Library"
+                                                "Prelude"
                                                 "Constructor2"
                                 }
               , sv_fixity = Nothing
               , sv_typeName = OrigName
                                 { origPackage = Nothing
                                 , origGName = GName
-                                                "Library"
+                                                "Prelude"
                                                 "DataType"
                                 }
               }
           ]
       )
     , ( GName
-          "Library"
+          "Prelude"
           "function"
       , fromList
           [ SymValue
               { sv_origName = OrigName
                                 { origPackage = Nothing
                                 , origGName = GName
-                                                "Library"
+                                                "Prelude"
                                                 "function"
                                 }
               , sv_fixity = Nothing
@@ -124,7 +124,7 @@ Table (
               { st_origName = OrigName
                                 { origPackage = Nothing
                                 , origGName = GName
-                                                "Library"
+                                                "Prelude"
                                                 "DataType"
                                 }
               , st_fixity = Nothing
@@ -132,14 +132,14 @@ Table (
           ]
       )
     , ( GName
-          "Library"
+          "Prelude"
           "DataType"
       , fromList
           [ SymData
               { st_origName = OrigName
                                 { origPackage = Nothing
                                 , origGName = GName
-                                                "Library"
+                                                "Prelude"
                                                 "DataType"
                                 }
               , st_fixity = Nothing

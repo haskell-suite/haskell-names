@@ -8,14 +8,14 @@ Table (
               { sv_origName = OrigName
                                 { origPackage = Nothing
                                 , origGName = GName
-                                                "Library"
+                                                "Prelude"
                                                 "Constructor1"
                                 }
               , sv_fixity = Nothing
               , sv_typeName = OrigName
                                 { origPackage = Nothing
                                 , origGName = GName
-                                                "Library"
+                                                "Prelude"
                                                 "DataType"
                                 }
               }
@@ -29,14 +29,14 @@ Table (
               { sv_origName = OrigName
                                 { origPackage = Nothing
                                 , origGName = GName
-                                                "Library"
+                                                "Prelude"
                                                 "Constructor2"
                                 }
               , sv_fixity = Nothing
               , sv_typeName = OrigName
                                 { origPackage = Nothing
                                 , origGName = GName
-                                                "Library"
+                                                "Prelude"
                                                 "DataType"
                                 }
               }
@@ -50,14 +50,14 @@ Table (
               { sv_origName = OrigName
                                 { origPackage = Nothing
                                 , origGName = GName
-                                                "Library"
+                                                "Prelude"
                                                 "DataTypeWithSelectors"
                                 }
               , sv_fixity = Nothing
               , sv_typeName = OrigName
                                 { origPackage = Nothing
                                 , origGName = GName
-                                                "Library"
+                                                "Prelude"
                                                 "DataTypeWithSelectors"
                                 }
               }
@@ -71,14 +71,14 @@ Table (
               { sv_origName = OrigName
                                 { origPackage = Nothing
                                 , origGName = GName
-                                                "Library"
+                                                "Prelude"
                                                 "Newtype"
                                 }
               , sv_fixity = Nothing
               , sv_typeName = OrigName
                                 { origPackage = Nothing
                                 , origGName = GName
-                                                "Library"
+                                                "Prelude"
                                                 "Newtype"
                                 }
               }
@@ -92,14 +92,14 @@ Table (
               { sv_origName = OrigName
                                 { origPackage = Nothing
                                 , origGName = GName
-                                                "Library"
+                                                "Prelude"
                                                 "NewtypeWithSelectors"
                                 }
               , sv_fixity = Nothing
               , sv_typeName = OrigName
                                 { origPackage = Nothing
                                 , origGName = GName
-                                                "Library"
+                                                "Prelude"
                                                 "NewtypeWithSelectors"
                                 }
               }
@@ -113,7 +113,7 @@ Table (
               { sv_origName = OrigName
                                 { origPackage = Nothing
                                 , origGName = GName
-                                                "Library"
+                                                "Prelude"
                                                 "function"
                                 }
               , sv_fixity = Nothing
@@ -128,14 +128,14 @@ Table (
               { sv_origName = OrigName
                                 { origPackage = Nothing
                                 , origGName = GName
-                                                "Library"
+                                                "Prelude"
                                                 "method1"
                                 }
               , sv_fixity = Nothing
               , sv_className = OrigName
                                  { origPackage = Nothing
                                  , origGName = GName
-                                                 "Library"
+                                                 "Prelude"
                                                  "Class"
                                  }
               }
@@ -149,14 +149,14 @@ Table (
               { sv_origName = OrigName
                                 { origPackage = Nothing
                                 , origGName = GName
-                                                "Library"
+                                                "Prelude"
                                                 "method2"
                                 }
               , sv_fixity = Nothing
               , sv_className = OrigName
                                  { origPackage = Nothing
                                  , origGName = GName
-                                                 "Library"
+                                                 "Prelude"
                                                  "Class"
                                  }
               }
@@ -170,14 +170,14 @@ Table (
               { sv_origName = OrigName
                                 { origPackage = Nothing
                                 , origGName = GName
-                                                "Library"
+                                                "Prelude"
                                                 "selector1"
                                 }
               , sv_fixity = Nothing
               , sv_typeName = OrigName
                                 { origPackage = Nothing
                                 , origGName = GName
-                                                "Library"
+                                                "Prelude"
                                                 "DataTypeWithSelectors"
                                 }
               }
@@ -191,14 +191,14 @@ Table (
               { sv_origName = OrigName
                                 { origPackage = Nothing
                                 , origGName = GName
-                                                "Library"
+                                                "Prelude"
                                                 "selector2"
                                 }
               , sv_fixity = Nothing
               , sv_typeName = OrigName
                                 { origPackage = Nothing
                                 , origGName = GName
-                                                "Library"
+                                                "Prelude"
                                                 "DataTypeWithSelectors"
                                 }
               }
@@ -212,133 +212,133 @@ Table (
               { sv_origName = OrigName
                                 { origPackage = Nothing
                                 , origGName = GName
-                                                "Library"
+                                                "Prelude"
                                                 "unNewtype"
                                 }
               , sv_fixity = Nothing
               , sv_typeName = OrigName
                                 { origPackage = Nothing
                                 , origGName = GName
-                                                "Library"
+                                                "Prelude"
                                                 "NewtypeWithSelectors"
                                 }
               }
           ]
       )
     , ( GName
-          "Library"
+          "Prelude"
           "Constructor1"
       , fromList
           [ SymConstructor
               { sv_origName = OrigName
                                 { origPackage = Nothing
                                 , origGName = GName
-                                                "Library"
+                                                "Prelude"
                                                 "Constructor1"
                                 }
               , sv_fixity = Nothing
               , sv_typeName = OrigName
                                 { origPackage = Nothing
                                 , origGName = GName
-                                                "Library"
+                                                "Prelude"
                                                 "DataType"
                                 }
               }
           ]
       )
     , ( GName
-          "Library"
+          "Prelude"
           "Constructor2"
       , fromList
           [ SymConstructor
               { sv_origName = OrigName
                                 { origPackage = Nothing
                                 , origGName = GName
-                                                "Library"
+                                                "Prelude"
                                                 "Constructor2"
                                 }
               , sv_fixity = Nothing
               , sv_typeName = OrigName
                                 { origPackage = Nothing
                                 , origGName = GName
-                                                "Library"
+                                                "Prelude"
                                                 "DataType"
                                 }
               }
           ]
       )
     , ( GName
-          "Library"
+          "Prelude"
           "DataTypeWithSelectors"
       , fromList
           [ SymConstructor
               { sv_origName = OrigName
                                 { origPackage = Nothing
                                 , origGName = GName
-                                                "Library"
+                                                "Prelude"
                                                 "DataTypeWithSelectors"
                                 }
               , sv_fixity = Nothing
               , sv_typeName = OrigName
                                 { origPackage = Nothing
                                 , origGName = GName
-                                                "Library"
+                                                "Prelude"
                                                 "DataTypeWithSelectors"
                                 }
               }
           ]
       )
     , ( GName
-          "Library"
+          "Prelude"
           "Newtype"
       , fromList
           [ SymConstructor
               { sv_origName = OrigName
                                 { origPackage = Nothing
                                 , origGName = GName
-                                                "Library"
+                                                "Prelude"
                                                 "Newtype"
                                 }
               , sv_fixity = Nothing
               , sv_typeName = OrigName
                                 { origPackage = Nothing
                                 , origGName = GName
-                                                "Library"
+                                                "Prelude"
                                                 "Newtype"
                                 }
               }
           ]
       )
     , ( GName
-          "Library"
+          "Prelude"
           "NewtypeWithSelectors"
       , fromList
           [ SymConstructor
               { sv_origName = OrigName
                                 { origPackage = Nothing
                                 , origGName = GName
-                                                "Library"
+                                                "Prelude"
                                                 "NewtypeWithSelectors"
                                 }
               , sv_fixity = Nothing
               , sv_typeName = OrigName
                                 { origPackage = Nothing
                                 , origGName = GName
-                                                "Library"
+                                                "Prelude"
                                                 "NewtypeWithSelectors"
                                 }
               }
           ]
       )
     , ( GName
-          "Library"
+          "Prelude"
           "function"
       , fromList
           [ SymValue
               { sv_origName = OrigName
                                 { origPackage = Nothing
                                 , origGName = GName
-                                                "Library"
+                                                "Prelude"
                                                 "function"
                                 }
               , sv_fixity = Nothing
@@ -346,105 +346,105 @@ Table (
           ]
       )
     , ( GName
-          "Library"
+          "Prelude"
           "method1"
       , fromList
           [ SymMethod
               { sv_origName = OrigName
                                 { origPackage = Nothing
                                 , origGName = GName
-                                                "Library"
+                                                "Prelude"
                                                 "method1"
                                 }
               , sv_fixity = Nothing
               , sv_className = OrigName
                                  { origPackage = Nothing
                                  , origGName = GName
-                                                 "Library"
+                                                 "Prelude"
                                                  "Class"
                                  }
               }
           ]
       )
     , ( GName
-          "Library"
+          "Prelude"
           "method2"
       , fromList
           [ SymMethod
               { sv_origName = OrigName
                                 { origPackage = Nothing
                                 , origGName = GName
-                                                "Library"
+                                                "Prelude"
                                                 "method2"
                                 }
               , sv_fixity = Nothing
               , sv_className = OrigName
                                  { origPackage = Nothing
                                  , origGName = GName
-                                                 "Library"
+                                                 "Prelude"
                                                  "Class"
                                  }
               }
           ]
       )
     , ( GName
-          "Library"
+          "Prelude"
           "selector1"
       , fromList
           [ SymSelector
               { sv_origName = OrigName
                                 { origPackage = Nothing
                                 , origGName = GName
-                                                "Library"
+                                                "Prelude"
                                                 "selector1"
                                 }
               , sv_fixity = Nothing
               , sv_typeName = OrigName
                                 { origPackage = Nothing
                                 , origGName = GName
-                                                "Library"
+                                                "Prelude"
                                                 "DataTypeWithSelectors"
                                 }
               }
           ]
       )
     , ( GName
-          "Library"
+          "Prelude"
           "selector2"
       , fromList
           [ SymSelector
               { sv_origName = OrigName
                                 { origPackage = Nothing
                                 , origGName = GName
-                                                "Library"
+                                                "Prelude"
                                                 "selector2"
                                 }
               , sv_fixity = Nothing
               , sv_typeName = OrigName
                                 { origPackage = Nothing
                                 , origGName = GName
-                                                "Library"
+                                                "Prelude"
                                                 "DataTypeWithSelectors"
                                 }
               }
           ]
       )
     , ( GName
-          "Library"
+          "Prelude"
           "unNewtype"
       , fromList
           [ SymSelector
               { sv_origName = OrigName
                                 { origPackage = Nothing
                                 , origGName = GName
-                                                "Library"
+                                                "Prelude"
                                                 "unNewtype"
                                 }
               , sv_fixity = Nothing
               , sv_typeName = OrigName
                                 { origPackage = Nothing
                                 , origGName = GName
-                                                "Library"
+                                                "Prelude"
                                                 "NewtypeWithSelectors"
                                 }
               }
@@ -460,7 +460,7 @@ Table (
               { st_origName = OrigName
                                 { origPackage = Nothing
                                 , origGName = GName
-                                                "Library"
+                                                "Prelude"
                                                 "Class"
                                 }
               , st_fixity = Nothing
@@ -475,7 +475,7 @@ Table (
               { st_origName = OrigName
                                 { origPackage = Nothing
                                 , origGName = GName
-                                                "Library"
+                                                "Prelude"
                                                 "DataType"
                                 }
               , st_fixity = Nothing
@@ -490,7 +490,7 @@ Table (
               { st_origName = OrigName
                                 { origPackage = Nothing
                                 , origGName = GName
-                                                "Library"
+                                                "Prelude"
                                                 "DataTypeWithSelectors"
                                 }
               , st_fixity = Nothing
@@ -505,7 +505,7 @@ Table (
               { st_origName = OrigName
                                 { origPackage = Nothing
                                 , origGName = GName
-                                                "Library"
+                                                "Prelude"
                                                 "Newtype"
                                 }
               , st_fixity = Nothing
@@ -520,7 +520,7 @@ Table (
               { st_origName = OrigName
                                 { origPackage = Nothing
                                 , origGName = GName
-                                                "Library"
+                                                "Prelude"
                                                 "NewtypeWithSelectors"
                                 }
               , st_fixity = Nothing
@@ -535,7 +535,7 @@ Table (
               { st_origName = OrigName
                                 { origPackage = Nothing
                                 , origGName = GName
-                                                "Library"
+                                                "Prelude"
                                                 "TypeSynonym"
                                 }
               , st_fixity = Nothing
@@ -543,14 +543,14 @@ Table (
           ]
       )
     , ( GName
-          "Library"
+          "Prelude"
           "Class"
       , fromList
           [ SymClass
               { st_origName = OrigName
                                 { origPackage = Nothing
                                 , origGName = GName
-                                                "Library"
+                                                "Prelude"
                                                 "Class"
                                 }
               , st_fixity = Nothing
@@ -558,14 +558,14 @@ Table (
           ]
       )
     , ( GName
-          "Library"
+          "Prelude"
           "DataType"
       , fromList
           [ SymData
               { st_origName = OrigName
                                 { origPackage = Nothing
                                 , origGName = GName
-                                                "Library"
+                                                "Prelude"
                                                 "DataType"
                                 }
               , st_fixity = Nothing
@@ -573,14 +573,14 @@ Table (
           ]
       )
     , ( GName
-          "Library"
+          "Prelude"
           "DataTypeWithSelectors"
       , fromList
           [ SymData
               { st_origName = OrigName
                                 { origPackage = Nothing
                                 , origGName = GName
-                                                "Library"
+                                                "Prelude"
                                                 "DataTypeWithSelectors"
                                 }
               , st_fixity = Nothing
@@ -588,14 +588,14 @@ Table (
           ]
       )
     , ( GName
-          "Library"
+          "Prelude"
           "Newtype"
       , fromList
           [ SymNewType
               { st_origName = OrigName
                                 { origPackage = Nothing
                                 , origGName = GName
-                                                "Library"
+                                                "Prelude"
                                                 "Newtype"
                                 }
               , st_fixity = Nothing
@@ -603,14 +603,14 @@ Table (
           ]
       )
     , ( GName
-          "Library"
+          "Prelude"
           "NewtypeWithSelectors"
       , fromList
           [ SymNewType
               { st_origName = OrigName
                                 { origPackage = Nothing
                                 , origGName = GName
-                                                "Library"
+                                                "Prelude"
                                                 "NewtypeWithSelectors"
                                 }
               , st_fixity = Nothing
@@ -618,14 +618,14 @@ Table (
           ]
       )
     , ( GName
-          "Library"
+          "Prelude"
           "TypeSynonym"
       , fromList
           [ SymType
               { st_origName = OrigName
                                 { origPackage = Nothing
                                 , origGName = GName
-                                                "Library"
+                                                "Prelude"
                                                 "TypeSynonym"
                                 }
               , st_fixity = Nothing

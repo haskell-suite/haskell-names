@@ -43,8 +43,8 @@ getIfaces = getInterfaces lang exts
 getModules = do
   [libraryIface] <-
     (\m -> evalModuleT (fst <$> getIfaces [m]) [] (error "retrieve") (error "retrieve"))
-    =<< parseAndPrepare "tests/exports/Library.hs"
-  return $ Map.singleton (convertModuleName "Library") libraryIface
+    =<< parseAndPrepare "tests/exports/Prelude.hs"
+  return $ Map.singleton (convertModuleName "Prelude") libraryIface
 
 -----------------------------------------------------
 -- Export test: parse a source file, dump its symbols
