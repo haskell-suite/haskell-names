@@ -17,6 +17,8 @@ module Language.Haskell.Names.SyntaxUtils
   , qNameToName
   , unCName
   , getErrors
+    -- export ExtensionSet here for the outside users
+  , ExtensionSet
   , moduleExtensions
   ) where
 import Prelude hiding (concatMap, foldl')
