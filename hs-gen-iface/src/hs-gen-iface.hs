@@ -12,6 +12,7 @@ import Control.Monad
 import Control.Exception
 import Data.Typeable
 import Data.Proxy
+import Data.Maybe
 import qualified Data.Foldable as F
 import System.FilePath
 import Text.Printf
@@ -81,15 +82,16 @@ parse exts cppOpts file = do
              , ignoreLinePragmas     = False
              }
 
--- FIXME use the language argument
+-- FIXME use the language argument in the parser
 compile :: Compiler.CompileFn
 compile buildDir mbLang exts cppOpts pkgName pkgdbs deps files = do
+  let lang = fromMaybe Haskell98 mbLang
 
   moduleSet <- mapM (parse exts cppOpts) files
 
   packages <- readPackagesInfo (Proxy :: Proxy NamesDB) pkgdbs deps
 
-  (ifaces, errors) <- evalModuleT (getInterfaces moduleSet) packages "names" readInterface
+  (ifaces, errors) <- evalModuleT (getInterfaces lang exts moduleSet) packages "names" readInterface
 
   F.for_ errors $ \e -> printf "Warning: %s" (ppError e)
 
