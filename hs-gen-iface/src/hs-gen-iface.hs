@@ -67,9 +67,8 @@ fixCppOpts opts =
     defines = ("__GLASGOW_HASKELL__", "706") : defines opts -- FIXME
   }
 
-parse :: [Extension] -> CpphsOptions -> FilePath -> IO (HSE.Module HSE.SrcSpan)
-parse exts cppOpts file = do
-    -- FIXME: use parseFileWithMode?
+parse :: Language -> [Extension] -> CpphsOptions -> FilePath -> IO (HSE.Module HSE.SrcSpan)
+parse lang exts cppOpts file = do
     x <- return . fmap HSE.srcInfoSpan . fst
             =<< fromParseResult
             =<< parseFileWithCommentsAndCPP (fixCppOpts cppOpts) mode file
@@ -77,17 +76,17 @@ parse exts cppOpts file = do
   where
     mode = defaultParseMode
              { UnAnn.parseFilename   = file
+             , baseLanguage          = lang
              , extensions            = exts
              , ignoreLanguagePragmas = False
              , ignoreLinePragmas     = False
              }
 
--- FIXME use the language argument in the parser
 compile :: Compiler.CompileFn
 compile buildDir mbLang exts cppOpts pkgName pkgdbs deps files = do
   let lang = fromMaybe Haskell98 mbLang
 
-  moduleSet <- mapM (parse exts cppOpts) files
+  moduleSet <- mapM (parse lang exts cppOpts) files
 
   packages <- readPackagesInfo (Proxy :: Proxy NamesDB) pkgdbs deps
 
