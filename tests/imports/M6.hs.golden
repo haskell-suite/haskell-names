@@ -1,0 +1,320 @@
+Table (
+  fromList
+    [ ( GName
+          "Prelude"
+          "Constructor1"
+      , fromList
+          [ SymConstructor
+              { sv_origName = OrigName
+                                { origPackage = Nothing
+                                , origGName = GName
+                                                "Prelude"
+                                                "Constructor1"
+                                }
+              , sv_fixity = Nothing
+              , sv_typeName = OrigName
+                                { origPackage = Nothing
+                                , origGName = GName
+                                                "Prelude"
+                                                "DataType"
+                                }
+              }
+          ]
+      )
+    , ( GName
+          "Prelude"
+          "Constructor2"
+      , fromList
+          [ SymConstructor
+              { sv_origName = OrigName
+                                { origPackage = Nothing
+                                , origGName = GName
+                                                "Prelude"
+                                                "Constructor2"
+                                }
+              , sv_fixity = Nothing
+              , sv_typeName = OrigName
+                                { origPackage = Nothing
+                                , origGName = GName
+                                                "Prelude"
+                                                "DataType"
+                                }
+              }
+          ]
+      )
+    , ( GName
+          "Prelude"
+          "DataTypeWithSelectors"
+      , fromList
+          [ SymConstructor
+              { sv_origName = OrigName
+                                { origPackage = Nothing
+                                , origGName = GName
+                                                "Prelude"
+                                                "DataTypeWithSelectors"
+                                }
+              , sv_fixity = Nothing
+              , sv_typeName = OrigName
+                                { origPackage = Nothing
+                                , origGName = GName
+                                                "Prelude"
+                                                "DataTypeWithSelectors"
+                                }
+              }
+          ]
+      )
+    , ( GName
+          "Prelude"
+          "Newtype"
+      , fromList
+          [ SymConstructor
+              { sv_origName = OrigName
+                                { origPackage = Nothing
+                                , origGName = GName
+                                                "Prelude"
+                                                "Newtype"
+                                }
+              , sv_fixity = Nothing
+              , sv_typeName = OrigName
+                                { origPackage = Nothing
+                                , origGName = GName
+                                                "Prelude"
+                                                "Newtype"
+                                }
+              }
+          ]
+      )
+    , ( GName
+          "Prelude"
+          "NewtypeWithSelectors"
+      , fromList
+          [ SymConstructor
+              { sv_origName = OrigName
+                                { origPackage = Nothing
+                                , origGName = GName
+                                                "Prelude"
+                                                "NewtypeWithSelectors"
+                                }
+              , sv_fixity = Nothing
+              , sv_typeName = OrigName
+                                { origPackage = Nothing
+                                , origGName = GName
+                                                "Prelude"
+                                                "NewtypeWithSelectors"
+                                }
+              }
+          ]
+      )
+    , ( GName
+          "Prelude"
+          "function"
+      , fromList
+          [ SymValue
+              { sv_origName = OrigName
+                                { origPackage = Nothing
+                                , origGName = GName
+                                                "Prelude"
+                                                "function"
+                                }
+              , sv_fixity = Nothing
+              }
+          ]
+      )
+    , ( GName
+          "Prelude"
+          "method1"
+      , fromList
+          [ SymMethod
+              { sv_origName = OrigName
+                                { origPackage = Nothing
+                                , origGName = GName
+                                                "Prelude"
+                                                "method1"
+                                }
+              , sv_fixity = Nothing
+              , sv_className = OrigName
+                                 { origPackage = Nothing
+                                 , origGName = GName
+                                                 "Prelude"
+                                                 "Class"
+                                 }
+              }
+          ]
+      )
+    , ( GName
+          "Prelude"
+          "method2"
+      , fromList
+          [ SymMethod
+              { sv_origName = OrigName
+                                { origPackage = Nothing
+                                , origGName = GName
+                                                "Prelude"
+                                                "method2"
+                                }
+              , sv_fixity = Nothing
+              , sv_className = OrigName
+                                 { origPackage = Nothing
+                                 , origGName = GName
+                                                 "Prelude"
+                                                 "Class"
+                                 }
+              }
+          ]
+      )
+    , ( GName
+          "Prelude"
+          "selector1"
+      , fromList
+          [ SymSelector
+              { sv_origName = OrigName
+                                { origPackage = Nothing
+                                , origGName = GName
+                                                "Prelude"
+                                                "selector1"
+                                }
+              , sv_fixity = Nothing
+              , sv_typeName = OrigName
+                                { origPackage = Nothing
+                                , origGName = GName
+                                                "Prelude"
+                                                "DataTypeWithSelectors"
+                                }
+              }
+          ]
+      )
+    , ( GName
+          "Prelude"
+          "selector2"
+      , fromList
+          [ SymSelector
+              { sv_origName = OrigName
+                                { origPackage = Nothing
+                                , origGName = GName
+                                                "Prelude"
+                                                "selector2"
+                                }
+              , sv_fixity = Nothing
+              , sv_typeName = OrigName
+                                { origPackage = Nothing
+                                , origGName = GName
+                                                "Prelude"
+                                                "DataTypeWithSelectors"
+                                }
+              }
+          ]
+      )
+    , ( GName
+          "Prelude"
+          "unNewtype"
+      , fromList
+          [ SymSelector
+              { sv_origName = OrigName
+                                { origPackage = Nothing
+                                , origGName = GName
+                                                "Prelude"
+                                                "unNewtype"
+                                }
+              , sv_fixity = Nothing
+              , sv_typeName = OrigName
+                                { origPackage = Nothing
+                                , origGName = GName
+                                                "Prelude"
+                                                "NewtypeWithSelectors"
+                                }
+              }
+          ]
+      )
+    ] ) (
+  fromList
+    [ ( GName
+          "Prelude"
+          "Class"
+      , fromList
+          [ SymClass
+              { st_origName = OrigName
+                                { origPackage = Nothing
+                                , origGName = GName
+                                                "Prelude"
+                                                "Class"
+                                }
+              , st_fixity = Nothing
+              }
+          ]
+      )
+    , ( GName
+          "Prelude"
+          "DataType"
+      , fromList
+          [ SymData
+              { st_origName = OrigName
+                                { origPackage = Nothing
+                                , origGName = GName
+                                                "Prelude"
+                                                "DataType"
+                                }
+              , st_fixity = Nothing
+              }
+          ]
+      )
+    , ( GName
+          "Prelude"
+          "DataTypeWithSelectors"
+      , fromList
+          [ SymData
+              { st_origName = OrigName
+                                { origPackage = Nothing
+                                , origGName = GName
+                                                "Prelude"
+                                                "DataTypeWithSelectors"
+                                }
+              , st_fixity = Nothing
+              }
+          ]
+      )
+    , ( GName
+          "Prelude"
+          "Newtype"
+      , fromList
+          [ SymNewType
+              { st_origName = OrigName
+                                { origPackage = Nothing
+                                , origGName = GName
+                                                "Prelude"
+                                                "Newtype"
+                                }
+              , st_fixity = Nothing
+              }
+          ]
+      )
+    , ( GName
+          "Prelude"
+          "NewtypeWithSelectors"
+      , fromList
+          [ SymNewType
+              { st_origName = OrigName
+                                { origPackage = Nothing
+                                , origGName = GName
+                                                "Prelude"
+                                                "NewtypeWithSelectors"
+                                }
+              , st_fixity = Nothing
+              }
+          ]
+      )
+    , ( GName
+          "Prelude"
+          "TypeSynonym"
+      , fromList
+          [ SymType
+              { st_origName = OrigName
+                                { origPackage = Nothing
+                                , origGName = GName
+                                                "Prelude"
+                                                "TypeSynonym"
+                                }
+              , st_fixity = Nothing
+              }
+          ]
+      )
+    ] )
