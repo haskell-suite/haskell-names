@@ -36,9 +36,13 @@ tests = sequence [exportTests, importTests, annotationTests]
 parseAndPrepare file =
   return . fmap srcInfoSpan . fromParseResult =<< parseFile file
 
+lang = Haskell2010
+exts = [DisableExtension ImplicitPrelude]
+getIfaces = getInterfaces lang exts
+
 getModules = do
   [libraryIface] <-
-    (\m -> evalModuleT (fst <$> getInterfaces [m]) [] (error "retrieve") (error "retrieve"))
+    (\m -> evalModuleT (fst <$> getIfaces [m]) [] (error "retrieve") (error "retrieve"))
     =<< parseAndPrepare "tests/exports/Library.hs"
   return $ Map.singleton (convertModuleName "Library") libraryIface
 
@@ -57,7 +61,7 @@ exportTests = do
   testFiles <- find (return True) (extension ==? ".hs") "tests/exports"
   parsed <- mapM parseAndPrepare testFiles
   ifaces <-
-    fst <$> runModuleT (fst <$> getInterfaces parsed) [] (error "retrieve") (error "retrieve") mods
+    fst <$> runModuleT (fst <$> getIfaces parsed) [] (error "retrieve") (error "retrieve") mods
 
   return $ testGroup "exports" $ zipWith exportTest testFiles ifaces
 
@@ -76,7 +80,9 @@ importTest mods file =
 getGlobalTable :: Map.Map Cabal.ModuleName Symbols -> FilePath -> IO Global.Table
 getGlobalTable mods file = do
   mod <- parseAndPrepare file
-  let mImps = snd <$> processImports (getImports mod)
+  let
+    extSet = moduleExtensions lang exts mod
+    mImps = snd <$> processImports extSet (getImports mod)
   fst <$> runModuleT mImps [] (error "retrieve") (error "retrieve") mods
 
 importTests = do
