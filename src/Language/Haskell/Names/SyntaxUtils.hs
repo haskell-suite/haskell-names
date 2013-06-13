@@ -239,7 +239,7 @@ getErrors = foldl' f Set.empty
 -- preferences (e.g. specified on the command line) and module's LANGUAGE
 -- pragmas.
 moduleExtensions
-  :: Language    -- ^ base ("default") language
+  :: Language    -- ^ base language
   -> [Extension] -- ^ global extensions
   -> Module l
   -> ExtensionSet
