@@ -96,6 +96,10 @@ You can parse interface files directly, but a better idea is to use
 `Distribution.HaskellSuite.Packages` API (from haskell-packages), combined with
 the package database `NamesDB` defined in `Language.Haskell.Modules.Interfaces`.
 
+### API documentation
+
+See [haskell-names haddock documentation](http://haskell-suite.github.io/docs/haskell-names/)
+
 ### Known issues
 
 * haskell-names doesn't perform validation yet. If a module is not valid
