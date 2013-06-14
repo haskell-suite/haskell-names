@@ -215,13 +215,8 @@ See [haskell-names haddock documentation][doc-index].
 
 The two modules you need are:
 
-[Language.Haskell.Names][]
-
-:   exports the core functions and data types
-
-[Language.Haskell.Names.Interfaces][]
-
-:   lets you work with haskell-names interface files
+* [Language.Haskell.Names][] — exports the core functions and data types
+* [Language.Haskell.Names.Interfaces][] — lets you work with haskell-names interface files
 
 Other modules are more experimental, less documented, and you probably don't need
 them anyway.
