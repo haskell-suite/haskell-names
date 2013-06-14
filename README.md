@@ -96,6 +96,20 @@ You can parse interface files directly, but a better idea is to use
 `Distribution.HaskellSuite.Packages` API (from haskell-packages), combined with
 the package database `NamesDB` defined in `Language.Haskell.Modules.Interfaces`.
 
+Name resolution
+---------------
+
+There are two approaches to name resolution.
+
+A simpler one is provided by the `annotateModule` function which annotates the
+module with scoping information.
+
+A more advanced interface is given by the `Language.Haskell.Names.Open` module.
+Its essence is described in the article [Open your name resolution][openrec].
+It is, however, very experimental.
+
+[openrec]: http://ro-che.info/articles/2013-03-04-open-name-resolution.html
+
 ### Example
 
 Let's say you have a module and you want to find out whether it uses
