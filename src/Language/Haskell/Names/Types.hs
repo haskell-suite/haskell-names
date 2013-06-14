@@ -47,6 +47,7 @@ data SymValueInfo name
       -- ^ data constructor
     deriving (Eq, Ord, Show, Data, Typeable, Functor, Foldable, Traversable)
 
+-- | Information about a type-level entitity
 data SymTypeInfo name
     = SymType
       { st_origName :: name
