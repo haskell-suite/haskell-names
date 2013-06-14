@@ -98,6 +98,9 @@ the package database `NamesDB` defined in `Language.Haskell.Modules.Interfaces`.
 
 ### Known issues
 
+* haskell-names doesn't perform validation yet. If a module is not valid
+  Haskell, then the behaviour is undefined. See the issues marked as
+  [validation][].
 * Symbol fixities are not recorded ([#1][])
 * Type variables are not resolved ([#2][])
 * Arrows are not fully supported ([#8][])
@@ -107,3 +110,4 @@ the package database `NamesDB` defined in `Language.Haskell.Modules.Interfaces`.
 [#2]: https://github.com/haskell-suite/haskell-names/issues/2
 [#8]: https://github.com/haskell-suite/haskell-names/issues/8
 [#25]: https://github.com/haskell-suite/haskell-names/issues/25
+[validation]: https://github.com/haskell-suite/haskell-names/issues?labels=validation&page=1&state=open
