@@ -1,11 +1,15 @@
--- | Reading 'ModuleSummary' from and writing to interface files
+-- | Reading 'Symbols' from and writing to interface files
 {-# LANGUAGE DeriveDataTypeable, OverloadedStrings, TemplateHaskell #-}
 {-# OPTIONS_GHC -fno-warn-orphans -fno-warn-name-shadowing #-}
 module Language.Haskell.Names.Interfaces
-  ( readInterface
+  (
+  -- * High-level interface
+    NamesDB(..)
+  -- * Low-level interface
+  , readInterface
   , writeInterface
+  -- * Exceptions
   , IfaceException(..)
-  , NamesDB(..)
   ) where
 
 import Language.Haskell.Names.Types
@@ -30,11 +34,13 @@ data IfaceException =
   deriving (Typeable, Show)
 instance Exception IfaceException
 
+-- | Read an interface file
 readInterface :: FilePath -> IO Symbols
 readInterface path =
   either (throwIO . BadInterface path) return =<<
     eitherDecode <$> BS.readFile path
 
+-- | Write an interface file
 writeInterface :: FilePath -> Symbols -> IO ()
 writeInterface path iface =
   BS.writeFile path $
@@ -147,7 +153,10 @@ instance FromJSON Symbols where
         in Symbols (Set.fromList vals) (Set.fromList tys)
     in toSymbols <$> eithersM
 
+-- | The database used by @hs-gen-iface@. Use it together with
+-- functions from "Distribution.HaskellSuite.Packages".
 newtype NamesDB = NamesDB FilePath
+
 instance IsPackageDB NamesDB where
   dbName = return "haskell-names"
   readPackageDB init (NamesDB db) = readDB init db
