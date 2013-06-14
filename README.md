@@ -95,3 +95,15 @@ or `base` easily. There are two ways to work around this:
 You can parse interface files directly, but a better idea is to use
 `Distribution.HaskellSuite.Packages` API (from haskell-packages), combined with
 the package database `NamesDB` defined in `Language.Haskell.Modules.Interfaces`.
+
+### Known issues
+
+* Symbol fixities are not recorded ([#1][])
+* Type variables are not resolved ([#2][])
+* Arrows are not fully supported ([#8][])
+* Type/data families and associated types are not fully supported ([#25][])
+
+[#1]: https://github.com/haskell-suite/haskell-names/issues/1
+[#2]: https://github.com/haskell-suite/haskell-names/issues/2
+[#8]: https://github.com/haskell-suite/haskell-names/issues/8
+[#25]: https://github.com/haskell-suite/haskell-names/issues/25
