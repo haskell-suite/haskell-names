@@ -5,7 +5,8 @@ Author:                 Roman Cheplyaka, Lennart Augustsson
 Maintainer:             Roman Cheplyaka <roma@ro-che.info>
 Category:               Language
 Synopsis:               Name resolution library for Haskell
-Description:            See <http://documentup.com/haskell-suite/haskell-names/>
+Description:            See <http://documentup.com/haskell-suite/haskell-names>
+Homepage:               http://documentup.com/haskell-suite/haskell-names
 Stability:              Experimental
 Build-Type:             Simple
 Cabal-Version:          >= 1.10
