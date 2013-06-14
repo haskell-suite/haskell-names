@@ -98,7 +98,24 @@ the package database `NamesDB` defined in `Language.Haskell.Modules.Interfaces`.
 
 ### API documentation
 
-See [haskell-names haddock documentation](http://haskell-suite.github.io/docs/haskell-names/)
+See [haskell-names haddock documentation][doc-index].
+
+The two modules you need are:
+
+[Language.Haskell.Names][]
+
+:   exports the core functions and data types
+
+[Language.Haskell.Names.Interfaces][]
+
+:   lets you work with haskell-names interface files
+
+Other modules are more experimental, less documented, and you probably don't need
+them anyway.
+
+[doc-index]: http://haskell-suite.github.io/docs/haskell-names/
+[Language.haskell.Names]: http://haskell-suite.github.io/docs/haskell-names/Language-Haskell-Names.html
+[Language.Haskell.Names.Interfaces]: http://haskell-suite.github.io/docs/haskell-names/Language-Haskell-Names-Interfaces.html
 
 ### Known issues
 
