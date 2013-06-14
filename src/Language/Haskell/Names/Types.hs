@@ -17,6 +17,7 @@ import Text.Printf
 
 type ExtensionSet = Set.Set KnownExtension
 
+-- | Repesents the symbol's fixity
 type SymFixity = (Assoc (), Int)
 
 -- | Information about a value-level entitity
@@ -110,7 +111,9 @@ mkVal i = Symbols (Set.singleton i) mempty
 mkTy :: SymTypeInfo OrigName -> Symbols
 mkTy i = Symbols mempty (Set.singleton i)
 
+-- | String representing an unqualified entity name
 type NameS = String
+-- | String representing a module name
 type ModuleNameS = String
 
 -- | Possibly qualified name. If the name is not qualified,
@@ -118,6 +121,7 @@ type ModuleNameS = String
 data GName = GName ModuleNameS NameS
   deriving (Eq, Ord, Show, Data, Typeable)
 
+-- | Display a 'GName'
 ppGName :: GName -> String
 ppGName (GName mod name) = printf "%s.%s" mod name
 
@@ -132,6 +136,7 @@ data OrigName = OrigName
   }
   deriving (Eq, Ord, Show, Data, Typeable)
 
+-- | Display an 'OrigName'
 ppOrigName :: OrigName -> String
 ppOrigName (OrigName mbPkg gname) =
   maybe "" (\pkgid -> printf "%s:" $ display pkgid) mbPkg ++
@@ -163,17 +168,38 @@ data NameInfo l
 
 data Error l
   = ENotInScope (QName l) -- FIXME annotate with namespace (types/values)
+    -- ^ name is not in scope
   | EAmbiguous (QName l) [OrigName]
+    -- ^ name is ambiguous
   | ETypeAsClass (QName l)
+    -- ^ type is used where a type class is expected
   | EClassAsType (QName l)
+    -- ^ type class is used where a type is expected
   | ENotExported
-      (Maybe (Name l)) -- optional parent, e.g. Bool in Bool(Right)
-      (Name l)         -- the name which is not exported
+      (Maybe (Name l)) --
+      (Name l)         --
       (ModuleName l)
+    -- ^ Attempt to explicitly import a name which is not exported (or,
+    -- possibly, does not even exist). For example:
+    --
+    -- >import Prelude(Bool(Right))
+    --
+    -- The fields are:
+    --
+    -- 1. optional parent in the import list, e.g. @Bool@ in @Bool(Right)@
+    --
+    -- 2. the name which is not exported
+    --
+    -- 3. the module which does not export the name
   | EModNotFound (ModuleName l)
+    -- ^ module not found
   | EInternal String
+    -- ^ internal error
   deriving (Data, Typeable, Show, Functor, Foldable, Traversable, Eq, Ord)
 
+-- | Display an error.
+--
+-- Note: can span multiple lines; the trailing newline is included.
 ppError :: SrcInfo l => Error l -> String
 ppError e =
   case e of
