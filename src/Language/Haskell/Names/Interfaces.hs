@@ -5,6 +5,8 @@ module Language.Haskell.Names.Interfaces
   (
   -- * High-level interface
     NamesDB(..)
+  , runNamesModuleT
+  , evalNamesModuleT
   -- * Low-level interface
   , readInterface
   , writeInterface
@@ -22,10 +24,12 @@ import Data.Char
 import Data.Typeable
 import Data.Either
 import qualified Data.Set as Set
+import qualified Data.Map as Map
 import Control.Exception
 import Control.Applicative
 import Control.Monad
-import Distribution.HaskellSuite.Packages
+import Distribution.HaskellSuite
+import qualified Distribution.ModuleName as Cabal
 
 data IfaceException =
   -- | Interface could not be parsed. This tells you the file name of the
@@ -163,3 +167,22 @@ instance IsPackageDB NamesDB where
   writePackageDB (NamesDB db) = writeDB db
   globalDB = return Nothing
   dbFromPath path = return $ NamesDB path
+
+-- | Extension of the name files (i.e. @"names"@)
+nameFilesExtension :: FilePath
+nameFilesExtension = "names"
+
+-- | Specialized version of 'runModuleT' that works with name files
+runNamesModuleT
+  :: ModuleT Symbols IO a
+  -> Packages
+  -> Map.Map Cabal.ModuleName Symbols
+  -> IO (a, Map.Map Cabal.ModuleName Symbols)
+runNamesModuleT ma pkgs = runModuleT ma pkgs nameFilesExtension readInterface
+
+-- | Specialized version of 'evalModuleT' that works with name files
+evalNamesModuleT
+  :: ModuleT Symbols IO a
+  -> Packages
+  -> IO a
+evalNamesModuleT ma pkgs = evalModuleT ma pkgs nameFilesExtension readInterface
