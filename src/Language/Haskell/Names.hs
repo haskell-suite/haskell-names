@@ -9,6 +9,8 @@ module Language.Haskell.Names
   , SymValueInfo(..)
   , SymTypeInfo(..)
   , Symbols(..)
+  , Scoped(..)
+  , NameInfo(..)
   , NameS
   , ModuleNameS
   , GName(..)
@@ -23,3 +25,4 @@ module Language.Haskell.Names
 import Language.Haskell.Names.Types
 import Language.Haskell.Names.Recursive
 import Language.Haskell.Names.ScopeUtils
+import Language.Haskell.Names.Annotated
