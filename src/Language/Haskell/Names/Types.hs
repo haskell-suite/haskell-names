@@ -19,20 +19,64 @@ type ExtensionSet = Set.Set KnownExtension
 
 type SymFixity = (Assoc (), Int)
 
+-- | Information about a value-level entitity
 data SymValueInfo name
-    = SymValue       { sv_origName :: name, sv_fixity :: Maybe SymFixity }
-    | SymMethod      { sv_origName :: name, sv_fixity :: Maybe SymFixity, sv_className :: name }
-    | SymSelector    { sv_origName :: name, sv_fixity :: Maybe SymFixity, sv_typeName :: name }
-    | SymConstructor { sv_origName :: name, sv_fixity :: Maybe SymFixity, sv_typeName :: name }
+    = SymValue
+      { sv_origName :: name
+      , sv_fixity :: Maybe SymFixity
+      }
+      -- ^ value or function
+    | SymMethod
+      { sv_origName :: name
+      , sv_fixity :: Maybe SymFixity
+      , sv_className :: name
+      }
+      -- ^ class method
+    | SymSelector
+      { sv_origName :: name
+      , sv_fixity :: Maybe SymFixity
+      , sv_typeName :: name
+      }
+      -- ^ record field selector
+    | SymConstructor
+      { sv_origName :: name
+      , sv_fixity :: Maybe SymFixity
+      , sv_typeName :: name
+      }
+      -- ^ data constructor
     deriving (Eq, Ord, Show, Data, Typeable, Functor, Foldable, Traversable)
 
 data SymTypeInfo name
-    = SymType        { st_origName :: name, st_fixity :: Maybe SymFixity }
-    | SymData        { st_origName :: name, st_fixity :: Maybe SymFixity }
-    | SymNewType     { st_origName :: name, st_fixity :: Maybe SymFixity }
-    | SymTypeFam     { st_origName :: name, st_fixity :: Maybe SymFixity }
-    | SymDataFam     { st_origName :: name, st_fixity :: Maybe SymFixity }
-    | SymClass       { st_origName :: name, st_fixity :: Maybe SymFixity }
+    = SymType
+      { st_origName :: name
+      , st_fixity :: Maybe SymFixity
+      }
+      -- ^ type synonym
+    | SymData
+      { st_origName :: name
+      , st_fixity :: Maybe SymFixity
+      }
+      -- ^ data type
+    | SymNewType
+      { st_origName :: name
+      , st_fixity :: Maybe SymFixity
+      }
+      -- ^ newtype
+    | SymTypeFam
+      { st_origName :: name
+      , st_fixity :: Maybe SymFixity
+      }
+      -- ^ type family
+    | SymDataFam
+      { st_origName :: name
+      , st_fixity :: Maybe SymFixity
+      }
+      -- ^ data family
+    | SymClass
+      { st_origName :: name
+      , st_fixity :: Maybe SymFixity
+      }
+      -- ^ type class
     deriving (Eq, Ord, Show, Data, Typeable, Functor, Foldable, Traversable)
 
 class HasOrigName i where
