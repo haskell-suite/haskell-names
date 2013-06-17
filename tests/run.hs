@@ -10,12 +10,14 @@ import Data.Monoid
 import qualified Data.Map as Map
 import Control.Monad.Identity
 import Control.Applicative
+import Control.Monad.Trans
 import Text.Show.Pretty
 import Text.Printf
 import qualified Data.Foldable as F
 
 import Language.Haskell.Exts.Annotated
 import Language.Haskell.Names
+import Language.Haskell.Names.Interfaces
 import Language.Haskell.Names.Exports
 import Language.Haskell.Names.Imports
 import Language.Haskell.Names.Annotated
@@ -29,9 +31,15 @@ import qualified Distribution.ModuleName as Cabal
 import Data.Generics.Traversable
 import Data.Proxy
 
+type MT = ModuleT Symbols IO
+
 main = defaultMain =<< tests
 
-tests = sequence [exportTests, importTests, annotationTests]
+tests =
+  liftM concat . sequence $
+    [ evalNamesModuleT (sequence [exportTests, importTests]) []
+    , sequence [annotationTests]
+    ]
 
 parseAndPrepare file =
   return . fmap srcInfoSpan . fromParseResult =<< parseFile file
@@ -39,12 +47,6 @@ parseAndPrepare file =
 lang = Haskell2010
 exts = [DisableExtension ImplicitPrelude]
 getIfaces = getInterfaces lang exts
-
-getModules = do
-  [libraryIface] <-
-    (\m -> evalModuleT (fst <$> getIfaces [m]) [] (error "retrieve") (error "retrieve"))
-    =<< parseAndPrepare "tests/exports/Prelude.hs"
-  return $ Map.singleton (convertModuleName "Prelude") libraryIface
 
 -----------------------------------------------------
 -- Export test: parse a source file, dump its symbols
@@ -56,39 +58,37 @@ exportTest file iface =
     out = file <.> "out"
     run = writeFile out $ ppShow iface
 
+exportTests :: MT Test
 exportTests = do
-  mods <- getModules
-  testFiles <- find (return True) (extension ==? ".hs") "tests/exports"
-  parsed <- mapM parseAndPrepare testFiles
-  ifaces <-
-    fst <$> runModuleT (fst <$> getIfaces parsed) [] (error "retrieve") (error "retrieve") mods
+  testFiles <- liftIO $ find (return True) (extension ==? ".hs") "tests/exports"
+  parsed <- liftIO $ mapM parseAndPrepare testFiles
+  ifaces <- fst <$> getIfaces parsed
 
   return $ testGroup "exports" $ zipWith exportTest testFiles ifaces
 
 ----------------------------------------------------------
 -- Import test: parse a source file, dump its global table
 ----------------------------------------------------------
-importTest mods file =
+importTest :: FilePath -> Global.Table -> Test
+importTest file tbl =
   goldenVsFile file golden out run
   where
     golden = file <.> "golden"
     out = file <.> "out"
     run = do
-      imps <- getGlobalTable mods file
-      writeFile out $ ppShow imps
+      writeFile out $ ppShow tbl
 
-getGlobalTable :: Map.Map Cabal.ModuleName Symbols -> FilePath -> IO Global.Table
-getGlobalTable mods file = do
-  mod <- parseAndPrepare file
-  let
-    extSet = moduleExtensions lang exts mod
-    mImps = snd <$> processImports extSet (getImports mod)
-  fst <$> runModuleT mImps [] (error "retrieve") (error "retrieve") mods
+getGlobalTable :: FilePath -> MT Global.Table
+getGlobalTable file = do
+  mod <- liftIO $ parseAndPrepare file
+  let extSet = moduleExtensions lang exts mod
+  snd <$> processImports extSet (getImports mod)
 
+importTests :: MT Test
 importTests = do
-  mods <- getModules
-  testFiles <- find (return True) (extension ==? ".hs") "tests/imports"
-  return $ testGroup "imports" $ map (importTest mods) testFiles
+  testFiles <- liftIO $ find (return True) (extension ==? ".hs") "tests/imports"
+  filesAndTables <- forM testFiles $ \file -> (,) file <$> getGlobalTable file
+  return $ testGroup "imports" $ map (uncurry importTest) filesAndTables
 
 ------------------------------------------------------------------
 -- Annotation test: parse the source, annotate it and pretty-print
