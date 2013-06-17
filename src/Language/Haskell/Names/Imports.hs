@@ -54,7 +54,7 @@ processImports exts importDecls = do
         -- FIXME currently we don't have a way to signal an error when
         -- Prelude cannot be found
         syms <- fold `liftM` getModuleInfo preludeName
-        return $
+        return $ tbl <>
           computeSymbolTable
             False -- not qualified
             (ModuleName () preludeName)
