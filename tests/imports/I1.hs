@@ -1,3 +1,3 @@
-module M1 where
+module I1 where
 
 import Prelude

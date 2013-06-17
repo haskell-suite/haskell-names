@@ -1,4 +1,4 @@
-module M5 (b, c) where
+module E5 (b, c) where
 
 data A = A { b :: A }
 

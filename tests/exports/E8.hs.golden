@@ -4,14 +4,14 @@ Symbols (
         { sv_origName = OrigName
                           { origPackage = Nothing
                           , origGName = GName
-                                          "M7"
+                                          "E8"
                                           "x"
                           }
         , sv_fixity = Nothing
         , sv_className = OrigName
                            { origPackage = Nothing
                            , origGName = GName
-                                           "M7"
+                                           "E8"
                                            "Bar"
                            }
         }
@@ -19,44 +19,29 @@ Symbols (
         { sv_origName = OrigName
                           { origPackage = Nothing
                           , origGName = GName
-                                          "M7"
+                                          "E8"
                                           "c"
                           }
         , sv_fixity = Nothing
         , sv_typeName = OrigName
                           { origPackage = Nothing
                           , origGName = GName
-                                          "M7"
+                                          "E8"
                                           "Foo"
-                          }
-        }
-    , SymSelector
-        { sv_origName = OrigName
-                          { origPackage = Nothing
-                          , origGName = GName
-                                          "M7"
-                                          "unN"
-                          }
-        , sv_fixity = Nothing
-        , sv_typeName = OrigName
-                          { origPackage = Nothing
-                          , origGName = GName
-                                          "M7"
-                                          "N"
                           }
         }
     , SymConstructor
         { sv_origName = OrigName
                           { origPackage = Nothing
                           , origGName = GName
-                                          "M7"
+                                          "E8"
                                           "Foo1"
                           }
         , sv_fixity = Nothing
         , sv_typeName = OrigName
                           { origPackage = Nothing
                           , origGName = GName
-                                          "M7"
+                                          "E8"
                                           "Foo"
                           }
         }
@@ -64,29 +49,14 @@ Symbols (
         { sv_origName = OrigName
                           { origPackage = Nothing
                           , origGName = GName
-                                          "M7"
-                                          "Foo2"
-                          }
-        , sv_fixity = Nothing
-        , sv_typeName = OrigName
-                          { origPackage = Nothing
-                          , origGName = GName
-                                          "M7"
-                                          "Foo"
-                          }
-        }
-    , SymConstructor
-        { sv_origName = OrigName
-                          { origPackage = Nothing
-                          , origGName = GName
-                                          "M7"
+                                          "E8"
                                           "Foo3"
                           }
         , sv_fixity = Nothing
         , sv_typeName = OrigName
                           { origPackage = Nothing
                           , origGName = GName
-                                          "M7"
+                                          "E8"
                                           "Foo"
                           }
         }
@@ -94,14 +64,14 @@ Symbols (
         { sv_origName = OrigName
                           { origPackage = Nothing
                           , origGName = GName
-                                          "M7"
+                                          "E8"
                                           "N"
                           }
         , sv_fixity = Nothing
         , sv_typeName = OrigName
                           { origPackage = Nothing
                           , origGName = GName
-                                          "M7"
+                                          "E8"
                                           "N"
                           }
         }
@@ -111,7 +81,7 @@ Symbols (
         { st_origName = OrigName
                           { origPackage = Nothing
                           , origGName = GName
-                                          "M7"
+                                          "E8"
                                           "Foo"
                           }
         , st_fixity = Nothing
@@ -120,7 +90,7 @@ Symbols (
         { st_origName = OrigName
                           { origPackage = Nothing
                           , origGName = GName
-                                          "M7"
+                                          "E8"
                                           "N"
                           }
         , st_fixity = Nothing
@@ -129,7 +99,7 @@ Symbols (
         { st_origName = OrigName
                           { origPackage = Nothing
                           , origGName = GName
-                                          "M7"
+                                          "E8"
                                           "Bar"
                           }
         , st_fixity = Nothing

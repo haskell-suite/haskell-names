@@ -1,4 +1,4 @@
-module M3 where
+module E3 where
 
 data A = B { c :: A }
 

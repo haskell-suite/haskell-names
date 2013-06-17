@@ -4,14 +4,14 @@ Symbols (
         { sv_origName = OrigName
                           { origPackage = Nothing
                           , origGName = GName
-                                          "M2"
+                                          "E2"
                                           "A"
                           }
         , sv_fixity = Nothing
         , sv_typeName = OrigName
                           { origPackage = Nothing
                           , origGName = GName
-                                          "M2"
+                                          "E2"
                                           "A"
                           }
         }
@@ -21,7 +21,7 @@ Symbols (
         { st_origName = OrigName
                           { origPackage = Nothing
                           , origGName = GName
-                                          "M2"
+                                          "E2"
                                           "A"
                           }
         , st_fixity = Nothing

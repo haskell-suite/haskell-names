@@ -1,3 +1,3 @@
-module M2 where
+module I2 where
 
 import Prelude (DataType(..), function)

@@ -1,4 +1,4 @@
-module M4 (A) where
+module E4 (A) where
 
 data A = B A
 
