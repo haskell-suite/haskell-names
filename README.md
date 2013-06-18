@@ -70,12 +70,26 @@ the full path to `hs-gen-iface` after `-w`, too.
 
 #### Core packages
 
-Core packages, such as `ghc-prim` and `base`, are highly GHC-specific and need to
-be tweaked a bit before they can be processed by haskell-names. Get our modified
-versions:
+haskell-names comes with the global package database populated with some core
+packages:
+
+    % hs-gen-iface pkg list --global
+    base-4.7.0.0
+    ghc-prim-0.3.1.0
+    integer-simple-0.1.1.0
+
+#### Compiling core packages by hand
+
+Suppose you need to compile any of the core packages by hand — for example, to
+get a different version than the one bundled with haskell-names.
+
+Core packages, such as `ghc-prim`, `integer-simple`, and `base`, are highly
+GHC-specific and need to be tweaked a bit before they can be processed by
+haskell-names. Get our modified versions:
 
 * [ghc-prim](https://github.com/haskell-suite/ghc-prim)
 * [base](https://github.com/haskell-suite/base)
+* [integer-simple](https://github.com/haskell-suite/integer-simple)
 
 Note that Cabal's new dependency solver won't let you install `ghc-prim`
 or `base` easily. There are two ways to work around this:
