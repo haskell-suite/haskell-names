@@ -1,0 +1,1 @@
+[{"entity":"value","origin":{"package":"base-4.7.0.0","module":"GHC.IO","name":"unsafeIOToST"},"fixity":null},{"entity":"value","origin":{"package":"base-4.7.0.0","module":"GHC.IO","name":"unsafeSTToIO"},"fixity":null},{"entity":"value","origin":{"package":"base-4.7.0.0","module":"GHC.ST","name":"unsafeInterleaveST"},"fixity":null}]
