@@ -181,7 +181,7 @@ resolveImportSpec mod isHiding syms spec =
               then
                 scopeError (ENotExported Nothing n mod) spec
               else
-                Scoped (Export (Symbols vlMatches tyMatches)) <$> spec
+                Scoped (ImportPart (Symbols vlMatches tyMatches)) <$> spec
       | otherwise ->
           let
             matches = mconcat
