@@ -1,5 +1,5 @@
 {-# LANGUAGE ImplicitPrelude #-}
-module I5 where
+module ExplicitPreludeQualified where
 
 -- explicit Prelude import suppresses implicit one
-import Prelude as Foo ()
+import qualified Prelude

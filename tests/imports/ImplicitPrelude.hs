@@ -1,4 +1,4 @@
 {-# LANGUAGE ImplicitPrelude #-}
-module I3 where
+module ImplicitPrelude where
 
 -- implicitly import Prelude
