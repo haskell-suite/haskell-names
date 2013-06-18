@@ -53,6 +53,7 @@ Library
                         Language.Haskell.Names.Recursive
                         Language.Haskell.Names.Types
                         Language.Haskell.Names.ScopeUtils
+                        Paths_haskell_names
 
 Test-suite test
   Default-Language: Haskell2010

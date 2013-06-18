@@ -30,6 +30,9 @@ import Control.Applicative
 import Control.Monad
 import Distribution.HaskellSuite
 import qualified Distribution.ModuleName as Cabal
+import System.FilePath
+
+import Paths_haskell_names
 
 data IfaceException =
   -- | Interface could not be parsed. This tells you the file name of the
@@ -163,9 +166,10 @@ newtype NamesDB = NamesDB FilePath
 
 instance IsPackageDB NamesDB where
   dbName = return "haskell-names"
-  readPackageDB init (NamesDB db) = readDB init db
+  readPackageDB init (NamesDB db) =
+    map (makePkgInfoAbsolute (dropFileName db)) <$> readDB init db
   writePackageDB (NamesDB db) = writeDB db
-  globalDB = return Nothing
+  globalDB = Just . NamesDB . (</> "libraries" </> "packages.db") <$> getDataDir
   dbFromPath path = return $ NamesDB path
 
 -- | Extension of the name files (i.e. @"names"@)
