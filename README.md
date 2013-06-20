@@ -1,8 +1,14 @@
 haskell-names
 =============
 
-Name resolution for haskell-src-exts AST
+haskell-names does name and module resolution for haskell-src-exts AST.
 
+Namely, it can do the following:
+
+* for a module, compute its interface, i.e. the set of entities exported by the
+  module, together with their original names.
+* for each name in the module, figure out what it refers to — whether it's bound
+  locally (say, by a `where` clause) or globally (and then give its origin).
 
 Installation
 ------------
