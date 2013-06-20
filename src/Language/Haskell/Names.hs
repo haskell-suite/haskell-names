@@ -25,4 +25,3 @@ module Language.Haskell.Names
 import Language.Haskell.Names.Types
 import Language.Haskell.Names.Recursive
 import Language.Haskell.Names.ScopeUtils
-import Language.Haskell.Names.Annotated

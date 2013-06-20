@@ -6,11 +6,8 @@ import qualified Data.Set as Set
 import Control.Applicative
 import Control.Arrow
 import Control.Monad
-import Control.Monad.State
 import Control.Monad.Writer
 import Data.Data
-import Data.Lens.Common
-import Data.Foldable as F
 import Distribution.HaskellSuite.Modules
 import Language.Haskell.Exts.Annotated
 import Language.Haskell.Names.Types
@@ -63,6 +60,7 @@ resolveExportSpec tbl exp =
         Global.Result i ->
           let s = mkTy i
           in (Scoped (Export s) <$> exp, s)
+        Global.Special {} -> error "Global.Special in export list?"
     EThingAll l qn -> return $
       case Global.lookupType qn tbl of
         Global.Error err ->

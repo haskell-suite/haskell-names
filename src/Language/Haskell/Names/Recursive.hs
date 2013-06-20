@@ -10,7 +10,6 @@ import Data.Monoid
 import Data.Data (Data)
 import qualified Data.Set as Set
 import Control.Monad hiding (forM_)
-import Control.Applicative
 import Language.Haskell.Exts.Annotated
 import Distribution.HaskellSuite.Modules
 import Data.Maybe
@@ -22,7 +21,6 @@ import Language.Haskell.Names.ScopeUtils
 import Language.Haskell.Names.ModuleSymbols
 import Language.Haskell.Names.Exports
 import Language.Haskell.Names.Imports
-import qualified Language.Haskell.Names.GlobalSymbolTable as Global
 import qualified Language.Haskell.Names.LocalSymbolTable  as Local
 import Language.Haskell.Names.Open.Base
 import Language.Haskell.Names.Annotated
@@ -52,10 +50,10 @@ annotateModule
   -> m (Module (Scoped l)) -- ^ output (annotated) module
 annotateModule lang exts mod@(Module lm mh os is ds) = do
   let extSet = moduleExtensions lang exts mod
-  (imp, impTbl) <- processImports extSet $ getImports mod
+  (imp, impTbl) <- processImports extSet is
   let ownTbl = moduleTable mod
       tbl = impTbl <> ownTbl
-  (exp, syms) <- processExports tbl mod
+  (exp, _syms) <- processExports tbl mod
 
   let
     lm' = none lm
@@ -63,7 +61,7 @@ annotateModule lang exts mod@(Module lm mh os is ds) = do
     is' = imp
     ds' = annotate (Scope tbl Local.empty Reference) `map` ds
 
-    mh' = flip fmap mh $ \(ModuleHead lh n mw me) ->
+    mh' = flip fmap mh $ \(ModuleHead lh n mw _me) ->
       let
         lh' = none lh
         n'  = noScope n
@@ -72,6 +70,8 @@ annotateModule lang exts mod@(Module lm mh os is ds) = do
       in ModuleHead lh' n' mw' me'
 
   return $ Module lm' mh' os' is' ds'
+
+annotateModule _ _ _ = error "annotateModule: non-standard modules are not supported"
 
 -- | Compute interfaces for a set of mutually recursive modules and write
 -- the results to the cache. Return the set of import/export errors.

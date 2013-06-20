@@ -221,7 +221,7 @@ ppError e =
       printf "%s: class %s is used where a type is expected\n"
         (ppLoc qn)
         (prettyPrint qn)
-    ENotExported mbParent name mod ->
+    ENotExported _mbParent name mod ->
       printf "%s: %s does not export %s\n"
         (ppLoc name)
         (prettyPrint mod)
@@ -231,7 +231,7 @@ ppError e =
       printf "%s: module not found: %s\n"
         (ppLoc mod)
         (prettyPrint mod)
-    EInternal s -> printf "Internal error: %s\n"
+    EInternal s -> printf "Internal error: %s\n" s
 
   where
     ppLoc :: (Annotated a, SrcInfo l) => a l -> String

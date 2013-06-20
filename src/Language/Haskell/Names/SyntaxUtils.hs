@@ -21,7 +21,7 @@ module Language.Haskell.Names.SyntaxUtils
   , ExtensionSet
   , moduleExtensions
   ) where
-import Prelude hiding (concatMap, foldl')
+import Prelude hiding (concatMap)
 import Data.Char
 import Data.Data
 import Data.Maybe

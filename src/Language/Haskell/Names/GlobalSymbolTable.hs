@@ -68,7 +68,7 @@ lookupL
   -> QName l
   -> Table
   -> Result l (i OrigName)
-lookupL lens (HSE.Special {}) _ =
+lookupL _ (HSE.Special {}) _ =
   Language.Haskell.Names.GlobalSymbolTable.Special
 lookupL lens qn tbl =
   case Set.toList <$> (Map.lookup (toGName qn) $ getL lens tbl) of
