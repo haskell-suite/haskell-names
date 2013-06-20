@@ -241,6 +241,9 @@ them anyway.
 
 ### Known issues
 
+* Because a non-trivial amount of packages are not designed to work with
+  anything except GHC, hs-gen-iface currently pretends to be GHC. This is of
+  course not acceptable — contributions here are welcome. ([#32][])
 * haskell-names doesn't perform validation yet. If a module is not valid
   Haskell, then the behaviour is undefined. See the issues marked as
   [validation][].
@@ -253,4 +256,5 @@ them anyway.
 [#2]: https://github.com/haskell-suite/haskell-names/issues/2
 [#8]: https://github.com/haskell-suite/haskell-names/issues/8
 [#25]: https://github.com/haskell-suite/haskell-names/issues/25
+[#32]: https://github.com/haskell-suite/haskell-names/issues/32
 [validation]: https://github.com/haskell-suite/haskell-names/issues?labels=validation&page=1&state=open
