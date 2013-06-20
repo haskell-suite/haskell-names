@@ -6,8 +6,10 @@ import Test.Golden.Console
 
 import System.FilePath
 import System.FilePath.Find
+import System.Exit
 import Data.Monoid
 import qualified Data.Map as Map
+import qualified Data.Set as Set
 import Control.Monad.Identity
 import Control.Applicative
 import Control.Monad.Trans
@@ -62,7 +64,14 @@ exportTests :: MT Test
 exportTests = do
   testFiles <- liftIO $ find (return True) (extension ==? ".hs") "tests/exports"
   parsed <- liftIO $ mapM parseAndPrepare testFiles
-  ifaces <- fst <$> getIfaces parsed
+  (ifaces, errors) <- getIfaces parsed
+
+  -- report possible problems
+  when (not $ Set.null errors) $ liftIO $ do
+    printf "The following unexpected problems were found:\n"
+    F.for_ errors $ \e -> do
+      putStr $ ppError e
+    exitFailure
 
   return $ testGroup "exports" $ zipWith exportTest testFiles ifaces
 
