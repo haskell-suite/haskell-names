@@ -5,7 +5,7 @@ Symbols (
         { st_origName = OrigName
                           { origPackage = Nothing
                           , origGName = GName
-                                          "E4"
+                                          "ExportList"
                                           "A"
                           }
         , st_fixity = Nothing

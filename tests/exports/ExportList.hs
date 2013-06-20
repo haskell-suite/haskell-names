@@ -1,4 +1,4 @@
-module E4 (A) where
+module ExportList (A) where
 
 data A = B A
 

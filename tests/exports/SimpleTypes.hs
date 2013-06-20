@@ -1,4 +1,4 @@
-module E3 where
+module SimpleTypes where
 
 data A = B { c :: A }
 

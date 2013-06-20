@@ -1,4 +1,4 @@
-module E7 (Foo(..), Bar(..), N(..)) where
+module ExportListWildcards (Foo(..), Bar(..), N(..)) where
 
 data Foo = Foo1 | Foo2 Int | Foo3 { c :: Bool }
 

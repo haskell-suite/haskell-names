@@ -4,7 +4,7 @@ Symbols (
         { sv_origName = OrigName
                           { origPackage = Nothing
                           , origGName = GName
-                                          "E1"
+                                          "SimpleValue"
                                           "a"
                           }
         , sv_fixity = Nothing
