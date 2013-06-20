@@ -225,6 +225,15 @@ data-files:
   libraries/base-4.7.0.0/Control/Exception/Base.names
   libraries/packages.db
 
+source-repository head
+  type:     git
+  location: git://github.com/haskell-suite/haskell-names.git
+
+source-repository this
+  type:     git
+  location: git://github.com/haskell-suite/haskell-names.git
+  tag:      v0.1
+
 Library
   Default-Language: Haskell2010
   Build-depends:
