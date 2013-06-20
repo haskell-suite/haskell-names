@@ -1,0 +1,31 @@
+Symbols (
+  fromList
+    [ SymValue
+        { sv_origName = OrigName
+                          { origPackage = Nothing
+                          , origGName = GName
+                                          "Rec1"
+                                          "rec1_1"
+                          }
+        , sv_fixity = Nothing
+        }
+    , SymValue
+        { sv_origName = OrigName
+                          { origPackage = Nothing
+                          , origGName = GName
+                                          "Rec2"
+                                          "rec2"
+                          }
+        , sv_fixity = Nothing
+        }
+    , SymValue
+        { sv_origName = OrigName
+                          { origPackage = Nothing
+                          , origGName = GName
+                                          "Rec3"
+                                          "rec3"
+                          }
+        , sv_fixity = Nothing
+        }
+    ] ) (
+  fromList [] )
