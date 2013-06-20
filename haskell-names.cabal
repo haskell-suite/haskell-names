@@ -237,7 +237,7 @@ Library
     , uniplate >= 1.5.1
     , aeson
     , bytestring
-    , haskell-packages
+    , haskell-packages >= 0.2
     , data-lens
     , data-lens-template
     , tagged
