@@ -5,6 +5,8 @@ module SelfReExport
   )
   where
 
+-- After #31 is resolved, we should be able to replace this with an
+-- ImplicitPrelude
 import Prelude
 
 data Local
