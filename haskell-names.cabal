@@ -294,8 +294,8 @@ Test-suite test
     , aeson
     , bytestring
     , haskell-packages
-    , test-framework
-    , test-framework-golden >= 1.1.2
+    , tasty
+    , tasty-golden
     , filemanip
     , utf8-string
     , pretty-show

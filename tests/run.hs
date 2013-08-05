@@ -1,8 +1,8 @@
 {-# LANGUAGE FlexibleInstances, OverlappingInstances, ImplicitParams,
              MultiParamTypeClasses #-}
-import Test.Framework hiding (defaultMain)
-import Test.Golden
-import Test.Golden.Console
+import Test.Tasty hiding (defaultMain)
+import Test.Tasty.Golden
+import Test.Tasty.Golden.Manage
 
 import System.FilePath
 import System.FilePath.Find
@@ -35,7 +35,7 @@ import Data.Proxy
 
 type MT = ModuleT Symbols IO
 
-main = defaultMain =<< tests
+main = defaultMain . testGroup "Tests" =<< tests
 
 tests =
   liftM concat . sequence $
@@ -60,7 +60,7 @@ exportTest file iface =
     out = file <.> "out"
     run = writeFile out $ ppShow iface
 
-exportTests :: MT Test
+exportTests :: MT TestTree
 exportTests = do
   testFiles <- liftIO $ find (return True) (extension ==? ".hs") "tests/exports"
   parsed <- liftIO $ mapM parseAndPrepare testFiles
@@ -78,7 +78,7 @@ exportTests = do
 ----------------------------------------------------------
 -- Import test: parse a source file, dump its global table
 ----------------------------------------------------------
-importTest :: FilePath -> Global.Table -> Test
+importTest :: FilePath -> Global.Table -> TestTree
 importTest file tbl =
   goldenVsFile file golden out run
   where
@@ -93,7 +93,7 @@ getGlobalTable file = do
   let extSet = moduleExtensions lang exts mod
   snd <$> processImports extSet (getImports mod)
 
-importTests :: MT Test
+importTests :: MT TestTree
 importTests = do
   testFiles <- liftIO $ find (return True) (extension ==? ".hs") "tests/imports"
   filesAndTables <- forM testFiles $ \file -> (,) file <$> getGlobalTable file
