@@ -15,12 +15,11 @@ Installation
 
 To install a released version:
 
-1. Install haskell-src-exts from [our git repository][hse]
-2. Install Cabal and cabal-install from [our git repository][cabal]
-3. `cabal install haskell-names hs-gen-iface`
+1. Install Cabal and cabal-install from [our git repository][cabal]
+2. `cabal install haskell-names hs-gen-iface`
 
 If you're building a development version, then you might also need to install
-development versions of [haskell-packages][hp] and [hse-cpp][].
+development versions of [haskell-src-exts][hse], [haskell-packages][hp], and [hse-cpp][].
 
 [cabal]: https://github.com/feuerbach/Cabal
 [hse]: https://github.com/haskell-suite/haskell-src-exts
