@@ -1,5 +1,5 @@
 Name:                   haskell-names
-Version:                0.1.1
+Version:                0.1.2
 License:                BSD3
 Author:                 Roman Cheplyaka, Lennart Augustsson
 Maintainer:             Roman Cheplyaka <roma@ro-che.info>
@@ -232,7 +232,7 @@ source-repository head
 source-repository this
   type:     git
   location: git://github.com/haskell-suite/haskell-names.git
-  tag:      v0.1.1
+  tag:      v0.1.2
 
 Library
   Default-Language: Haskell2010
@@ -252,7 +252,7 @@ Library
     , tagged
     , traverse-with-class
     , type-eq
-    , Cabal
+    , Cabal >= 1.16 && < 1.20
   Hs-source-dirs:       src
   Ghc-options:          -Wall -fno-warn-name-shadowing
 
