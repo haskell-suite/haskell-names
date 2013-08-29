@@ -1,5 +1,5 @@
 {-# LANGUAGE DeriveDataTypeable, DeriveFunctor, DeriveFoldable,
-             DeriveTraversable #-}
+             DeriveTraversable, StandaloneDeriving, CPP #-}
 module Language.Haskell.Names.Types where
 
 import Language.Haskell.Exts.Annotated
@@ -9,7 +9,8 @@ import Data.Monoid
 import Data.Lens.Common
 import qualified Data.Set as Set
 import {-# SOURCE #-} qualified Language.Haskell.Names.GlobalSymbolTable as Global
-import Distribution.Package (PackageId)
+import Distribution.Package
+import Data.Version
 import Distribution.Text
 import Data.Foldable as F
 import Data.Traversable
@@ -125,6 +126,14 @@ data GName = GName ModuleNameS NameS
 -- | Display a 'GName'
 ppGName :: GName -> String
 ppGName (GName mod name) = printf "%s.%s" mod name
+
+#if ! MIN_VERSION_Cabal(1,17,0)
+deriving instance Typeable PackageIdentifier
+deriving instance Data PackageIdentifier
+deriving instance Typeable PackageName
+deriving instance Data PackageName
+deriving instance Data Version
+#endif
 
 -- | Qualified name, where 'ModuleNameS' points to the module where the
 -- name was originally defined. The module part is never empty.
