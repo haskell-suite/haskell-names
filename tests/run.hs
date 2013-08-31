@@ -177,11 +177,23 @@ formatLoc srcInfo =
     (srcLine   loc)
     (srcColumn loc)
 
+formatValueNamespace SymValue {} = "value"
+formatValueNamespace SymMethod {} = "method"
+formatValueNamespace SymSelector {} = "selector"
+formatValueNamespace SymConstructor {} = "constructor"
+
+formatOrigin = ppOrigName . sv_origName
+
 formatInfo :: NameInfo SrcSpan -> String
 formatInfo (LocalValue loc) =
   printf "a local value defined at %s" $ formatLoc loc
+formatInfo (GlobalValue info) =
+  printf "a global %s, %s"
+    (formatValueNamespace info)
+    (formatOrigin info)
 formatInfo (ScopeError (ENotInScope {})) = "not in scope"
 formatInfo None = "none"
+formatInfo i = error $ "tests/run.hs: formatInfo: " ++ show i
 
 formatAnn :: String -> Scoped SrcSpan -> String
 formatAnn name (Scoped info loc) =
