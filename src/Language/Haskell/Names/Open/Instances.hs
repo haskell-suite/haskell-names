@@ -40,11 +40,28 @@ instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (Decl l) where
           scWithWhere = intro mbWhere scWithPat
         in
         c PatBind
-          <| sc          -: l
-          <| sc          -: pat
-          <| sc          -: mbType
-          <| scWithWhere -: rhs
-          <| scWithPat   -: mbWhere
+          <| sc                -: l
+          <| binderV sc        -: pat
+          <| exprT sc          -: mbType
+          <| exprV scWithWhere -: rhs
+          <| scWithPat         -: mbWhere
+      -- FunBind consists of Matches, which we handle below anyway.
+      TypeSig l names ty ->
+        c TypeSig
+          <| sc -: l
+          <| exprV sc -: names
+          <| exprT sc -: ty
+      _ -> defaultRtraverse e sc
+
+instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (Pat l) where
+  rtraverse e sc =
+    case e of
+      -- XXX more cases
+      PViewPat l exp pat ->
+        c PViewPat
+          <| sc         -: l
+          <| exprV sc   -: exp
+          <| binderV sc -: pat
       _ -> defaultRtraverse e sc
 
 -- | Chain a sequence of nodes where every node may introduce some
@@ -79,11 +96,11 @@ instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (Match l) where
           scWithWhere = intro mbWhere scWithPats
         in
         c Match
-          <| sc          -: l
-          <| binder sc   -: name
+          <| sc                -: l
+          <| binderV sc        -: name
           <*> pats' -- has been already traversed
-          <| scWithWhere -: rhs
-          <| scWithPats  -: mbWhere
+          <| exprV scWithWhere -: rhs
+          <| scWithPats        -: mbWhere
       InfixMatch l pat1 name patsRest rhs mbWhere ->
         let
           equivalentMatch = Match l name (pat1:patsRest) rhs mbWhere

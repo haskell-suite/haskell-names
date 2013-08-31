@@ -15,7 +15,12 @@ import Data.Generics.Traversable
 import Data.Typeable
 import GHC.Exts (Constraint)
 
-data NameContext = Binding | Reference | Other
+data NameContext
+  = BindingT
+  | BindingV
+  | ReferenceT
+  | ReferenceV
+  | Other -- ^ we don't expect names in this context
 
 data Scope = Scope
   { _gTable :: Global.Table
@@ -25,8 +30,8 @@ data Scope = Scope
 
 makeLens ''Scope
 
-initialScope :: Scope
-initialScope = Scope Global.empty Local.empty Reference
+initialScope :: Global.Table -> Scope
+initialScope tbl = Scope tbl Local.empty Other
 
 newtype Alg w = Alg
   { runAlg :: forall d . Resolvable d => d -> Scope -> w d }
@@ -71,5 +76,14 @@ intro node =
 setNameCtx :: NameContext -> Scope -> Scope
 setNameCtx ctx = setL nameCtx ctx
 
-binder :: Scope -> Scope
-binder = setNameCtx Binding
+binderV :: Scope -> Scope
+binderV = setNameCtx BindingV
+
+binderT :: Scope -> Scope
+binderT = setNameCtx BindingT
+
+exprV :: Scope -> Scope
+exprV = setNameCtx ReferenceV
+
+exprT :: Scope -> Scope
+exprT = setNameCtx ReferenceT

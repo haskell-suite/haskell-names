@@ -59,7 +59,7 @@ annotateModule lang exts mod@(Module lm mh os is ds) = do
     lm' = none lm
     os' = fmap noScope os
     is' = imp
-    ds' = annotate (Scope tbl Local.empty Reference) `map` ds
+    ds' = annotate (initialScope tbl) `map` ds
 
     mh' = flip fmap mh $ \(ModuleHead lh n mw _me) ->
       let
