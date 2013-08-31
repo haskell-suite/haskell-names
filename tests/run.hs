@@ -41,6 +41,11 @@ type MT = ModuleT Symbols IO
 
 main = defaultMain . testGroup "Tests" =<< tests
 
+-- All tests are created in the same ModuleT session. This means that
+-- export tests are available for import in subsequent tests (because of
+-- the getIfaces call). However, import tests are not registered in the
+-- monad, so they are not available for import.
+
 tests =
   liftM concat . sequence $
     [ evalNamesModuleT (sequence [exportTests, importTests]) []
@@ -115,6 +120,7 @@ importTests = do
 -- Annotation test: parse the source, annotate it and pretty-print
 ------------------------------------------------------------------
 -- {{{
+-- Code to retrieve annotations from the AST using GTraversable
 class TestAnn a where
   getAnn :: a -> Maybe (String, Scoped SrcSpan)
 
@@ -142,6 +148,7 @@ printAnns =
     go a = one a ++ gfoldMap go a
   in go
 
+-- Actual tests
 annotationTest file = goldenVsFile file golden out run
   where
     golden = file <.> "golden"
