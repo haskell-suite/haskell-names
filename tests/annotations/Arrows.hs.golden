@@ -1,6 +1,18 @@
+Arrows   at 1:14 is none
+x        at  4:1 is a value bound here
+y        at  4:3 is a value bound here
+z        at 4:12 is a value bound here
+a        at  5:3 is a value bound here
+y        at  5:8 is a local value defined at 4:3
 y        at  5:8 is a local value defined at 4:3
 z        at 5:13 is a local value defined at 4:12
+z        at 5:13 is a local value defined at 4:12
+b        at  6:3 is a value bound here
+y        at  6:8 is a local value defined at 4:3
 y        at  6:8 is a local value defined at 4:3
 a        at 6:13 is a local value defined at 5:3
+a        at 6:13 is a local value defined at 5:3
 y        at  7:3 is a local value defined at 4:3
+y        at  7:3 is a local value defined at 4:3
+b        at  7:8 is a local value defined at 6:3
 b        at  7:8 is a local value defined at 6:3

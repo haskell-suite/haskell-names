@@ -1,11 +1,29 @@
+a        at  3:1 is a value bound here
+b        at  3:3 is a value bound here
+x        at 3:10 is a local value defined at 4:9
 x        at 3:10 is a local value defined at 4:9
 y        at 3:12 is a local value defined at 7:9
+y        at 3:12 is a local value defined at 7:9
+z        at 3:14 is a local value defined at 10:9
 z        at 3:14 is a local value defined at 10:9
 t        at 3:16 is a local value defined at 6:13
+t        at 3:16 is a local value defined at 6:13
+x        at  4:9 is a value bound here
 b        at 4:14 is a local value defined at 3:3
+b        at 4:14 is a local value defined at 3:3
+y        at  5:9 is a value bound here
 x        at 5:14 is a local value defined at 4:9
+x        at 5:14 is a local value defined at 4:9
+t        at 6:13 is a value bound here
 y        at 6:17 is a local value defined at 5:9
+y        at 6:17 is a local value defined at 5:9
+y        at  7:9 is a value bound here
+y        at 7:14 is a local value defined at 5:9
 y        at 7:14 is a local value defined at 5:9
 t        at  8:9 is a local value defined at 6:13
+t        at  8:9 is a local value defined at 6:13
 x        at  9:9 is a local value defined at 4:9
+x        at  9:9 is a local value defined at 4:9
+z        at 10:9 is a value bound here
+x        at 10:14 is a local value defined at 4:9
 x        at 10:14 is a local value defined at 4:9

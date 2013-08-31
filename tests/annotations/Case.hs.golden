@@ -1,20 +1,52 @@
+f        at  5:1 is a value bound here
+x        at  5:3 is a value bound here
+x        at 5:12 is a local value defined at 5:3
 x        at 5:12 is a local value defined at 5:3
 Right    at  6:3 is not in scope
+Right    at  6:3 is not in scope
+a        at 6:10 is a value bound here
+b        at 6:12 is a value bound here
+c        at 6:14 is a value bound here
+a        at 6:20 is a local value defined at 6:10
 a        at 6:20 is a local value defined at 6:10
 b        at 6:22 is a local value defined at 6:12
+b        at 6:22 is a local value defined at 6:12
+c        at 6:24 is a local value defined at 6:14
 c        at 6:24 is a local value defined at 6:14
 Left     at  7:3 is not in scope
+Left     at  7:3 is not in scope
 Left     at  8:3 is not in scope
+Left     at  8:3 is not in scope
+y        at  8:8 is a value bound here
+u        at  9:7 is a local value defined at 12:7
 u        at  9:7 is a local value defined at 12:7
 u        at 9:12 is a local value defined at 12:7
+u        at 9:12 is a local value defined at 12:7
+v        at 10:11 is a value bound here
 u        at 10:15 is a local value defined at 12:7
+u        at 10:15 is a local value defined at 12:7
+k        at 10:18 is a value bound here
+v        at 10:23 is a local value defined at 10:11
 v        at 10:23 is a local value defined at 10:11
 u        at 10:28 is a local value defined at 12:7
+u        at 10:28 is a local value defined at 12:7
+u        at 12:7 is a value bound here
 y        at 12:11 is a local value defined at 8:8
+y        at 12:11 is a local value defined at 8:8
+q        at 13:7 is a value bound here
+v        at 13:11 is not in scope
 v        at 13:11 is not in scope
 Left     at 14:3 is not in scope
+Left     at 14:3 is not in scope
+y        at 14:8 is a value bound here
+t        at 14:13 is a local value defined at 16:7
 t        at 14:13 is a local value defined at 16:7
 a        at 14:15 is not in scope
+a        at 14:15 is not in scope
 y        at 14:17 is a local value defined at 14:8
+y        at 14:17 is a local value defined at 14:8
+t        at 16:7 is a value bound here
 y        at 16:11 is a local value defined at 14:8
+y        at 16:11 is a local value defined at 14:8
+x        at 16:13 is a local value defined at 5:3
 x        at 16:13 is a local value defined at 5:3

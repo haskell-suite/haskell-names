@@ -1,20 +1,56 @@
+f        at  3:1 is a value bound here
+x        at  3:3 is a value bound here
+y        at  3:5 is a value bound here
+x        at  3:9 is a local value defined at 3:3
 x        at  3:9 is a local value defined at 3:3
 y        at 3:11 is a local value defined at 3:5
+y        at 3:11 is a local value defined at 3:5
+z        at 3:13 is a local value defined at 6:5
 z        at 3:13 is a local value defined at 6:5
 t        at 3:15 is a local value defined at 7:5
+t        at 3:15 is a local value defined at 7:5
+z        at  6:5 is a value bound here
+x        at  6:9 is a local value defined at 3:3
 x        at  6:9 is a local value defined at 3:3
 t        at 6:11 is a local value defined at 7:5
+t        at 6:11 is a local value defined at 7:5
+t        at  7:5 is a value bound here
+y        at  7:9 is a local value defined at 3:5
 y        at  7:9 is a local value defined at 3:5
 z        at 7:11 is a local value defined at 6:5
+z        at 7:11 is a local value defined at 6:5
+f        at  8:1 is a value bound here
+x        at  8:3 is a value bound here
+y        at  8:5 is a value bound here
+z        at  9:7 is a value bound here
+x        at 9:11 is a local value defined at 8:3
 x        at 9:11 is a local value defined at 8:3
 y        at 9:13 is a local value defined at 8:5
+y        at 9:13 is a local value defined at 8:5
+k1       at 10:4 is a value bound here
+k2       at 10:8 is a value bound here
+z        at 10:15 is a local value defined at 9:7
 z        at 10:15 is a local value defined at 9:7
 k1       at 11:3 is a local value defined at 10:4
+k1       at 11:3 is a local value defined at 10:4
+k2       at 12:3 is a local value defined at 10:8
 k2       at 12:3 is a local value defined at 10:8
 y        at 13:5 is a local value defined at 8:5
+y        at 13:5 is a local value defined at 8:5
+z        at 15:2 is a value bound here
+*        at 15:4 is a value bound here
+x        at 15:6 is a value bound here
+y        at 15:9 is a value bound here
+x        at 15:13 is a local value defined at 15:6
 x        at 15:13 is a local value defined at 15:6
 y        at 15:15 is a local value defined at 15:9
+y        at 15:15 is a local value defined at 15:9
+z        at 15:17 is a local value defined at 15:2
 z        at 15:17 is a local value defined at 15:2
 t        at 15:19 is a local value defined at 17:5
+t        at 15:19 is a local value defined at 17:5
+t        at 17:5 is a value bound here
 y        at 17:9 is a local value defined at 15:9
+y        at 17:9 is a local value defined at 15:9
+z        at 17:11 is a local value defined at 15:2
 z        at 17:11 is a local value defined at 15:2

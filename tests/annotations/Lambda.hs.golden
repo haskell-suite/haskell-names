@@ -1,2 +1,7 @@
+f        at  3:1 is a value bound here
+x        at  3:6 is a value bound here
+y        at  3:8 is a value bound here
 x        at 3:13 is a local value defined at 3:6
+x        at 3:13 is a local value defined at 3:6
+y        at 3:15 is a local value defined at 3:8
 y        at 3:15 is a local value defined at 3:8

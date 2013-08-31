@@ -1,5 +1,15 @@
+ViewPatterns at 1:14 is none
+f        at  4:1 is a value bound here
 y        at  4:4 is not in scope
+y        at  4:4 is not in scope
+x        at  4:9 is a value bound here
+z        at 4:12 is a value bound here
 x        at 4:15 is a local value defined at 4:9
+x        at 4:15 is a local value defined at 4:9
+y        at 4:20 is a value bound here
+x        at  5:3 is a local value defined at 4:9
 x        at  5:3 is a local value defined at 4:9
 y        at  6:3 is a local value defined at 4:20
+y        at  6:3 is a local value defined at 4:20
+z        at  7:3 is a local value defined at 4:12
 z        at  7:3 is a local value defined at 4:12

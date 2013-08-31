@@ -1,7 +1,20 @@
+a        at  3:1 is a value bound here
+x        at  4:7 is a value bound here
+y        at  5:7 is a value bound here
+t        at  7:7 is a value bound here
+x        at 7:11 is a local value defined at 4:7
 x        at 7:11 is a local value defined at 4:7
 y        at 7:13 is a local value defined at 9:7
+y        at 7:13 is a local value defined at 9:7
+z        at 7:15 is a local value defined at 8:7
 z        at 7:15 is a local value defined at 8:7
 t        at 7:17 is a local value defined at 7:7
+t        at 7:17 is a local value defined at 7:7
+z        at  8:7 is a value bound here
+y        at  9:7 is a value bound here
+x        at 10:6 is a local value defined at 4:7
 x        at 10:6 is a local value defined at 4:7
 y        at 10:8 is a local value defined at 9:7
+y        at 10:8 is a local value defined at 9:7
+z        at 10:10 is a local value defined at 8:7
 z        at 10:10 is a local value defined at 8:7
