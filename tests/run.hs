@@ -15,7 +15,7 @@ import qualified Data.Set as Set
 import Control.Monad.Identity
 import Control.Applicative
 import Control.Monad.Trans
-import Text.Show.Pretty
+import Text.Show.Pretty (ppShow)
 import Text.Printf
 import qualified Data.Foldable as F
 
@@ -129,6 +129,9 @@ instance TestAnn a where
 instance TestAnn (QName (Scoped SrcSpan)) where
   getAnn qn = Just (nameToString . qNameToName $ qn, ann qn)
 
+instance TestAnn (Name (Scoped SrcSpan)) where
+  getAnn n = Just (nameToString n, ann n)
+
 instance GTraversable (Rec TestAnn) (Scoped SrcSpan) where
   gtraverse _ x = pure x
 
@@ -203,6 +206,7 @@ formatInfo (GlobalType info) =
   printf "a global %s, %s"
     (formatTypeNamespace info)
     (formatOrigin info)
+formatInfo ValueBinder = "a value bound here"
 formatInfo (ScopeError (ENotInScope {})) = "not in scope"
 formatInfo None = "none"
 formatInfo i = error $ "tests/run.hs: formatInfo: " ++ show i

@@ -43,6 +43,9 @@ annotateRec _ sc a = go sc a where
     | ReferenceT <- getL nameCtx sc
     , Just (Eq :: QName (Scoped l) :~: a) <- dynamicEq
       = lookupType (fmap sLoc a) sc <$ a
+    | BindingV <- getL nameCtx sc
+    , Just (Eq :: Name (Scoped l) :~: a) <- dynamicEq
+      = Scoped ValueBinder (sLoc . ann $ a) <$ a
     | otherwise
       = rmap go sc a
 

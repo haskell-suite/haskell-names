@@ -17,9 +17,6 @@ scopeError e f = Scoped (ScopeError e) <$> f
 none :: l -> Scoped l
 none = Scoped None
 
-binder :: l -> Scoped l
-binder = Scoped Binder
-
 noScope :: (Annotated a) => a l -> a (Scoped l)
 noScope = fmap none
 

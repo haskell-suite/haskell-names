@@ -162,7 +162,8 @@ data NameInfo l
     | GlobalType  (SymTypeInfo  OrigName) -- ^ global type
     | LocalValue  SrcLoc -- ^ local value, and location where it is bound
     | TypeVar     SrcLoc -- ^ type variable, and location where it is bound
-    | Binder -- ^ here the name is bound
+    | ValueBinder -- ^ here the value name is bound
+    | TypeBinder  -- ^ here the type name is defined
     | Import      Global.Table
       -- ^ @import@ declaration, and the table of symbols that it
       -- introduces
