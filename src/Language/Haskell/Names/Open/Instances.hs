@@ -72,6 +72,36 @@ instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (DeclHead l) where
           <| sc -: v2
       _ -> defaultRtraverse e sc
 
+instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (ConDecl l) where
+  rtraverse e sc =
+    case e of
+      ConDecl l name tys ->
+        c ConDecl
+          <| sc -: l
+          <| binderV sc -: name
+          <| sc -: tys
+      InfixConDecl l t1 name t2 ->
+        c InfixConDecl
+          <| sc -: l
+          <| sc -: t1
+          <| binderV sc -: name
+          <| sc -: t2
+      RecDecl l name fields ->
+        c RecDecl
+          <| sc -: l
+          <| binderV sc -: name
+          <| sc -: fields
+
+
+instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (FieldDecl l) where
+  rtraverse e sc =
+    case e of
+      FieldDecl l name tys ->
+        c FieldDecl
+          <| sc -: l
+          <| binderV sc -: name
+          <| sc -: tys
+
 instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (Pat l) where
   rtraverse e sc =
     case e of
