@@ -76,6 +76,11 @@ instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (Pat l) where
           <| sc       -: l
           <| exprV sc -: qn
           <| sc       -: pat
+      PRec l qn pfs ->
+        c PRec
+          <| sc       -: l
+          <| exprV sc -: qn
+          <| sc       -: pfs
       PAsPat l n pat ->
         c PAsPat
           <| sc         -: l
@@ -92,6 +97,17 @@ instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (Pat l) where
           <| exprV sc -: exp
           <| sc       -: pat
       _ -> defaultRtraverse e sc
+
+instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (PatField l) where
+  rtraverse e sc =
+    case e of
+      PFieldPat l qn pat ->
+        c PFieldPat
+          <| sc       -: l
+          <| exprV sc -: qn
+          <| sc       -: pat
+      PFieldPun {} -> error "haskell-names: field puns are not supported"
+      PFieldWildcard {} -> error "haskell-names: record wildcards are not supported"
 
 -- | Chain a sequence of nodes where every node may introduce some
 -- variables into scope for the subsequent nodes. Examples: patterns (see
