@@ -1,9 +1,9 @@
 NPlusKPatterns at 1:14 is none
-R        at  4:6 is none
+R        at  4:6 is a type or class defined here
 R        at 4:10 is none
 y        at 4:14 is none
-R        at 4:19 is none
-R        at 4:19 is none
+R        at 4:19 is a global data type, Pats.R
+R        at 4:19 is a global data type, Pats.R
 f        at  6:1 is a value bound here
 x        at  6:3 is a value bound here
 x        at  6:7 is a local value defined at 6:3
