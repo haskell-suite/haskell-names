@@ -1,0 +1,3 @@
+Newtype  at  5:8 is a global newtype, Prelude.Newtype
+Newtype  at  6:7 is a global constructor, Prelude.Newtype
+foo      at 6:15 is a local value defined at 6:1
