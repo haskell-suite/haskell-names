@@ -50,6 +50,9 @@ lang = Haskell2010
 exts = [DisableExtension ImplicitPrelude]
 getIfaces = getInterfaces lang exts
 
+getTestFiles :: MonadIO m => FilePath -> m [FilePath]
+getTestFiles dir = liftIO $ find (return True) (extension ==? ".hs") dir
+
 -----------------------------------------------------
 -- Export test: parse a source file, dump its symbols
 -----------------------------------------------------
@@ -62,7 +65,7 @@ exportTest file iface =
 
 exportTests :: MT TestTree
 exportTests = do
-  testFiles <- liftIO $ find (return True) (extension ==? ".hs") "tests/exports"
+  testFiles <- getTestFiles "tests/exports"
   parsed <- liftIO $ mapM parseAndPrepare testFiles
   (ifaces, errors) <- getIfaces parsed
 
@@ -95,7 +98,7 @@ getGlobalTable file = do
 
 importTests :: MT TestTree
 importTests = do
-  testFiles <- liftIO $ find (return True) (extension ==? ".hs") "tests/imports"
+  testFiles <- getTestFiles "tests/imports"
   filesAndTables <- forM testFiles $ \file -> (,) file <$> getGlobalTable file
   return $ testGroup "imports" $ map (uncurry importTest) filesAndTables
 
@@ -140,7 +143,7 @@ annotationTest file = goldenVsFile file golden out run
       writeFile out $ printAnns annotatedMod
 
 annotationTests = do
-  testFiles <- find (return True) (extension ==? ".hs") "tests/annotations"
+  testFiles <- getTestFiles "tests/annotations"
   return $ testGroup "annotations" $ map annotationTest testFiles
 
 -----------------------
