@@ -20,6 +20,7 @@ module Language.Haskell.Names
   , Error(..)
   , ppError
   , SymFixity
+  , HasOrigName(..)
   ) where
 
 import Language.Haskell.Names.Types
