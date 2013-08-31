@@ -40,6 +40,9 @@ annotateRec _ sc a = go sc a where
     | ReferenceV <- getL nameCtx sc
     , Just (Eq :: QName (Scoped l) :~: a) <- dynamicEq
       = lookupValue (fmap sLoc a) sc <$ a
+    | ReferenceT <- getL nameCtx sc
+    , Just (Eq :: QName (Scoped l) :~: a) <- dynamicEq
+      = lookupType (fmap sLoc a) sc <$ a
     | otherwise
       = rmap go sc a
 
@@ -54,3 +57,12 @@ lookupValue qn sc = Scoped nameInfo (ann qn)
             Global.Result r -> GlobalValue r
             Global.Error e -> ScopeError e
             Global.Special -> None
+
+lookupType :: QName l -> Scope -> Scoped l
+lookupType qn sc = Scoped nameInfo (ann qn)
+  where
+    nameInfo =
+      case Global.lookupType qn $ getL gTable sc of
+        Global.Result r -> GlobalType r
+        Global.Error e -> ScopeError e
+        Global.Special -> None
