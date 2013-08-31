@@ -1,6 +1,6 @@
 -- vim:fdm=marker:foldtext=foldtext()
 {-# LANGUAGE FlexibleInstances, OverlappingInstances, ImplicitParams,
-             MultiParamTypeClasses #-}
+             MultiParamTypeClasses, FlexibleContexts #-}
 -- Imports {{{
 import Test.Tasty hiding (defaultMain)
 import Test.Tasty.Golden
