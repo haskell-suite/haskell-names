@@ -191,6 +191,7 @@ instance (Data l) => GetBound (Pat l) l where
     getBound p = [ n | p' <- universe $ transform dropExp p, n <- varp p' ]
         where varp (PVar _ n) = [n]
               varp (PAsPat _ n _) = [n]
+              varp (PNPlusK _ n _) = [n]
               varp _ = []
               dropExp (PViewPat _ _ x) = x  -- must remove nested Exp so universe doesn't descend into them
               dropExp x = x
