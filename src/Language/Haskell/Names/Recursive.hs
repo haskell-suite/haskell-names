@@ -21,7 +21,6 @@ import Language.Haskell.Names.ScopeUtils
 import Language.Haskell.Names.ModuleSymbols
 import Language.Haskell.Names.Exports
 import Language.Haskell.Names.Imports
-import qualified Language.Haskell.Names.LocalSymbolTable  as Local
 import Language.Haskell.Names.Open.Base
 import Language.Haskell.Names.Annotated
 
