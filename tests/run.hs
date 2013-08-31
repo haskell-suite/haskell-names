@@ -1,5 +1,7 @@
+-- vim:fdm=marker:foldtext=foldtext()
 {-# LANGUAGE FlexibleInstances, OverlappingInstances, ImplicitParams,
              MultiParamTypeClasses #-}
+-- Imports {{{
 import Test.Tasty hiding (defaultMain)
 import Test.Tasty.Golden
 import Test.Tasty.Golden.Manage
@@ -32,7 +34,9 @@ import qualified Distribution.ModuleName as Cabal
 
 import Data.Generics.Traversable
 import Data.Proxy
+-- }}}
 
+-- Common definitions {{{
 type MT = ModuleT Symbols IO
 
 main = defaultMain . testGroup "Tests" =<< tests
@@ -52,10 +56,12 @@ getIfaces = getInterfaces lang exts
 
 getTestFiles :: MonadIO m => FilePath -> m [FilePath]
 getTestFiles dir = liftIO $ find (return True) (extension ==? ".hs") dir
+-- }}}
 
 -----------------------------------------------------
 -- Export test: parse a source file, dump its symbols
 -----------------------------------------------------
+-- {{{
 exportTest file iface =
   goldenVsFile file golden out run
   where
@@ -77,10 +83,12 @@ exportTests = do
     exitFailure
 
   return $ testGroup "exports" $ zipWith exportTest testFiles ifaces
+-- }}}
 
 ----------------------------------------------------------
 -- Import test: parse a source file, dump its global table
 ----------------------------------------------------------
+-- {{{
 importTest :: FilePath -> Global.Table -> TestTree
 importTest file tbl =
   goldenVsFile file golden out run
@@ -101,10 +109,12 @@ importTests = do
   testFiles <- getTestFiles "tests/imports"
   filesAndTables <- forM testFiles $ \file -> (,) file <$> getGlobalTable file
   return $ testGroup "imports" $ map (uncurry importTest) filesAndTables
+-- }}}
 
 ------------------------------------------------------------------
 -- Annotation test: parse the source, annotate it and pretty-print
 ------------------------------------------------------------------
+-- {{{
 class TestAnn a where
   getAnn :: a -> Maybe (String, Scoped SrcSpan)
 
@@ -145,10 +155,12 @@ annotationTest file = goldenVsFile file golden out run
 annotationTests = do
   testFiles <- getTestFiles "tests/annotations"
   return $ testGroup "annotations" $ map annotationTest testFiles
+-- }}}
 
 -----------------------
 -- Formatting utilities
 -----------------------
+-- {{{
 formatLoc :: SrcInfo l => l -> String
 formatLoc srcInfo =
   let loc = getPointLoc srcInfo in
@@ -168,3 +180,4 @@ formatAnn name (Scoped info loc) =
     name
     (formatLoc loc)
     (formatInfo info)
+-- }}}
