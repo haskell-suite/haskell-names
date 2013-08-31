@@ -182,7 +182,15 @@ formatValueNamespace SymMethod {} = "method"
 formatValueNamespace SymSelector {} = "selector"
 formatValueNamespace SymConstructor {} = "constructor"
 
-formatOrigin = ppOrigName . sv_origName
+formatTypeNamespace SymType {} = "type synonym"
+formatTypeNamespace SymData {} = "data type"
+formatTypeNamespace SymNewType {} = "newtype"
+formatTypeNamespace SymTypeFam {} = "type family"
+formatTypeNamespace SymDataFam {} = "data family"
+formatTypeNamespace SymClass {} = "type class"
+
+formatOrigin :: HasOrigName i => i OrigName -> String
+formatOrigin = ppOrigName . origName
 
 formatInfo :: NameInfo SrcSpan -> String
 formatInfo (LocalValue loc) =
@@ -190,6 +198,10 @@ formatInfo (LocalValue loc) =
 formatInfo (GlobalValue info) =
   printf "a global %s, %s"
     (formatValueNamespace info)
+    (formatOrigin info)
+formatInfo (GlobalType info) =
+  printf "a global %s, %s"
+    (formatTypeNamespace info)
     (formatOrigin info)
 formatInfo (ScopeError (ENotInScope {})) = "not in scope"
 formatInfo None = "none"
