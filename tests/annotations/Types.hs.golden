@@ -1,0 +1,25 @@
+MultiParamTypeClasses at 1:14 is none
+A        at  4:6 is a type or class defined here
+B        at  5:5 is a value bound here
+A        at  5:7 is a global data type, Types.A
+A        at  5:7 is a global data type, Types.A
+C        at  6:5 is a value bound here
+A        at  6:7 is a global data type, Types.A
+A        at  6:7 is a global data type, Types.A
+D        at  7:5 is a value bound here
+d        at  7:9 is a value bound here
+A        at 7:14 is a global data type, Types.A
+A        at 7:14 is a global data type, Types.A
+e        at 7:17 is a value bound here
+A        at 7:22 is a global data type, Types.A
+A        at 7:22 is a global data type, Types.A
+X        at  9:6 is a type or class defined here
+A        at 9:10 is a global data type, Types.A
+A        at 9:10 is a global data type, Types.A
+C        at 11:7 is a type or class defined here
+a        at 11:9 is none
+f        at 12:3 is none
+X        at 12:8 is a global type synonym, Types.X
+X        at 12:8 is a global type synonym, Types.X
+A        at 12:13 is a global data type, Types.A
+A        at 12:13 is a global data type, Types.A
