@@ -42,15 +42,34 @@ instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (Decl l) where
         c PatBind
           <| sc                -: l
           <| sc                -: pat
-          <| exprT sc          -: mbType
+          <| sc                -: mbType
           <| exprV scWithWhere -: rhs
           <| scWithPat         -: mbWhere
       -- FunBind consists of Matches, which we handle below anyway.
       TypeSig l names ty ->
         c TypeSig
-          <| sc -: l
+          <| sc       -: l
           <| exprV sc -: names
-          <| exprT sc -: ty
+          <| sc       -: ty
+      _ -> defaultRtraverse e sc
+
+instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (Type l) where
+  rtraverse e sc = defaultRtraverse e (exprT sc)
+
+instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (DeclHead l) where
+  rtraverse e sc =
+    case e of
+      DHead l name tyVars ->
+        c DHead
+          <| sc -: l
+          <| binderT sc -: name
+          <| sc -: tyVars
+      DHInfix l v1 name v2 ->
+        c DHInfix
+          <| sc -: l
+          <| sc -: v1
+          <| binderT sc -: name
+          <| sc -: v2
       _ -> defaultRtraverse e sc
 
 instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (Pat l) where
@@ -86,11 +105,6 @@ instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (Pat l) where
           <| sc         -: l
           <| binderV sc -: n
           <| sc         -: pat
-      PatTypeSig l pat ty ->
-        c PatTypeSig
-          <| sc       -: l
-          <| sc       -: pat
-          <| exprT sc -: ty
       PViewPat l exp pat ->
         c PViewPat
           <| sc       -: l
