@@ -48,8 +48,7 @@ main = defaultMain . testGroup "Tests" =<< tests
 
 tests =
   liftM concat . sequence $
-    [ evalNamesModuleT (sequence [exportTests, importTests]) []
-    , sequence [annotationTests]
+    [ evalNamesModuleT (sequence [exportTests, importTests, annotationTests]) []
     ]
 
 parseAndPrepare file =
@@ -149,19 +148,22 @@ printAnns =
   in go
 
 -- Actual tests
-annotationTest file = goldenVsFile file golden out run
+annotationTest file annotatedMod = goldenVsFile file golden out run
   where
     golden = file <.> "golden"
     out = file <.> "out"
     run = do
-      mod <- parseAndPrepare file
-      let annotatedMod = annotate initialScope mod
-      -- writeFile out $ ppShow $ fmap void annotatedMod
-      writeFile out $ printAnns annotatedMod
+      liftIO $ writeFile out $ printAnns annotatedMod
+
+getAnnotated file = do
+  mod <- liftIO $ parseAndPrepare file
+  annotateModule lang exts mod
 
 annotationTests = do
   testFiles <- getTestFiles "tests/annotations"
-  return $ testGroup "annotations" $ map annotationTest testFiles
+  filesAndMods <- forM testFiles $ \file -> (,) file <$> getAnnotated file
+  return $ testGroup "annotations" $
+    map (uncurry annotationTest) filesAndMods
 -- }}}
 
 -----------------------
