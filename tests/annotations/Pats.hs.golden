@@ -1,0 +1,38 @@
+NPlusKPatterns at 1:14 is none
+R        at  4:6 is none
+R        at 4:10 is none
+y        at 4:14 is none
+R        at 4:19 is none
+R        at 4:19 is none
+f        at  6:1 is a value bound here
+x        at  6:3 is a value bound here
+x        at  6:7 is a local value defined at 6:3
+x        at  6:7 is a local value defined at 6:3
+f        at  7:1 is a value bound here
+x        at  7:4 is a value bound here
+x        at 7:11 is a local value defined at 7:4
+x        at 7:11 is a local value defined at 7:4
+f        at  8:1 is a value bound here
+R        at  8:4 is a global constructor, Pats.R
+R        at  8:4 is a global constructor, Pats.R
+x        at  8:6 is a value bound here
+x        at 8:11 is a local value defined at 8:6
+x        at 8:11 is a local value defined at 8:6
+f        at  9:1 is a value bound here
+x        at  9:4 is a value bound here
+:        at  9:6 is none
+y        at  9:8 is a value bound here
+x        at 9:13 is a local value defined at 9:4
+x        at 9:13 is a local value defined at 9:4
+f        at 10:1 is a value bound here
+R        at 10:4 is a global constructor, Pats.R
+R        at 10:4 is a global constructor, Pats.R
+y        at 10:8 is a global selector, Pats.y
+y        at 10:8 is a global selector, Pats.y
+x        at 10:12 is a value bound here
+x        at 10:19 is a local value defined at 10:12
+x        at 10:19 is a local value defined at 10:12
+f        at 11:1 is a value bound here
+x        at 11:3 is a value bound here
+x        at 11:9 is a local value defined at 11:3
+x        at 11:9 is a local value defined at 11:3
