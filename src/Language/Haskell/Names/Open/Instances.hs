@@ -41,7 +41,7 @@ instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (Decl l) where
         in
         c PatBind
           <| sc                -: l
-          <| binderV sc        -: pat
+          <| sc                -: pat
           <| exprT sc          -: mbType
           <| exprV scWithWhere -: rhs
           <| scWithPat         -: mbWhere
@@ -56,12 +56,41 @@ instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (Decl l) where
 instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (Pat l) where
   rtraverse e sc =
     case e of
-      -- XXX more cases
+      PVar l name ->
+        c PVar
+          <| sc         -: l
+          <| binderV sc -: name
+      PNPlusK l name i ->
+        c PNPlusK
+          <| sc         -: l
+          <| binderV sc -: name
+          <| sc         -: i
+      PInfixApp l pat1 name pat2 ->
+        c PInfixApp
+          <| sc       -: l
+          <| sc       -: pat1
+          <| exprV sc -: name
+          <| sc       -: pat2
+      PApp l qn pat ->
+        c PApp
+          <| sc       -: l
+          <| exprV sc -: qn
+          <| sc       -: pat
+      PAsPat l n pat ->
+        c PAsPat
+          <| sc         -: l
+          <| binderV sc -: n
+          <| sc         -: pat
+      PatTypeSig l pat ty ->
+        c PatTypeSig
+          <| sc       -: l
+          <| sc       -: pat
+          <| exprT sc -: ty
       PViewPat l exp pat ->
         c PViewPat
-          <| sc         -: l
-          <| exprV sc   -: exp
-          <| binderV sc -: pat
+          <| sc       -: l
+          <| exprV sc -: exp
+          <| sc       -: pat
       _ -> defaultRtraverse e sc
 
 -- | Chain a sequence of nodes where every node may introduce some
