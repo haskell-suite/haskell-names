@@ -207,6 +207,7 @@ formatInfo (GlobalType info) =
     (formatTypeNamespace info)
     (formatOrigin info)
 formatInfo ValueBinder = "a value bound here"
+formatInfo TypeBinder = "a type or class defined here"
 formatInfo (ScopeError (ENotInScope {})) = "not in scope"
 formatInfo None = "none"
 formatInfo i = error $ "tests/run.hs: formatInfo: " ++ show i
