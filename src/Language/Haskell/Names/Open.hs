@@ -1,6 +1,7 @@
 -- Public interface for open resolution
 module Language.Haskell.Names.Open
   ( Resolvable(..)
+  , Alg(..)
   , rmap
   , Scope
   , NameContext(..)
