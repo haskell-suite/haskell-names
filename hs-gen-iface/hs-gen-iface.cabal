@@ -1,8 +1,10 @@
 Name:                   hs-gen-iface
 Version:                0.2
-License:                BSD3
+License:                MIT
+License-file:           LICENSE
 Author:                 Roman Cheplyaka
 Maintainer:             Roman Cheplyaka <roma@ro-che.info>
+Description:            Compiler which generates module interfaces for haskell-names
 Category:               Language
 Synopsis:               Utility to generate haskell-names interface files
 Stability:              Experimental
@@ -18,7 +20,7 @@ Executable hs-gen-iface
   Other-modules:
     Paths_hs_gen_iface
   Build-depends:
-    base,
+    base == 4.*,
     containers,
     haskell-src-exts,
     haskell-names,
