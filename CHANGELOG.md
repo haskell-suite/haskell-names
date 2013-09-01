@@ -1,6 +1,15 @@
 Changes
 =======
 
+Version 0.2
+-------------
+
+* Proper annotations for types and binding sites. `NameContext` now has a few
+  new constructors.
+* Properly support n+k patterns
+* Expose the `Alg` datatype for open name resolution
+* Expose the `HasOrigName` class
+
 Version 0.1.2
 -------------
 
