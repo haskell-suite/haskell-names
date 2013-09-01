@@ -1,4 +1,4 @@
-{-# LANGUAGE TypeFamilies #-}
+{-# LANGUAGE TypeFamilies, ScopedTypeVariables #-}
 module Language.Haskell.Names.Recursive
   ( computeInterfaces
   , getInterfaces
@@ -27,10 +27,11 @@ import Language.Haskell.Names.Annotated
 -- | Take a set of modules and return a list of sets, where each sets for
 -- a strongly connected component in the import graph.
 -- The boolean determines if imports using @SOURCE@ are taken into account.
-groupModules :: [Module l] -> [[Module l]]
+groupModules :: forall l . [Module l] -> [[Module l]]
 groupModules modules =
   map flattenSCC $ stronglyConnComp $ map mkNode modules
   where
+    mkNode :: Module l -> (Module l, ModuleName (), [ModuleName ()])
     mkNode m =
       ( m
       , dropAnn $ getModuleName m
