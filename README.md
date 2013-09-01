@@ -246,6 +246,8 @@ them anyway.
 
 ### Known issues
 
+See the [list of all issues][issues].
+
 * Because a non-trivial amount of packages are not designed to work with
   anything except GHC, hs-gen-iface currently pretends to be GHC. This is of
   course not acceptable — contributions here are welcome. ([#32][])
@@ -257,6 +259,7 @@ them anyway.
 * Arrows are not fully supported ([#8][])
 * Type/data families and associated types are not fully supported ([#25][])
 
+[issues]: https://github.com/haskell-suite/haskell-names/issues/
 [#1]: https://github.com/haskell-suite/haskell-names/issues/1
 [#2]: https://github.com/haskell-suite/haskell-names/issues/2
 [#8]: https://github.com/haskell-suite/haskell-names/issues/8
