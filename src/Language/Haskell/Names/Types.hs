@@ -10,11 +10,13 @@ import Data.Lens.Common
 import qualified Data.Set as Set
 import {-# SOURCE #-} qualified Language.Haskell.Names.GlobalSymbolTable as Global
 import Distribution.Package
-import Data.Version
 import Distribution.Text
 import Data.Foldable as F
 import Data.Traversable
 import Text.Printf
+#if ! MIN_VERSION_Cabal(1,17,0)
+import Data.Version
+#endif
 
 type ExtensionSet = Set.Set KnownExtension
 
