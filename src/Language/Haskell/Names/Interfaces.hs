@@ -1,5 +1,5 @@
 -- | Reading 'Symbols' from and writing to interface files
-{-# LANGUAGE DeriveDataTypeable, OverloadedStrings, TemplateHaskell #-}
+{-# LANGUAGE DeriveDataTypeable, OverloadedStrings, FlexibleInstances #-}
 {-# OPTIONS_GHC -fno-warn-orphans -fno-warn-name-shadowing #-}
 module Language.Haskell.Names.Interfaces
   (
@@ -18,7 +18,6 @@ import Language.Haskell.Names.Types
 import Language.Haskell.Exts.Annotated
 import qualified Data.ByteString.Lazy as BS
 import Data.Aeson
-import Data.Aeson.TH
 import Data.Monoid
 import Data.Char
 import Data.Typeable
@@ -143,8 +142,27 @@ instance FromJSON name => FromJSON (SymTypeInfo name) where
 
   parseJSON _ = mzero
 
--- FIXME
-deriveJSON id ''Assoc
+instance ToJSON (Assoc ()) where
+  toJSON assoc =
+    let
+      (assocStr, prec) =
+        case assoc of
+          AssocNone prec  -> ("none", prec)
+          AssocLeft prec  -> ("left", prec)
+          AssocRight prec -> ("right", prec)
+    in
+      object ["fixity" .= toJSON (assocStr :: String), "precedence" .= toJSON prec]
+
+instance FromJSON (Assoc ()) where
+  parseJSON (Object v) = do
+    fixity <- v .: "fixity"
+    prec   <- v .: "precedence"
+    case fixity :: String of
+      "none"  -> return $ AssocNone prec
+      "left"  -> return $ AssocLeft prec
+      "right" -> return $ AssocRight prec
+      _ -> mzero
+  parseJSON _ = mzero
 
 instance ToJSON Symbols where
   toJSON (Symbols vals types) =
