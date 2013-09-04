@@ -13,6 +13,9 @@ Stability:              Experimental
 Build-Type:             Simple
 Cabal-Version:          >= 1.10
 
+extra-source-files:
+  README.md
+  CHANGELOG.md
 data-files:
   libraries/integer-simple-0.1.1.0/GHC/Integer/Logarithms/Internals.names
   libraries/integer-simple-0.1.1.0/GHC/Integer/Simple/Internals.names
