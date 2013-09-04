@@ -40,7 +40,7 @@ instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (Decl l) where
       -- global values are marked as local.
       -- (see https://github.com/haskell-suite/haskell-names/issues/35)
       --
-      -- If this is a local binding, then we have already introduces these
+      -- If this is a local binding, then we have already introduced these
       -- variables when processing the enclosing Binds.
       PatBind l pat mbType rhs mbWhere ->
         let
