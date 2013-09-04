@@ -6,3 +6,11 @@ Newtype  at  6:7 is a global constructor, Prelude.Newtype
 Newtype  at  6:7 is a global constructor, Prelude.Newtype
 foo      at 6:15 is a global value, Global.foo
 foo      at 6:15 is a global value, Global.foo
+bar      at  8:1 is a value bound here
+x        at  8:5 is a value bound here
+bar      at  8:9 is a global value, Global.bar
+bar      at  8:9 is a global value, Global.bar
+x        at 8:14 is a local value defined at 8:5
+x        at 8:14 is a local value defined at 8:5
+-        at 8:15 is not in scope
+-        at 8:15 is not in scope
