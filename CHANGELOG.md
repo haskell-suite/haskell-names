@@ -1,6 +1,12 @@
 Changes
 =======
 
+Version 0.2.1
+-------------
+
+* Fix a bug where global symbols were annotated as local
+* Make the code compile with aeson-0.6.2.0
+
 Version 0.2
 -------------
 
