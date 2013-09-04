@@ -34,17 +34,24 @@ infix 5 -:
 instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (Decl l) where
   rtraverse e sc =
     case e of
+      -- N.B. We do not add pat to the local scope.
+      --
+      -- If this is a top-level binding, then we shouldn't do so, lest
+      -- global values are marked as local.
+      -- (see https://github.com/haskell-suite/haskell-names/issues/35)
+      --
+      -- If this is a local binding, then we have already introduces these
+      -- variables when processing the enclosing Binds.
       PatBind l pat mbType rhs mbWhere ->
         let
-          scWithPat = intro pat sc
-          scWithWhere = intro mbWhere scWithPat
+          scWithWhere = intro mbWhere sc
         in
         c PatBind
           <| sc                -: l
           <| sc                -: pat
           <| sc                -: mbType
           <| exprV scWithWhere -: rhs
-          <| scWithPat         -: mbWhere
+          <| sc                -: mbWhere
       -- FunBind consists of Matches, which we handle below anyway.
       TypeSig l names ty ->
         c TypeSig

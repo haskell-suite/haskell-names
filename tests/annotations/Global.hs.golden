@@ -4,5 +4,5 @@ Newtype  at  5:8 is a global newtype, Prelude.Newtype
 foo      at  6:1 is a value bound here
 Newtype  at  6:7 is a global constructor, Prelude.Newtype
 Newtype  at  6:7 is a global constructor, Prelude.Newtype
-foo      at 6:15 is a local value defined at 6:1
-foo      at 6:15 is a local value defined at 6:1
+foo      at 6:15 is a global value, Global.foo
+foo      at 6:15 is a global value, Global.foo
