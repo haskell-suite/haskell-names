@@ -1,0 +1,71 @@
+NamedFieldPuns at 1:14 is none
+RecordWildcards at 1:30 is none
+A        at  4:6 is a type or class defined here
+A        at 4:10 is a value bound here
+b        at 4:14 is a value bound here
+A        at 4:19 is a global data type, Records.A
+A        at 4:19 is a global data type, Records.A
+c        at 4:22 is a value bound here
+A        at 4:27 is a global data type, Records.A
+A        at 4:27 is a global data type, Records.A
+undefined at  6:1 is a value bound here
+undefined at 6:13 is a global value, Records.undefined
+undefined at 6:13 is a global value, Records.undefined
+f        at  9:1 is a value bound here
+A        at  9:3 is a global constructor, Records.A
+A        at  9:3 is a global constructor, Records.A
+b        at  9:7 is a global selector, Records.b
+b        at  9:7 is a global selector, Records.b
+q        at 9:11 is a value bound here
+q        at 9:17 is a local value defined at 9:11
+q        at 9:17 is a local value defined at 9:11
+fu       at 13:1 is a value bound here
+x        at 13:4 is a value bound here
+x        at 13:8 is a local value defined at 13:4
+x        at 13:8 is a local value defined at 13:4
+b        at 13:12 is a global selector, Records.b
+b        at 13:12 is a global selector, Records.b
+b        at 13:16 is a global selector, Records.b
+b        at 13:16 is a global selector, Records.b
+x        at 13:18 is a local value defined at 13:4
+x        at 13:18 is a local value defined at 13:4
+g        at 16:1 is a value bound here
+A        at 16:3 is a global constructor, Records.A
+A        at 16:3 is a global constructor, Records.A
+b        at 16:6 is a value bound here
+b        at 16:11 is a local value defined at 16:6
+b        at 16:11 is a local value defined at 16:6
+A        at 19:1 is a global constructor, Records.A
+A        at 19:1 is a global constructor, Records.A
+tx       at 19:5 is a value bound here
+undefined at 19:12 is a global value, Records.undefined
+undefined at 19:12 is a global value, Records.undefined
+ty       at 20:1 is a value bound here
+tx       at 20:6 is a global value, Records.tx
+tx       at 20:6 is a global value, Records.tx
+tz       at 23:1 is a value bound here
+b        at 23:10 is a value bound here
+A        at 23:19 is a global constructor, Records.A
+A        at 23:19 is a global constructor, Records.A
+b        at 23:23 is a local value defined at 23:10
+h        at 26:1 is a value bound here
+A        at 26:4 is a global constructor, Records.A
+A        at 26:4 is a global constructor, Records.A
+b        at 26:7 is a value bound here
+c        at 26:10 is a global selector, Records.c
+c        at 26:10 is a global selector, Records.c
+y        at 26:18 is a value bound here
+b        at 26:26 is a local value defined at 26:7
+b        at 26:26 is a local value defined at 26:7
+y        at 26:29 is a local value defined at 26:18
+y        at 26:29 is a local value defined at 26:18
+tm       at 29:1 is a value bound here
+b        at 29:10 is a value bound here
+v        at 29:17 is a value bound here
+A        at 29:26 is a global constructor, Records.A
+A        at 29:26 is a global constructor, Records.A
+b        at 29:30 is a local value defined at 29:10
+c        at 29:33 is a global selector, Records.c
+c        at 29:33 is a global selector, Records.c
+v        at 29:37 is a local value defined at 29:17
+v        at 29:37 is a local value defined at 29:17
