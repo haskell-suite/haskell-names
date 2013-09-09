@@ -157,6 +157,10 @@ instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (PatField l) where
           <| sc       -: l
           <| exprV sc -: qn
           <| sc       -: pat
+      PFieldPun l n ->
+        c PFieldPun
+          <| sc -: l
+          <| binderV sc -: n
       -- FIXME
       _ -> defaultRtraverse e sc
 
