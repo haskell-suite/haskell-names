@@ -49,8 +49,15 @@ annotateRec _ sc a = go sc a where
     | BindingT <- getL nameCtx sc
     , Just (Eq :: Name (Scoped l) :~: a) <- dynamicEq
       = Scoped TypeBinder (sLoc . ann $ a) <$ a
+    | Just (Eq :: FieldUpdate (Scoped l) :~: a) <- dynamicEq
+      = case a of
+          FieldPun l n -> FieldPun l (lookupUnqualValue n sc <$ n)
+          _ -> rmap go sc a
     | otherwise
       = rmap go sc a
+
+lookupUnqualValue :: Name (Scoped l) -> Scope -> Scoped l
+lookupUnqualValue n = lookupValue (UnQual (sLoc $ ann n) (sLoc <$> n))
 
 lookupValue :: QName l -> Scope -> Scoped l
 lookupValue qn sc = Scoped nameInfo (ann qn)
