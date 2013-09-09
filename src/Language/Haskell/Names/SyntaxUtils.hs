@@ -186,15 +186,19 @@ instance (Data l) => GetBound (QualStmt l) l where
 getBoundSign :: Decl l -> [Name l]
 getBoundSign (TypeSig _ ns _) = ns
 getBoundSign _ = []
-
 instance (Data l) => GetBound (Pat l) l where
-    getBound p = [ n | p' <- universe $ transform dropExp p, n <- varp p' ]
-        where varp (PVar _ n) = [n]
-              varp (PAsPat _ n _) = [n]
-              varp (PNPlusK _ n _) = [n]
-              varp _ = []
-              dropExp (PViewPat _ _ x) = x  -- must remove nested Exp so universe doesn't descend into them
-              dropExp x = x
+  getBound p = [ n | p' <- universe $ transform dropExp p, n <- varp p' ]
+    where
+      varp (PVar _ n) = [n]
+      varp (PAsPat _ n _) = [n]
+      varp (PNPlusK _ n _) = [n]
+      varp (PRec _ _ fs) = [ n | f <- fs, n <- getRecVars f ]
+      varp _ = []
+      dropExp (PViewPat _ _ x) = x  -- must remove nested Exp so universe doesn't descend into them
+      dropExp x = x
+      getRecVars PFieldPat {} = [] -- this is already found by the generic algorithm
+      getRecVars (PFieldPun _ n) = [n]
+      getRecVars PFieldWildcard {} = [] -- not supported yet
 
 isTypeDecl :: Decl l -> Bool
 isTypeDecl (TypeDecl _ _ _) = True
