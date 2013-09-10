@@ -17,6 +17,7 @@ import Language.Haskell.Names.Types
 import qualified Language.Haskell.Names.GlobalSymbolTable as Global
 import Language.Haskell.Names.SyntaxUtils
 import Language.Haskell.Names.ScopeUtils
+import Language.Haskell.Names.GetBound
 
 moduleTable :: (Eq l, Data l) => Module l -> Global.Table
 moduleTable m =

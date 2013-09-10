@@ -269,6 +269,7 @@ Library
                         Language.Haskell.Names.Exports
                         Language.Haskell.Names.ModuleSymbols
                         Language.Haskell.Names.SyntaxUtils
+                        Language.Haskell.Names.GetBound
 
   Other-modules:
                         Language.Haskell.Names.Open.Base

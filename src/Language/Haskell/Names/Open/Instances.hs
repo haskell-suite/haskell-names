@@ -12,7 +12,7 @@ module Language.Haskell.Names.Open.Instances where
 import Language.Haskell.Names.Types
 import Language.Haskell.Names.Open.Base
 import Language.Haskell.Names.Open.Derived ()
-import Language.Haskell.Names.SyntaxUtils
+import Language.Haskell.Names.GetBound
 import Language.Haskell.Exts.Annotated
 import qualified Data.Data as D
 import Control.Applicative

@@ -4,7 +4,7 @@ module Language.Haskell.Names.Open.Base where
 
 import qualified Language.Haskell.Names.GlobalSymbolTable as Global
 import qualified Language.Haskell.Names.LocalSymbolTable as Local
-import Language.Haskell.Names.SyntaxUtils
+import Language.Haskell.Names.GetBound
 import Language.Haskell.Exts.Annotated
 import Control.Applicative
 import Control.Monad.Identity
