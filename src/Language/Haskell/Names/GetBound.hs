@@ -1,17 +1,41 @@
-{-# LANGUAGE MultiParamTypeClasses, FunctionalDependencies, FlexibleInstances, UndecidableInstances #-}
+{-# LANGUAGE MultiParamTypeClasses, FunctionalDependencies,
+             FlexibleInstances, UndecidableInstances, NamedFieldPuns,
+             ScopedTypeVariables #-}
 module Language.Haskell.Names.GetBound
-  ( GetBound(..)
+  ( GetBound(..) -- FIXME don't export getBound
   ) where
 
 import Data.Generics.Uniplate.Data
 import Data.Data
+import qualified Data.Map as Map
+import qualified Data.Set as Set
+import Data.Maybe
+import Control.Monad
+import Control.Applicative
 
 import Language.Haskell.Exts.Annotated
+import Language.Haskell.Names.Types
+import Language.Haskell.Names.SyntaxUtils
 import qualified Language.Haskell.Names.GlobalSymbolTable as Global
 
 -- | Get bound value identifiers.
+
+-- Minimal definition: either 'getBound' or 'getBoundCtx'.
+--
+-- Note that 'getBound' may be undefined for some instances, so the client
+-- code should always call 'getBoundCtx'. 'getBound' is only provided for
+-- a more convenient way to write instances. And since all instances are
+-- defined in this module, we don't even export 'getBound'.
 class GetBound a l | a -> l where
     getBound :: a -> [Name l]
+    getBound = error "getBound is called directly. Call getBoundCtx instead"
+
+    -- | 'getBoundCtx' is needed to resolve record wildcards. There we
+    -- need to know which fields the given constructor has. So we pass the
+    -- global table for that.
+    getBoundCtx :: Global.Table -> a -> [Name l]
+    -- default definition: ignore the context
+    getBoundCtx _ = getBound
 
 -- XXX account for shadowing?
 instance (GetBound a l) => GetBound [a] l where
@@ -98,20 +122,73 @@ instance (Data l) => GetBound (QualStmt l) l where
       QualStmt _ stmt -> getBound stmt
       _ -> []
 
-getBoundSign :: Decl l -> [Name l]
-getBoundSign (TypeSig _ ns _) = ns
-getBoundSign _ = []
 instance (Data l) => GetBound (Pat l) l where
-  getBound p = [ n | p' <- universe $ transform dropExp p, n <- varp p' ]
+  getBoundCtx gt p =
+    [ n | p' <- universe $ transform dropExp p, n <- varp p' ]
+
     where
+
       varp (PVar _ n) = [n]
       varp (PAsPat _ n _) = [n]
       varp (PNPlusK _ n _) = [n]
-      varp (PRec _ _ fs) = [ n | f <- fs, n <- getRecVars f ]
+      varp (PRec _ con fs) =
+        [ n
+        | -- (lazily) compute elided fields for the case when 'f' below is a wildcard
+          let elidedFields = getElidedFields con fs
+        , f <- fs
+        , n <- getRecVars elidedFields f
+        ]
       varp _ = []
-      dropExp (PViewPat _ _ x) = x  -- must remove nested Exp so universe doesn't descend into them
-      dropExp x = x
-      getRecVars PFieldPat {} = [] -- this is already found by the generic algorithm
-      getRecVars (PFieldPun _ n) = [n]
-      getRecVars PFieldWildcard {} = [] -- not supported yet
 
+      getElidedFields :: QName l -> [PatField l] -> Set.Set (Name ())
+      getElidedFields con patfs =
+        let
+          givenFieldNames :: Set.Set (Name ())
+          givenFieldNames =
+            Set.fromList . map void . flip mapMaybe patfs $ \pf ->
+              case pf of
+                PFieldPat _ qn _ -> Just $ qNameToName qn
+                PFieldPun _ n -> Just n
+                PFieldWildcard {} -> Nothing
+
+          -- FIXME must report error when the constructor cannot be
+          -- resolved
+          mbConOrigName =
+            case Global.lookupValue con gt of
+              Global.Result info@SymConstructor{} -> Just $ sv_origName info
+              _ -> Nothing
+
+          allValueInfos :: Set.Set (SymValueInfo OrigName)
+          allValueInfos = Set.unions $ Map.elems $ Global.values gt
+
+          ourFieldInfos :: Set.Set (SymValueInfo OrigName)
+          ourFieldInfos =
+            case mbConOrigName of
+              Nothing -> Set.empty
+              Just conOrigName ->
+                flip Set.filter allValueInfos $ \v ->
+                  case v of
+                    SymSelector { sv_constructors }
+                      | conOrigName `elem` sv_constructors -> True
+                    _ -> False
+
+          ourFieldNames :: Set.Set (Name ())
+          ourFieldNames =
+            Set.map
+              (stringToName . (\(GName _ n) -> n) . origGName . sv_origName)
+              ourFieldInfos
+
+        in ourFieldNames `Set.difference` givenFieldNames
+
+      -- must remove nested Exp so universe doesn't descend into them
+      dropExp (PViewPat _ _ x) = x
+      dropExp x = x
+
+      getRecVars :: Set.Set (Name ()) -> PatField l -> [Name l]
+      getRecVars _ PFieldPat {} = [] -- this is already found by the generic algorithm
+      getRecVars _ (PFieldPun _ n) = [n]
+      getRecVars elidedFields (PFieldWildcard l) = map (l <$) $ Set.toList elidedFields
+
+getBoundSign :: Decl l -> [Name l]
+getBoundSign (TypeSig _ ns _) = ns
+getBoundSign _ = []
