@@ -44,48 +44,63 @@ getTopDeclSymbols mdl d =
   map (either (Left . fmap toOrig) (Right . fmap toOrig)) $
   case d of
     TypeDecl _ dh _ ->
-        let tn = hname dh
-        in  [ Right (SymType        { st_origName = tn, st_fixity = Nothing })]
+      let tn = hname dh
+      in  [ Right (SymType        { st_origName = tn, st_fixity = Nothing })]
+
     TypeFamDecl _ dh _ ->
-        let tn = hname dh
-        in  [ Right (SymTypeFam     { st_origName = tn, st_fixity = Nothing })]
+      let tn = hname dh
+      in  [ Right (SymTypeFam     { st_origName = tn, st_fixity = Nothing })]
+
     DataDecl _ dataOrNew _ dh _ _ ->
-        let dq = hname dh
-            (cs, fs) = partition isCon $ getBound d
-            as = cs ++ nub fs  -- Ignore multiple selectors for now
-            dataOrNewCon = case dataOrNew of DataType {} -> SymData; NewType {} -> SymNewType
-        in    Right (dataOrNewCon dq Nothing) :
-            [ if isCon cn then
-              Left  (SymConstructor { sv_origName = qname cn, sv_fixity = Nothing, sv_typeName = dq }) else
-              Left  (SymSelector    { sv_origName = qname cn, sv_fixity = Nothing, sv_typeName = dq })
-            | cn <- as ]
+      let
+        dq = hname dh
+        (cs, fs) = partition isCon $ getBound d
+        as = cs ++ nub fs  -- Ignore multiple selectors for now
+        dataOrNewCon = case dataOrNew of DataType {} -> SymData; NewType {} -> SymNewType
+      in
+        Right (dataOrNewCon dq Nothing) :
+        [ if isCon cn then
+          Left  (SymConstructor { sv_origName = qname cn, sv_fixity = Nothing, sv_typeName = dq }) else
+          Left  (SymSelector    { sv_origName = qname cn, sv_fixity = Nothing, sv_typeName = dq })
+        | cn <- as ]
+
     GDataDecl _ dataOrNew _ dh _ _ _ ->
-        let dq = hname dh
-            (cs, fs) = partition isCon $ getBound d
-            as = cs ++ nub fs  -- Ignore multiple selectors for now
-            dataOrNewCon = case dataOrNew of DataType {} -> SymData; NewType {} -> SymNewType
-        in    Right (dataOrNewCon dq Nothing) :
-            [ if isCon cn then
-              Left  (SymConstructor { sv_origName = qname cn, sv_fixity = Nothing, sv_typeName = dq }) else
-              Left  (SymSelector    { sv_origName = qname cn, sv_fixity = Nothing, sv_typeName = dq })
-            | cn <- as ]
+      let
+        dq = hname dh
+        (cs, fs) = partition isCon $ getBound d
+        as = cs ++ nub fs  -- Ignore multiple selectors for now
+        dataOrNewCon = case dataOrNew of DataType {} -> SymData; NewType {} -> SymNewType
+      in
+        Right (dataOrNewCon dq Nothing) :
+        [ if isCon cn then
+          Left  (SymConstructor { sv_origName = qname cn, sv_fixity = Nothing, sv_typeName = dq }) else
+          Left  (SymSelector    { sv_origName = qname cn, sv_fixity = Nothing, sv_typeName = dq })
+        | cn <- as ]
+
     ClassDecl _ _ dh _ mds ->
-        let ms = getBound d
-            cq = hname dh
-            cdecls = fromMaybe [] mds
-        in    Right (SymClass       { st_origName = cq,       st_fixity = Nothing }) :
-            [ Right (SymTypeFam     { st_origName = hname dh, st_fixity = Nothing }) | ClsTyFam   _   dh _ <- cdecls ] ++
-            [ Right (SymDataFam     { st_origName = hname dh, st_fixity = Nothing }) | ClsDataFam _ _ dh _ <- cdecls ] ++
-            [ Left  (SymMethod      { sv_origName = qname mn, sv_fixity = Nothing, sv_className = cq }) | mn <- ms ]
+      let
+        ms = getBound d
+        cq = hname dh
+        cdecls = fromMaybe [] mds
+      in
+          Right (SymClass   { st_origName = cq,       st_fixity = Nothing }) :
+        [ Right (SymTypeFam { st_origName = hname dh, st_fixity = Nothing }) | ClsTyFam   _   dh _ <- cdecls ] ++
+        [ Right (SymDataFam { st_origName = hname dh, st_fixity = Nothing }) | ClsDataFam _ _ dh _ <- cdecls ] ++
+        [ Left  (SymMethod  { sv_origName = qname mn, sv_fixity = Nothing, sv_className = cq }) | mn <- ms ]
+
     FunBind _ ms ->
-        let vn : _ = getBound ms
-        in  [ Left  (SymValue       { sv_origName = qname vn, sv_fixity = Nothing }) ]
+      let vn : _ = getBound ms
+      in  [ Left  (SymValue { sv_origName = qname vn, sv_fixity = Nothing }) ]
+
     PatBind _ p _ _ _ ->
-            [ Left  (SymValue       { sv_origName = qname vn, sv_fixity = Nothing }) | vn <- getBound p ]
+      [ Left  (SymValue { sv_origName = qname vn, sv_fixity = Nothing }) | vn <- getBound p ]
+
     ForImp _ _ _ _ fn _ ->
-            [ Left  (SymValue       { sv_origName = qname fn, sv_fixity = Nothing }) ]
-    _ ->    []
-  where ModuleName _ smdl = mdl
-        qname = GName smdl . nameToString
-        hname = qname . fst . splitDeclHead
-        toOrig = OrigName Nothing
+      [ Left  (SymValue { sv_origName = qname fn, sv_fixity = Nothing }) ]
+
+    _ -> []
+  where
+    ModuleName _ smdl = mdl
+    qname = GName smdl . nameToString
+    hname = qname . fst . splitDeclHead
+    toOrig = OrigName Nothing
