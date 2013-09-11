@@ -11,6 +11,7 @@ module Language.Haskell.Names.SyntaxUtils
   , opName
   , isCon
   , nameToString
+  , stringToName
   , specialConToString
   , qNameToName
   , unCName
@@ -110,6 +111,10 @@ isCon _ = False
 nameToString :: Name l -> String
 nameToString (Ident _ s) = s
 nameToString (Symbol _ s) = s
+
+stringToName :: String -> Name ()
+stringToName s@(c:_) | isSymbol c = Symbol () s
+stringToName s = Ident () s
 
 specialConToString :: SpecialCon l -> String
 specialConToString (UnitCon _)            = "()"
