@@ -81,8 +81,9 @@ instance ToJSON name => ToJSON (SymValueInfo name) where
         SymValue {} -> []
         SymMethod { sv_className = cls } ->
           [("class", toJSON cls)]
-        SymSelector { sv_typeName = ty } ->
-          [("type", toJSON ty)]
+        SymSelector { sv_typeName = ty, sv_constructors = cons } ->
+          [("type", toJSON ty)
+          ,("constructors", toJSON cons)]
         SymConstructor { sv_typeName = ty } ->
           [("type", toJSON ty)]
 
@@ -102,7 +103,10 @@ instance FromJSON name => FromJSON (SymValueInfo name) where
     case entity :: String of
       "value" -> return $ SymValue name fixity
       "method" -> SymMethod name fixity <$> v .: "class"
-      "selector" -> SymSelector name fixity <$> v .: "type"
+      "selector" ->
+        SymSelector name fixity
+          <$> v .: "type"
+          <*> v .: "constructors"
       "constructor" -> SymConstructor name fixity <$> v .: "type"
       _ -> mzero
 

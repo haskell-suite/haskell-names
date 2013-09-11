@@ -40,6 +40,7 @@ data SymValueInfo name
       { sv_origName :: name
       , sv_fixity :: Maybe SymFixity
       , sv_typeName :: name
+      , sv_constructors :: [name]
       }
       -- ^ record field selector
     | SymConstructor
