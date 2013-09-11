@@ -56,9 +56,8 @@ getTopDeclSymbols mdl d =
         dq = hname dh
         (cs, fs) = partition isCon $ getBound d
         as = cs ++ nub fs  -- Ignore multiple selectors for now
-        dataOrNewCon = case dataOrNew of DataType {} -> SymData; NewType {} -> SymNewType
       in
-        Right (dataOrNewCon dq Nothing) :
+        Right (dataOrNewCon dataOrNew dq Nothing) :
         [ if isCon cn then
           Left  (SymConstructor { sv_origName = qname cn, sv_fixity = Nothing, sv_typeName = dq }) else
           Left  (SymSelector    { sv_origName = qname cn, sv_fixity = Nothing, sv_typeName = dq })
@@ -69,9 +68,8 @@ getTopDeclSymbols mdl d =
         dq = hname dh
         (cs, fs) = partition isCon $ getBound d
         as = cs ++ nub fs  -- Ignore multiple selectors for now
-        dataOrNewCon = case dataOrNew of DataType {} -> SymData; NewType {} -> SymNewType
       in
-        Right (dataOrNewCon dq Nothing) :
+        Right (dataOrNewCon dataOrNew dq Nothing) :
         [ if isCon cn then
           Left  (SymConstructor { sv_origName = qname cn, sv_fixity = Nothing, sv_typeName = dq }) else
           Left  (SymSelector    { sv_origName = qname cn, sv_fixity = Nothing, sv_typeName = dq })
@@ -104,3 +102,4 @@ getTopDeclSymbols mdl d =
     qname = GName smdl . nameToString
     hname = qname . fst . splitDeclHead
     toOrig = OrigName Nothing
+    dataOrNewCon dataOrNew = case dataOrNew of DataType {} -> SymData; NewType {} -> SymNewType
