@@ -41,6 +41,8 @@ type MT = ModuleT Symbols IO
 
 main = defaultMain . testGroup "Tests" =<< tests
 
+goldenTest name = goldenVsFileDiff name (\ref new -> ["diff", "-u", ref, new])
+
 -- All tests are created in the same ModuleT session. This means that
 -- export tests are available for import in subsequent tests (because of
 -- the getIfaces call). However, import tests are not registered in the
@@ -67,7 +69,7 @@ getTestFiles dir = liftIO $ find (return True) (extension ==? ".hs") dir
 -----------------------------------------------------
 -- {{{
 exportTest file iface =
-  goldenVsFile file golden out run
+  goldenTest file golden out run
   where
     golden = file <.> "golden"
     out = file <.> "out"
@@ -95,7 +97,7 @@ exportTests = do
 -- {{{
 importTest :: FilePath -> Global.Table -> TestTree
 importTest file tbl =
-  goldenVsFile file golden out run
+  goldenTest file golden out run
   where
     golden = file <.> "golden"
     out = file <.> "out"
@@ -151,7 +153,7 @@ printAnns =
   in go
 
 -- Actual tests
-annotationTest file annotatedMod = goldenVsFile file golden out run
+annotationTest file annotatedMod = goldenTest file golden out run
   where
     golden = file <.> "golden"
     out = file <.> "out"
