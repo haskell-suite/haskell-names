@@ -45,13 +45,12 @@ getTopDeclSymbols mdl d =
   case d of
     TypeDecl _ dh _ ->
         let tn = hname dh
-        in  [ Right (SymType        { st_origName = qname tn, st_fixity = Nothing })]
+        in  [ Right (SymType        { st_origName = tn, st_fixity = Nothing })]
     TypeFamDecl _ dh _ ->
         let tn = hname dh
-        in  [ Right (SymTypeFam     { st_origName = qname tn, st_fixity = Nothing })]
+        in  [ Right (SymTypeFam     { st_origName = tn, st_fixity = Nothing })]
     DataDecl _ dataOrNew _ dh _ _ ->
-        let dn = hname dh
-            dq = qname dn
+        let dq = hname dh
             (cs, fs) = partition isCon $ getBound d
             as = cs ++ nub fs  -- Ignore multiple selectors for now
             dataOrNewCon = case dataOrNew of DataType {} -> SymData; NewType {} -> SymNewType
@@ -61,24 +60,22 @@ getTopDeclSymbols mdl d =
               Left  (SymSelector    { sv_origName = qname cn, sv_fixity = Nothing, sv_typeName = dq })
             | cn <- as ]
     GDataDecl _ dataOrNew _ dh _ _ _ ->
-        let dn = hname dh
-            cq = qname dn
+        let dq = hname dh
             (cs, fs) = partition isCon $ getBound d
             as = cs ++ nub fs  -- Ignore multiple selectors for now
             dataOrNewCon = case dataOrNew of DataType {} -> SymData; NewType {} -> SymNewType
-        in    Right (dataOrNewCon cq Nothing) :
+        in    Right (dataOrNewCon dq Nothing) :
             [ if isCon cn then
-              Left  (SymConstructor { sv_origName = qname cn, sv_fixity = Nothing, sv_typeName = cq }) else
-              Left  (SymSelector    { sv_origName = qname cn, sv_fixity = Nothing, sv_typeName = cq })
+              Left  (SymConstructor { sv_origName = qname cn, sv_fixity = Nothing, sv_typeName = dq }) else
+              Left  (SymSelector    { sv_origName = qname cn, sv_fixity = Nothing, sv_typeName = dq })
             | cn <- as ]
-    ClassDecl _ _ _ _ mds ->
+    ClassDecl _ _ dh _ mds ->
         let ms = getBound d
-            cn = getDeclHeadName d
-            cq = qname cn
+            cq = hname dh
             cdecls = fromMaybe [] mds
         in    Right (SymClass       { st_origName = cq,       st_fixity = Nothing }) :
-            [ Right (SymTypeFam     { st_origName = qname dn, st_fixity = Nothing }) | ClsTyFam   _   dh _ <- cdecls, let dn = hname dh ] ++
-            [ Right (SymDataFam     { st_origName = qname tn, st_fixity = Nothing }) | ClsDataFam _ _ dh _ <- cdecls, let tn = hname dh ] ++
+            [ Right (SymTypeFam     { st_origName = hname dh, st_fixity = Nothing }) | ClsTyFam   _   dh _ <- cdecls ] ++
+            [ Right (SymDataFam     { st_origName = hname dh, st_fixity = Nothing }) | ClsDataFam _ _ dh _ <- cdecls ] ++
             [ Left  (SymMethod      { sv_origName = qname mn, sv_fixity = Nothing, sv_className = cq }) | mn <- ms ]
     FunBind _ ms ->
         let vn : _ = getBound ms
@@ -90,5 +87,5 @@ getTopDeclSymbols mdl d =
     _ ->    []
   where ModuleName _ smdl = mdl
         qname = GName smdl . nameToString
-        hname = fst . splitDeclHead
+        hname = qname . fst . splitDeclHead
         toOrig = OrigName Nothing
