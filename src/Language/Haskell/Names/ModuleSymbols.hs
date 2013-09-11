@@ -1,18 +1,20 @@
+{-# LANGUAGE ScopedTypeVariables #-}
 module Language.Haskell.Names.ModuleSymbols
   ( moduleSymbols
   , moduleTable
   )
   where
 
-import Data.List
 import Data.Maybe
 import Data.Either
 import Data.Lens.Common
 import Data.Monoid
 import Data.Data
 import qualified Data.Set as Set
-import Language.Haskell.Exts.Annotated
+import qualified Data.Map as Map
+import Control.Monad
 
+import Language.Haskell.Exts.Annotated
 import Language.Haskell.Names.Types
 import qualified Language.Haskell.Names.GlobalSymbolTable as Global
 import Language.Haskell.Names.SyntaxUtils
@@ -34,9 +36,14 @@ moduleSymbols m =
     setL valSyms (Set.fromList vs) $
     setL tySyms  (Set.fromList ts) mempty
 
+type TypeName = GName
+type ConName = Name ()
+type SelectorName = Name ()
+type Constructors = [(ConName, [SelectorName])]
+
 -- Extract names that get bound by a top level declaration.
 getTopDeclSymbols
-  :: (Eq l, Data l)
+  :: forall l . (Eq l, Data l)
   => ModuleName l
   -> Decl l
   -> [Either (SymValueInfo OrigName) (SymTypeInfo OrigName)]
@@ -51,29 +58,37 @@ getTopDeclSymbols mdl d =
       let tn = hname dh
       in  [ Right (SymTypeFam     { st_origName = tn, st_fixity = Nothing })]
 
-    DataDecl _ dataOrNew _ dh _ _ ->
+    DataDecl _ dataOrNew _ dh qualConDecls _ ->
       let
-        dq = hname dh
-        (cs, fs) = partition isCon $ getBound d
-        as = cs ++ nub fs  -- Ignore multiple selectors for now
-      in
-        Right (dataOrNewCon dataOrNew dq Nothing) :
-        [ if isCon cn then
-          Left  (SymConstructor { sv_origName = qname cn, sv_fixity = Nothing, sv_typeName = dq }) else
-          Left  (SymSelector    { sv_origName = qname cn, sv_fixity = Nothing, sv_typeName = dq })
-        | cn <- as ]
+        cons :: Constructors
+        cons = do -- list monad
+          QualConDecl _ _ _ conDecl <- qualConDecls
+          case conDecl of
+            ConDecl _ n _ -> return (void n, [])
+            InfixConDecl _ _ n _ -> return (void n, [])
+            RecDecl _ n fields ->
+              return (void n , [void f | FieldDecl _ fNames _ <- fields, f <- fNames])
 
-    GDataDecl _ dataOrNew _ dh _ _ _ ->
+        dq = hname dh
+
+        infos = constructorsToInfos dq cons
+
+      in
+        Right (dataOrNewCon dataOrNew dq Nothing) : map Left infos
+
+    GDataDecl _ dataOrNew _ dh _ gadtDecls _ ->
+      -- As of 1.14.0, HSE doesn't support GADT records.
+      -- When it does, this code should be rewritten similarly to the
+      -- DataDecl case.
+      -- (Also keep in mind that GHC doesn't create selectors for fields
+      -- with existential type variables.)
       let
         dq = hname dh
-        (cs, fs) = partition isCon $ getBound d
-        as = cs ++ nub fs  -- Ignore multiple selectors for now
       in
-        Right (dataOrNewCon dataOrNew dq Nothing) :
-        [ if isCon cn then
-          Left  (SymConstructor { sv_origName = qname cn, sv_fixity = Nothing, sv_typeName = dq }) else
-          Left  (SymSelector    { sv_origName = qname cn, sv_fixity = Nothing, sv_typeName = dq })
-        | cn <- as ]
+          Right (dataOrNewCon dataOrNew dq Nothing) :
+        [ Left (SymConstructor { sv_origName = qname cn, sv_fixity = Nothing, sv_typeName = dq })
+        | GadtDecl _ cn _ <- gadtDecls
+        ]
 
     ClassDecl _ _ dh _ mds ->
       let
@@ -103,3 +118,22 @@ getTopDeclSymbols mdl d =
     hname = qname . fst . splitDeclHead
     toOrig = OrigName Nothing
     dataOrNewCon dataOrNew = case dataOrNew of DataType {} -> SymData; NewType {} -> SymNewType
+
+    constructorsToInfos :: TypeName -> Constructors -> [SymValueInfo GName]
+    constructorsToInfos ty cons = conInfos ++ selInfos
+      where
+        conInfos =
+          [ SymConstructor { sv_origName = qname con, sv_fixity = Nothing, sv_typeName = ty }
+          | (con, _) <- cons
+          ]
+
+        selectorsMap :: Map.Map SelectorName [ConName]
+        selectorsMap =
+          Map.unionsWith (++) . flip map cons $ \(c, fs) ->
+            Map.unionsWith (++) . flip map fs $ \f ->
+              Map.singleton f [c]
+
+        selInfos =
+          [ (SymSelector { sv_origName = qname f, sv_fixity = Nothing, sv_typeName = ty, sv_constructors = map qname fCons })
+          | (f, fCons) <- Map.toList selectorsMap
+          ]
