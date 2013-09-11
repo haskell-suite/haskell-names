@@ -96,6 +96,13 @@ Table (
                                                 "Prelude"
                                                 "DataTypeWithSelectors"
                                 }
+              , sv_constructors = [ OrigName
+                                      { origPackage = Nothing
+                                      , origGName = GName
+                                                      "Prelude"
+                                                      "DataTypeWithSelectors"
+                                      }
+                                  ]
               }
           ]
       )
@@ -195,6 +202,13 @@ Table (
                                                 "Prelude"
                                                 "DataTypeWithSelectors"
                                 }
+              , sv_constructors = [ OrigName
+                                      { origPackage = Nothing
+                                      , origGName = GName
+                                                      "Prelude"
+                                                      "DataTypeWithSelectors"
+                                      }
+                                  ]
               }
           ]
       )

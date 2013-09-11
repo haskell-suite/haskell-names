@@ -29,6 +29,13 @@ Symbols (
                                           "ExportListWildcards"
                                           "Foo"
                           }
+        , sv_constructors = [ OrigName
+                                { origPackage = Nothing
+                                , origGName = GName
+                                                "ExportListWildcards"
+                                                "Foo3"
+                                }
+                            ]
         }
     , SymSelector
         { sv_origName = OrigName
@@ -44,6 +51,13 @@ Symbols (
                                           "ExportListWildcards"
                                           "N"
                           }
+        , sv_constructors = [ OrigName
+                                { origPackage = Nothing
+                                , origGName = GName
+                                                "ExportListWildcards"
+                                                "N"
+                                }
+                            ]
         }
     , SymConstructor
         { sv_origName = OrigName

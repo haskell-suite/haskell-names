@@ -23,6 +23,13 @@ Symbols (
                                           "ExportList2"
                                           "A"
                           }
+        , sv_constructors = [ OrigName
+                                { origPackage = Nothing
+                                , origGName = GName
+                                                "ExportList2"
+                                                "A"
+                                }
+                            ]
         }
     ] ) (
   fromList [] )

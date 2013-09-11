@@ -62,6 +62,13 @@ Symbols (
                                           "Prelude"
                                           "DataTypeWithSelectors"
                           }
+        , sv_constructors = [ OrigName
+                                { origPackage = Nothing
+                                , origGName = GName
+                                                "Prelude"
+                                                "DataTypeWithSelectors"
+                                }
+                            ]
         }
     , SymSelector
         { sv_origName = OrigName
@@ -77,6 +84,13 @@ Symbols (
                                           "Prelude"
                                           "DataTypeWithSelectors"
                           }
+        , sv_constructors = [ OrigName
+                                { origPackage = Nothing
+                                , origGName = GName
+                                                "Prelude"
+                                                "DataTypeWithSelectors"
+                                }
+                            ]
         }
     , SymSelector
         { sv_origName = OrigName
@@ -92,6 +106,13 @@ Symbols (
                                           "Prelude"
                                           "NewtypeWithSelectors"
                           }
+        , sv_constructors = [ OrigName
+                                { origPackage = Nothing
+                                , origGName = GName
+                                                "Prelude"
+                                                "NewtypeWithSelectors"
+                                }
+                            ]
         }
     , SymConstructor
         { sv_origName = OrigName
