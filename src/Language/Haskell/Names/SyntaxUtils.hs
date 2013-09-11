@@ -21,10 +21,8 @@ module Language.Haskell.Names.SyntaxUtils
   ) where
 import Prelude hiding (concatMap)
 import Data.Char
-import Data.Data
 import Data.Maybe
 import Data.Either
-import Data.Generics.Uniplate.Data
 import Data.Foldable
 import qualified Data.Set as Set
 import Language.Haskell.Exts.Annotated
