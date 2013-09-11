@@ -29,6 +29,12 @@ Symbols (
                                                 "ExportList2"
                                                 "A"
                                 }
+                            , OrigName
+                                { origPackage = Nothing
+                                , origGName = GName
+                                                "ExportList2"
+                                                "B"
+                                }
                             ]
         }
     ] ) (
