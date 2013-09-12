@@ -39,6 +39,10 @@ qualifySymbols pkg (Symbols vals tys) =
 
 computeSymbolTable
   :: Bool
+    -- ^ If 'True' (\"qualified\"), then only the qualified names are
+    -- inserted.
+    --
+    -- If 'False', then both qualified and unqualified names are insterted.
   -> ModuleName l
   -> Symbols
   -> Global.Table
