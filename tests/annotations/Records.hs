@@ -1,6 +1,8 @@
 {-# LANGUAGE NamedFieldPuns, RecordWildCards #-}
 module Records where
 
+import qualified Prelude
+
 data A = A { b :: A, c :: A }
 
 undefined = undefined
@@ -34,3 +36,7 @@ tm = let b = 1; v = 2 in A { b, c = v }
 
 -- simple wildcard pattern
 f A { .. } = (b, c)
+
+-- top-level wildcard pattern
+Prelude.DataTypeWithSelectors { .. } = undefined
+aux = (selector1,selector2)
