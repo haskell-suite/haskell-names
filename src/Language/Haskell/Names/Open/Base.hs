@@ -69,9 +69,11 @@ rmap f sc =
   in runIdentity . flip rtraverse sc
 
 intro :: (SrcInfo l, GetBound a l) => a -> Scope -> Scope
-intro node =
-  modL lTable $
-    \tbl -> foldl' (flip Local.addValue) tbl $ getBound node
+intro node sc =
+  modL lTable
+    (\tbl -> foldl' (flip Local.addValue) tbl $
+      getBoundCtx (sc ^. gTable) node)
+    sc
 
 setNameCtx :: NameContext -> Scope -> Scope
 setNameCtx ctx = setL nameCtx ctx
