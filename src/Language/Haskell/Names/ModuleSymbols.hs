@@ -21,16 +21,33 @@ import Language.Haskell.Names.SyntaxUtils
 import Language.Haskell.Names.ScopeUtils
 import Language.Haskell.Names.GetBound
 
-moduleTable :: (Eq l, Data l) => Module l -> Global.Table
-moduleTable m =
-  computeSymbolTable False (getModuleName m) (moduleSymbols m)
+-- | Compute module's global table. It contains both the imported entities
+-- and the global entities defined in this module.
+moduleTable
+  :: (Eq l, Data l)
+  => Global.Table -- ^ the import table for this module
+  -> Module l
+  -> Global.Table
+moduleTable impTbl m =
+  impTbl <>
+  computeSymbolTable False (getModuleName m) (moduleSymbols impTbl m)
 
-moduleSymbols :: (Eq l, Data l) => Module l -> Symbols
-moduleSymbols m =
+-- | Compute the symbols that are defined in the given module.
+--
+-- The import table is needed to resolve possible top-level record
+-- wildcard bindings, such as
+--
+-- >A {..} = foo
+moduleSymbols
+  :: (Eq l, Data l)
+  => Global.Table -- ^ the import table for this module
+  -> Module l
+  -> Symbols
+moduleSymbols impTbl m =
   let (vs,ts) =
         partitionEithers $
           concatMap
-            (getTopDeclSymbols $ getModuleName m)
+            (getTopDeclSymbols impTbl $ getModuleName m)
             (getModuleDecls m)
   in
     setL valSyms (Set.fromList vs) $
@@ -44,10 +61,11 @@ type Constructors = [(ConName, [SelectorName])]
 -- Extract names that get bound by a top level declaration.
 getTopDeclSymbols
   :: forall l . (Eq l, Data l)
-  => ModuleName l
+  => Global.Table -- ^ the import table for this module
+  -> ModuleName l
   -> Decl l
   -> [Either (SymValueInfo OrigName) (SymTypeInfo OrigName)]
-getTopDeclSymbols mdl d =
+getTopDeclSymbols impTbl mdl d =
   map (either (Left . fmap toOrig) (Right . fmap toOrig)) $
   case d of
     TypeDecl _ dh _ ->
@@ -92,7 +110,7 @@ getTopDeclSymbols mdl d =
 
     ClassDecl _ _ dh _ mds ->
       let
-        ms = getBound d
+        ms = getBoundCtx impTbl d
         cq = hname dh
         cdecls = fromMaybe [] mds
       in
@@ -102,11 +120,11 @@ getTopDeclSymbols mdl d =
         [ Left  (SymMethod  { sv_origName = qname mn, sv_fixity = Nothing, sv_className = cq }) | mn <- ms ]
 
     FunBind _ ms ->
-      let vn : _ = getBound ms
+      let vn : _ = getBoundCtx impTbl ms
       in  [ Left  (SymValue { sv_origName = qname vn, sv_fixity = Nothing }) ]
 
     PatBind _ p _ _ _ ->
-      [ Left  (SymValue { sv_origName = qname vn, sv_fixity = Nothing }) | vn <- getBound p ]
+      [ Left  (SymValue { sv_origName = qname vn, sv_fixity = Nothing }) | vn <- getBoundCtx impTbl p ]
 
     ForImp _ _ _ _ fn _ ->
       [ Left  (SymValue { sv_origName = qname fn, sv_fixity = Nothing }) ]

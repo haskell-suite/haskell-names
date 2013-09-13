@@ -24,7 +24,7 @@ processExports
 processExports tbl m =
   case getExportSpecList m of
     Nothing ->
-      return (Nothing, moduleSymbols m)
+      return (Nothing, moduleSymbols tbl m)
     Just exp ->
       liftM (first Just) $ resolveExportSpecList tbl exp
 

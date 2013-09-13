@@ -51,8 +51,7 @@ annotateModule
 annotateModule lang exts mod@(Module lm mh os is ds) = do
   let extSet = moduleExtensions lang exts mod
   (imp, impTbl) <- processImports extSet is
-  let ownTbl = moduleTable mod
-      tbl = impTbl <> ownTbl
+  let tbl = moduleTable impTbl mod
   (exp, _syms) <- processExports tbl mod
 
   let
@@ -86,8 +85,7 @@ findFixPoint mods = go mods (map (const mempty) mods) where
     forM_ (zip syms mods) $ \(s,(m, _)) -> insertInCache (getModuleName m) s
     (syms', errors) <- liftM unzip $ forM mods $ \(m, extSet) -> do
       (imp, impTbl) <- processImports extSet $ getImports m
-      let ownTbl = moduleTable m
-          tbl = impTbl <> ownTbl
+      let tbl = moduleTable impTbl m
       (exp, syms) <- processExports tbl m
       return (syms, foldMap getErrors imp <> foldMap getErrors exp)
     if syms' == syms
