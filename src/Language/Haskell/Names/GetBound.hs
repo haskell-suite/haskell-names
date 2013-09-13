@@ -2,7 +2,7 @@
              FlexibleInstances, UndecidableInstances, NamedFieldPuns,
              ScopedTypeVariables #-}
 module Language.Haskell.Names.GetBound
-  ( GetBound(..) -- FIXME don't export getBound
+  ( GetBound(..)
   ) where
 
 import Data.Generics.Uniplate.Data
@@ -19,111 +19,102 @@ import Language.Haskell.Names.SyntaxUtils
 import qualified Language.Haskell.Names.GlobalSymbolTable as Global
 
 -- | Get bound value identifiers.
-
--- Minimal definition: either 'getBound' or 'getBoundCtx'.
---
--- Note that 'getBound' may be undefined for some instances, so the client
--- code should always call 'getBoundCtx'. 'getBound' is only provided for
--- a more convenient way to write instances. And since all instances are
--- defined in this module, we don't even export 'getBound'.
 class GetBound a l | a -> l where
-    getBound :: a -> [Name l]
-    getBound = error "getBound is called directly. Call getBoundCtx instead"
-
-    -- | 'getBoundCtx' is needed to resolve record wildcards. There we
-    -- need to know which fields the given constructor has. So we pass the
-    -- global table for that.
-    getBoundCtx :: Global.Table -> a -> [Name l]
-    -- default definition: ignore the context
-    getBoundCtx _ = getBound
+    -- | For record wildcards we need to know which fields the given
+    -- constructor has. So we pass the global table for that.
+    getBound :: Global.Table -> a -> [Name l]
 
 -- XXX account for shadowing?
 instance (GetBound a l) => GetBound [a] l where
-    getBound xs = concatMap getBound xs
+    getBound ctx xs = concatMap (getBound ctx) xs
 
 instance (GetBound a l) => GetBound (Maybe a) l where
-    getBound Nothing = []
-    getBound (Just x) = getBound x
+    getBound ctx = maybe [] (getBound ctx)
 
 instance (GetBound a l, GetBound b l) => GetBound (a, b) l where
-    getBound (a, b) = getBound a ++ getBound b
+    getBound ctx (a, b) = getBound ctx a ++ getBound ctx b
 
 instance (Data l) => GetBound (Binds l) l where
-    getBound (BDecls _ ds) = getBound ds
-    getBound (IPBinds _ _) = []  -- XXX doesn't bind regular identifiers
+    getBound ctx e = case e of
+      BDecls _ ds -> getBound ctx ds
+      IPBinds _ _ -> []  -- XXX doesn't bind regular identifiers
 
 instance (Data l) => GetBound (Decl l) l where
-    getBound (TypeDecl{}) = []
-    getBound (TypeFamDecl{}) = []
-    getBound (DataDecl _ _ _ _ ds _) = getBound ds
-    getBound (GDataDecl _ _ _ _ _ ds _) = getBound ds
-    getBound (DataFamDecl{}) = []
-    getBound (TypeInsDecl{}) = []
-    getBound (DataInsDecl _ _ _ ds _) = getBound ds
-    getBound (GDataInsDecl _ _ _ _ ds _) = getBound ds
-    getBound (ClassDecl _ _ _ _ mds) = getBound mds
-    getBound (InstDecl{}) = []
-    getBound (DerivDecl{}) = []
-    getBound (InfixDecl{}) = []
-    getBound (DefaultDecl{}) = []
-    getBound (SpliceDecl{}) = []
-    getBound (TypeSig{}) = []
-    getBound (FunBind _ []) = error "getBound: FunBind []"
-    getBound (FunBind _ (Match _ n _ _ _ : _)) = [n]
-    getBound (FunBind _ (InfixMatch _ _ n _ _ _ : _)) = [n]
-    getBound (PatBind _ p _ _ _) = getBound p
-    getBound (ForImp _ _ _ _ n _) = [n]
-    getBound (ForExp _ _ _ n _) = [n]
-    getBound (RulePragmaDecl{}) = []
-    getBound (DeprPragmaDecl{}) = []
-    getBound (WarnPragmaDecl{}) = []
-    getBound (InlineSig{}) = []
-    getBound (SpecSig{}) = []
-    getBound (SpecInlineSig{}) = []
-    getBound (InstSig{}) = []
-    getBound (AnnPragma{}) = []
-    getBound (InlineConlikeSig{}) = []
+    getBound ctx e = case e of
+      TypeDecl{} -> []
+      TypeFamDecl{} -> []
+      DataDecl _ _ _ _ ds _ -> getBound ctx ds
+      GDataDecl _ _ _ _ _ ds _ -> getBound ctx ds
+      DataFamDecl{} -> []
+      TypeInsDecl{} -> []
+      DataInsDecl _ _ _ ds _ -> getBound ctx ds
+      GDataInsDecl _ _ _ _ ds _ -> getBound ctx ds
+      ClassDecl _ _ _ _ mds -> getBound ctx mds
+      InstDecl{} -> []
+      DerivDecl{} -> []
+      InfixDecl{} -> []
+      DefaultDecl{} -> []
+      SpliceDecl{} -> []
+      TypeSig{} -> []
+      FunBind _ [] -> error "getBound: FunBind []"
+      FunBind _ (Match _ n _ _ _ : _) -> [n]
+      FunBind _ (InfixMatch _ _ n _ _ _ : _) -> [n]
+      PatBind _ p _ _ _ -> getBound ctx p
+      ForImp _ _ _ _ n _ -> [n]
+      ForExp _ _ _ n _ -> [n]
+      RulePragmaDecl{} -> []
+      DeprPragmaDecl{} -> []
+      WarnPragmaDecl{} -> []
+      InlineSig{} -> []
+      SpecSig{} -> []
+      SpecInlineSig{} -> []
+      InstSig{} -> []
+      AnnPragma{} -> []
+      InlineConlikeSig{} -> []
 
 instance (Data l) => GetBound (QualConDecl l) l where
-    getBound (QualConDecl _ _ _ d) = getBound d
+    getBound ctx (QualConDecl _ _ _ d) = getBound ctx d
 
 instance (Data l) => GetBound (GadtDecl l) l where
-    getBound (GadtDecl _ n _) = [n]
+    getBound _ctx (GadtDecl _ n _) = [n]
 
 instance (Data l) => GetBound (ConDecl l) l where
-    getBound (ConDecl _ n _) = [n]
-    getBound (InfixConDecl _ _ n _) = [n]
-    getBound (RecDecl _ n fs) = n : getBound fs
+    getBound ctx e = case e of
+      ConDecl _ n _ -> [n]
+      InfixConDecl _ _ n _ -> [n]
+      RecDecl _ n fs -> n : getBound ctx fs
 
 instance (Data l) => GetBound (FieldDecl l) l where
-    getBound (FieldDecl _ ns _) = ns
+    getBound _ctx (FieldDecl _ ns _) = ns
 
 instance (Data l) => GetBound (ClassDecl l) l where
-    getBound (ClsDecl _ d) = getBoundSign d
-    getBound (ClsDataFam{}) = []
-    getBound (ClsTyFam{}) = []
-    getBound (ClsTyDef{}) = []
+    getBound _ctx e = case e of
+      ClsDecl _ d -> getBoundSign d
+      ClsDataFam{} -> []
+      ClsTyFam{} -> []
+      ClsTyDef{} -> []
 
 instance (Data l) => GetBound (Match l) l where
-    getBound (Match _ n _ _ _) = [n]
-    getBound (InfixMatch _ _ n _ _ _) = [n]
+    getBound _ctx e = case e of
+      Match _ n _ _ _ -> [n]
+      InfixMatch _ _ n _ _ _ -> [n]
 
 instance (Data l) => GetBound (Stmt l) l where
-  getBound e =
+  getBound ctx e =
     case e of
-      Generator _ pat _ -> getBound pat
-      LetStmt _ bnds    -> getBound bnds
-      RecStmt _ stmts   -> getBound stmts
+      Generator _ pat _ -> getBound ctx pat
+      LetStmt _ bnds    -> getBound ctx bnds
+      RecStmt _ stmts   -> getBound ctx stmts
       Qualifier {} -> []
 
 instance (Data l) => GetBound (QualStmt l) l where
-  getBound e =
+  getBound ctx e =
     case e of
-      QualStmt _ stmt -> getBound stmt
+      QualStmt _ stmt -> getBound ctx stmt
       _ -> []
 
 instance (Data l) => GetBound (Pat l) l where
-  getBoundCtx gt p =
+  getBound gt p =
     [ n | p' <- universe $ transform dropExp p, n <- varp p' ]
 
     where

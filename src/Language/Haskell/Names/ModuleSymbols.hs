@@ -110,7 +110,7 @@ getTopDeclSymbols impTbl mdl d =
 
     ClassDecl _ _ dh _ mds ->
       let
-        ms = getBoundCtx impTbl d
+        ms = getBound impTbl d
         cq = hname dh
         cdecls = fromMaybe [] mds
       in
@@ -120,11 +120,11 @@ getTopDeclSymbols impTbl mdl d =
         [ Left  (SymMethod  { sv_origName = qname mn, sv_fixity = Nothing, sv_className = cq }) | mn <- ms ]
 
     FunBind _ ms ->
-      let vn : _ = getBoundCtx impTbl ms
+      let vn : _ = getBound impTbl ms
       in  [ Left  (SymValue { sv_origName = qname vn, sv_fixity = Nothing }) ]
 
     PatBind _ p _ _ _ ->
-      [ Left  (SymValue { sv_origName = qname vn, sv_fixity = Nothing }) | vn <- getBoundCtx impTbl p ]
+      [ Left  (SymValue { sv_origName = qname vn, sv_fixity = Nothing }) | vn <- getBound impTbl p ]
 
     ForImp _ _ _ _ fn _ ->
       [ Left  (SymValue { sv_origName = qname fn, sv_fixity = Nothing }) ]

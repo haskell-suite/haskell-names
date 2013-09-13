@@ -72,7 +72,7 @@ intro :: (SrcInfo l, GetBound a l) => a -> Scope -> Scope
 intro node sc =
   modL lTable
     (\tbl -> foldl' (flip Local.addValue) tbl $
-      getBoundCtx (sc ^. gTable) node)
+      getBound (sc ^. gTable) node)
     sc
 
 setNameCtx :: NameContext -> Scope -> Scope
