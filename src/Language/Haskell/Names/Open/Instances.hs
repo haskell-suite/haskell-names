@@ -161,8 +161,9 @@ instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (PatField l) where
         c PFieldPun
           <| sc -: l
           <| binderV sc -: n
-      -- FIXME
-      _ -> defaultRtraverse e sc
+      -- In future we might want to annotate PFieldWildcard with the names
+      -- it introduces.
+      PFieldWildcard {} -> defaultRtraverse e sc
 
 -- | Chain a sequence of nodes where every node may introduce some
 -- variables into scope for the subsequent nodes. Examples: patterns (see
