@@ -1,5 +1,5 @@
 NamedFieldPuns at 1:14 is none
-RecordWildcards at 1:30 is none
+RecordWildCards at 1:30 is none
 A        at  4:6 is a type or class defined here
 A        at 4:10 is a value bound here
 b        at 4:14 is a value bound here
@@ -69,3 +69,10 @@ c        at 29:33 is a global selector, Records.c
 c        at 29:33 is a global selector, Records.c
 v        at 29:37 is a local value defined at 29:17
 v        at 29:37 is a local value defined at 29:17
+f        at 36:1 is a value bound here
+A        at 36:3 is a global constructor, Records.A
+A        at 36:3 is a global constructor, Records.A
+b        at 36:15 is a local value defined at 36:7
+b        at 36:15 is a local value defined at 36:7
+c        at 36:18 is a local value defined at 36:7
+c        at 36:18 is a local value defined at 36:7

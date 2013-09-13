@@ -1,4 +1,4 @@
-{-# LANGUAGE NamedFieldPuns, RecordWildcards #-}
+{-# LANGUAGE NamedFieldPuns, RecordWildCards #-}
 module Records where
 
 data A = A { b :: A, c :: A }
@@ -31,3 +31,6 @@ tm = let b = 1; v = 2 in A { b, c = v }
 -- stripping module name
 -- (not supported by HSE yet)
 {- f A { M.b } = b -}
+
+-- simple wildcard pattern
+f A { .. } = (b, c)
