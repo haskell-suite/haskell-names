@@ -266,6 +266,22 @@ instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (Exp l) where
           <| sc -: pat
           <| scWithPat -: e
 
+      RecConstr l qn fields ->
+        let
+          scWc =
+            setWcNames
+              (expWcNames
+                (sc ^. gTable)
+                (sc ^. lTable)
+                qn
+                fields)
+              sc
+        in
+        c RecConstr
+          <| sc   -: l
+          <| sc   -: qn
+          <| scWc -: fields
+
       _ -> defaultRtraverse e sc
 
 instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (Alt l) where

@@ -12,6 +12,7 @@ import Language.Haskell.Exts.Annotated
 import Language.Haskell.Names.Types
 import Language.Haskell.Names.SyntaxUtils
 import qualified Language.Haskell.Names.GlobalSymbolTable as Global
+import qualified Language.Haskell.Names.LocalSymbolTable as Local
 
 -- | Information about the names being introduced by a record wildcard
 --
@@ -79,6 +80,13 @@ nameOfPatField pf =
     PFieldPun _ n -> Just n
     PFieldWildcard {} -> Nothing
 
+nameOfUpdField :: FieldUpdate l -> Maybe (Name l)
+nameOfUpdField pf =
+  case pf of
+    FieldUpdate _ qn _ -> Just $ qNameToName qn
+    FieldPun _ n -> Just n
+    FieldWildcard {} -> Nothing
+
 patWcNames
   :: Global.Table
   -> QName l
@@ -89,3 +97,23 @@ patWcNames gt con patfs =
   Map.toList $
   getElidedFields gt con $
   mapMaybe nameOfPatField patfs
+
+expWcNames
+  :: Global.Table
+  -> Local.Table
+  -> QName l
+  -> [FieldUpdate l]
+  -> WcNames
+expWcNames gt lt con patfs =
+  map swap $
+  filter (isInScope . fst) $
+  Map.toList $
+  getElidedFields gt con $
+  mapMaybe nameOfUpdField patfs
+  where
+    isInScope name
+      | Global.Result {} <- Global.lookupValue qn gt = True
+      | Right {} <- Local.lookupValue qn lt = True
+      | otherwise = False
+      where
+        qn = UnQual () (void name)

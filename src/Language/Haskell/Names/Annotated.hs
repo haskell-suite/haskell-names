@@ -20,6 +20,7 @@ import Data.Proxy
 import Data.Lens.Common
 import Data.Typeable
 import Control.Applicative
+import Control.Arrow
 
 -- This should be incorporated into Data.Typeable soon
 import Type.Eq
@@ -52,6 +53,14 @@ annotateRec _ sc a = go sc a where
     | Just (Eq :: FieldUpdate (Scoped l) :~: a) <- dynamicEq
       = case a of
           FieldPun l n -> FieldPun l (lookupUnqualValue n sc <$ n)
+          FieldWildcard l ->
+            let
+              namesUnres = sc ^. wcNames
+              resolve n =
+                let Scoped info _ = lookupValue (sLoc l <$ UnQual () n) sc
+                in info
+              namesRes = map (second resolve) namesUnres
+            in FieldWildcard $ Scoped (RecExpWildcard namesRes) (sLoc l)
           _ -> rmap go sc a
     | Just (Eq :: PatField (Scoped l) :~: a) <- dynamicEq
     , PFieldWildcard l <- a

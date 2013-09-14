@@ -177,6 +177,10 @@ data NameInfo l
     | RecPatWildcard [OrigName]
       -- ^ wildcard in a record pattern. The list contains resolved names
       -- of the fields that are brought in scope by this pattern.
+    | RecExpWildcard [(OrigName, NameInfo l)]
+      -- ^ wildcard in a record construction expression. The list contains
+      -- resolved names of the fields and information about values
+      -- assigned to those fields.
     | None
       -- ^ no annotation
     | ScopeError  (Error l)
