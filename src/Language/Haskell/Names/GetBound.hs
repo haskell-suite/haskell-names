@@ -16,6 +16,7 @@ import Control.Applicative
 import Language.Haskell.Exts.Annotated
 import Language.Haskell.Names.Types
 import Language.Haskell.Names.SyntaxUtils
+import Language.Haskell.Names.RecordWildcards
 import qualified Language.Haskell.Names.GlobalSymbolTable as Global
 
 -- | Get bound value identifiers.
@@ -125,60 +126,20 @@ instance (Data l) => GetBound (Pat l) l where
       varp (PRec _ con fs) =
         [ n
         | -- (lazily) compute elided fields for the case when 'f' below is a wildcard
-          let elidedFields = getElidedFields con fs
+          let elidedFields = Map.keys $ getElidedFields gt con fs
         , f <- fs
         , n <- getRecVars elidedFields f
         ]
       varp _ = []
 
-      getElidedFields :: QName l -> [PatField l] -> Set.Set (Name ())
-      getElidedFields con patfs =
-        let
-          givenFieldNames :: Set.Set (Name ())
-          givenFieldNames =
-            Set.fromList . map void . flip mapMaybe patfs $ \pf ->
-              case pf of
-                PFieldPat _ qn _ -> Just $ qNameToName qn
-                PFieldPun _ n -> Just n
-                PFieldWildcard {} -> Nothing
-
-          -- FIXME must report error when the constructor cannot be
-          -- resolved
-          mbConOrigName =
-            case Global.lookupValue con gt of
-              Global.Result info@SymConstructor{} -> Just $ sv_origName info
-              _ -> Nothing
-
-          allValueInfos :: Set.Set (SymValueInfo OrigName)
-          allValueInfos = Set.unions $ Map.elems $ Global.values gt
-
-          ourFieldInfos :: Set.Set (SymValueInfo OrigName)
-          ourFieldInfos =
-            case mbConOrigName of
-              Nothing -> Set.empty
-              Just conOrigName ->
-                flip Set.filter allValueInfos $ \v ->
-                  case v of
-                    SymSelector { sv_constructors }
-                      | conOrigName `elem` sv_constructors -> True
-                    _ -> False
-
-          ourFieldNames :: Set.Set (Name ())
-          ourFieldNames =
-            Set.map
-              (stringToName . (\(GName _ n) -> n) . origGName . sv_origName)
-              ourFieldInfos
-
-        in ourFieldNames `Set.difference` givenFieldNames
-
       -- must remove nested Exp so universe doesn't descend into them
       dropExp (PViewPat _ _ x) = x
       dropExp x = x
 
-      getRecVars :: Set.Set (Name ()) -> PatField l -> [Name l]
+      getRecVars :: [Name ()] -> PatField l -> [Name l]
       getRecVars _ PFieldPat {} = [] -- this is already found by the generic algorithm
       getRecVars _ (PFieldPun _ n) = [n]
-      getRecVars elidedFields (PFieldWildcard l) = map (l <$) $ Set.toList elidedFields
+      getRecVars elidedFields (PFieldWildcard l) = map (l <$) elidedFields
 
 getBoundSign :: Decl l -> [Name l]
 getBoundSign (TypeSig _ ns _) = ns

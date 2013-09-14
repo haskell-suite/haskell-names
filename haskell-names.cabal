@@ -277,6 +277,7 @@ Library
                         Language.Haskell.Names.Open.Derived
                         Language.Haskell.Names.Recursive
                         Language.Haskell.Names.Types
+                        Language.Haskell.Names.RecordWildcards
                         Language.Haskell.Names.ScopeUtils
                         Paths_haskell_names
 

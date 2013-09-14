@@ -4,8 +4,8 @@ module Language.Haskell.Names.Open.Base where
 
 import qualified Language.Haskell.Names.GlobalSymbolTable as Global
 import qualified Language.Haskell.Names.LocalSymbolTable as Local
-import Language.Haskell.Names.Types
 import Language.Haskell.Names.GetBound
+import Language.Haskell.Names.RecordWildcards
 import Language.Haskell.Exts.Annotated
 import Control.Applicative
 import Control.Monad.Identity
@@ -22,19 +22,6 @@ data NameContext
   | ReferenceT
   | ReferenceV
   | Other -- ^ we don't expect names in this context
-
--- | Information about the names being introduced by a record wildcard
---
--- Non-trivial values of this type are created when we process a record
--- pattern or construction, and are used when we reach the wildcard itself.
---
--- If this is 'Nothing', then we don't expect a wildcard.
---
--- If it's 'Just', then it contains, for each wildcard field, the OrigName
--- of the selector and the Name which is either introduced (in case of the
--- pattern) or referenced (in case of the expression). This is redundant,
--- but convenient.
-type WcNames = Maybe [(OrigName, Name ())]
 
 data Scope = Scope
   { _gTable :: Global.Table
