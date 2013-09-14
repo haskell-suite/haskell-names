@@ -7,15 +7,9 @@ module Language.Haskell.Names.GetBound
 
 import Data.Generics.Uniplate.Data
 import Data.Data
-import qualified Data.Map as Map
-import qualified Data.Set as Set
-import Data.Maybe
-import Control.Monad
 import Control.Applicative
 
 import Language.Haskell.Exts.Annotated
-import Language.Haskell.Names.Types
-import Language.Haskell.Names.SyntaxUtils
 import Language.Haskell.Names.RecordWildcards
 import qualified Language.Haskell.Names.GlobalSymbolTable as Global
 
@@ -126,7 +120,7 @@ instance (Data l) => GetBound (Pat l) l where
       varp (PRec _ con fs) =
         [ n
         | -- (lazily) compute elided fields for the case when 'f' below is a wildcard
-          let elidedFields = Map.keys $ getElidedFields gt con fs
+          let elidedFields = map snd $ patWcNames gt con fs
         , f <- fs
         , n <- getRecVars elidedFields f
         ]

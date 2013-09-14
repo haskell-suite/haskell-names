@@ -15,31 +15,27 @@ import qualified Language.Haskell.Names.GlobalSymbolTable as Global
 
 -- | Information about the names being introduced by a record wildcard
 --
--- Non-trivial values of this type are created when we process a record
--- pattern or construction, and are used when we reach the wildcard itself.
+-- During resolving traversal, we always (lazily) construct this list when
+-- we process PRec or RecConstr, even if it doesn't contain a wildcard.
 --
--- If this is 'Nothing', then we don't expect a wildcard.
+-- Then, if the pattern or construction actually contains a wildcard, we use the computed value.
 --
--- If it's 'Just', then it contains, for each wildcard field, the OrigName
--- of the selector and the Name which is either introduced (in case of the
--- pattern) or referenced (in case of the expression). This is redundant,
--- but convenient.
-type WcNames = Maybe [(OrigName, Name ())]
+-- It contains, for each wildcard field, the OrigName of the selector and
+-- the Name which is either introduced (in case of the pattern) or
+-- referenced (in case of the expression). This is redundant, but
+-- convenient.
+type WcNames = [(OrigName, Name ())]
 
 getElidedFields
   :: Global.Table
   -> QName l
-  -> [PatField l]
+  -> [Name l] -- mentioned field names
   -> Map.Map (Name ()) OrigName
-getElidedFields gt con patfs =
+getElidedFields gt con fields =
   let
     givenFieldNames :: Map.Map (Name ()) ()
     givenFieldNames =
-      Map.fromList . map ((, ()) . void) . flip mapMaybe patfs $ \pf ->
-        case pf of
-          PFieldPat _ qn _ -> Just $ qNameToName qn
-          PFieldPun _ n -> Just n
-          PFieldWildcard {} -> Nothing
+      Map.fromList . map ((, ()) . void) $ fields
 
     -- FIXME must report error when the constructor cannot be
     -- resolved
@@ -76,19 +72,20 @@ getElidedFields gt con patfs =
 
   in ourFieldNames `Map.difference` givenFieldNames
 
+nameOfPatField :: PatField l -> Maybe (Name l)
+nameOfPatField pf =
+  case pf of
+    PFieldPat _ qn _ -> Just $ qNameToName qn
+    PFieldPun _ n -> Just n
+    PFieldWildcard {} -> Nothing
+
 patWcNames
   :: Global.Table
   -> QName l
   -> [PatField l]
   -> WcNames
-patWcNames gt con patfs {- scope ommitted -} =
-  if any isWildcard patfs
-    then Just wcNames
-    else Nothing
-
-  where
-    isWildcard :: PatField l -> Bool
-    isWildcard PFieldWildcard {} = True
-    isWildcard _ = False
-
-    wcNames = map swap $ Map.toList $ getElidedFields gt con patfs
+patWcNames gt con patfs =
+  map swap $
+  Map.toList $
+  getElidedFields gt con $
+  mapMaybe nameOfPatField patfs

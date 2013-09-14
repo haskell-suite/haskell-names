@@ -33,7 +33,7 @@ data Scope = Scope
 makeLens ''Scope
 
 initialScope :: Global.Table -> Scope
-initialScope tbl = Scope tbl Local.empty Other Nothing
+initialScope tbl = Scope tbl Local.empty Other []
 
 newtype Alg w = Alg
   { runAlg :: forall d . Resolvable d => d -> Scope -> w d }
