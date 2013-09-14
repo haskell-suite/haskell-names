@@ -72,12 +72,14 @@ v        at 31:37 is a local value defined at 31:17
 f        at 38:1 is a value bound here
 A        at 38:3 is a global constructor, Records.A
 A        at 38:3 is a global constructor, Records.A
+..       at 38:7 is a record pattern wildcard which brings the following fields: Records.b, Records.c
 b        at 38:15 is a local value defined at 38:7
 b        at 38:15 is a local value defined at 38:7
 c        at 38:18 is a local value defined at 38:7
 c        at 38:18 is a local value defined at 38:7
 DataTypeWithSelectors at 41:1 is a global constructor, Prelude.DataTypeWithSelectors
 DataTypeWithSelectors at 41:1 is a global constructor, Prelude.DataTypeWithSelectors
+..       at 41:33 is a record pattern wildcard which brings the following fields: Prelude.selector1, Prelude.selector2
 undefined at 41:40 is a global value, Records.undefined
 undefined at 41:40 is a global value, Records.undefined
 aux      at 42:1 is a value bound here
