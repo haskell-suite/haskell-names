@@ -91,7 +91,7 @@ intro node sc =
     sc
 
 setNameCtx :: NameContext -> Scope -> Scope
-setNameCtx ctx = setL nameCtx ctx
+setNameCtx = setL nameCtx
 
 setWcNames :: WcNames -> Scope -> Scope
 setWcNames = setL wcNames
