@@ -10,6 +10,7 @@ import System.FilePath
 import System.FilePath.Find
 import System.Exit
 import Data.Monoid
+import Data.List hiding (find)
 import qualified Data.Map as Map
 import qualified Data.Set as Set
 import Control.Monad.Identity
@@ -134,6 +135,10 @@ instance TestAnn (QName (Scoped SrcSpan)) where
 instance TestAnn (Name (Scoped SrcSpan)) where
   getAnn n = Just (nameToString n, ann n)
 
+instance TestAnn (PatField (Scoped SrcSpan)) where
+  getAnn (PFieldWildcard l) = Just ("..", l)
+  getAnn _ = Nothing
+
 instance GTraversable (Rec TestAnn) (Scoped SrcSpan) where
   gtraverse _ x = pure x
 
@@ -210,6 +215,10 @@ formatInfo (GlobalType info) =
     (formatOrigin info)
 formatInfo ValueBinder = "a value bound here"
 formatInfo TypeBinder = "a type or class defined here"
+formatInfo (RecPatWildcard names) =
+  printf
+    "a record pattern wildcard which brings the following fields: %s"
+    (intercalate ", " $ map ppOrigName names)
 formatInfo (ScopeError (ENotInScope {})) = "not in scope"
 formatInfo None = "none"
 formatInfo i = error $ "tests/run.hs: formatInfo: " ++ show i
