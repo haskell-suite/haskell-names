@@ -139,6 +139,10 @@ instance TestAnn (PatField (Scoped SrcSpan)) where
   getAnn (PFieldWildcard l) = Just ("..", l)
   getAnn _ = Nothing
 
+instance TestAnn (FieldUpdate (Scoped SrcSpan)) where
+  getAnn (FieldWildcard l) = Just ("..", l)
+  getAnn _ = Nothing
+
 instance GTraversable (Rec TestAnn) (Scoped SrcSpan) where
   gtraverse _ x = pure x
 
@@ -219,6 +223,14 @@ formatInfo (RecPatWildcard names) =
   printf
     "a record pattern wildcard which brings the following fields: %s"
     (intercalate ", " $ map ppOrigName names)
+formatInfo (RecExpWildcard names) =
+  printf
+    "a record construction wildcard which assigns the following fields: %s"
+    $ intercalate ", "
+      [ printf "%s = (%s)" (ppOrigName field) valueDesc
+      | (field, vinfo) <- names
+      , let valueDesc = formatInfo vinfo
+      ]
 formatInfo (ScopeError (ENotInScope {})) = "not in scope"
 formatInfo None = "none"
 formatInfo i = error $ "tests/run.hs: formatInfo: " ++ show i
