@@ -87,3 +87,23 @@ selector1 at 42:8 is a global value, Records.selector1
 selector1 at 42:8 is a global value, Records.selector1
 selector2 at 42:18 is a global value, Records.selector2
 selector2 at 42:18 is a global value, Records.selector2
+f2       at 45:1 is a value bound here
+A        at 45:4 is a global constructor, Records.A
+A        at 45:4 is a global constructor, Records.A
+b        at 45:8 is a global selector, Records.b
+b        at 45:8 is a global selector, Records.b
+v        at 45:12 is a value bound here
+..       at 45:15 is a record pattern wildcard which brings the following fields: Records.c
+v        at 45:23 is a local value defined at 45:12
+v        at 45:23 is a local value defined at 45:12
+c        at 45:26 is a local value defined at 45:15
+c        at 45:26 is a local value defined at 45:15
+f3       at 48:1 is a value bound here
+A        at 48:4 is a global constructor, Records.A
+A        at 48:4 is a global constructor, Records.A
+b        at 48:8 is a value bound here
+..       at 48:11 is a record pattern wildcard which brings the following fields: Records.c
+b        at 48:19 is a local value defined at 48:8
+b        at 48:19 is a local value defined at 48:8
+c        at 48:22 is a local value defined at 48:11
+c        at 48:22 is a local value defined at 48:11

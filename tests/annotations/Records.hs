@@ -40,3 +40,9 @@ f A { .. } = (b, c)
 -- top-level wildcard pattern
 Prelude.DataTypeWithSelectors { .. } = undefined
 aux = (selector1,selector2)
+
+-- mixed wildcard and normal pattern
+f2 A { b = v, .. } = (v, c)
+
+-- mixed wildcard and pun
+f3 A { b, .. } = (b, c)
