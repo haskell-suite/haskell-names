@@ -4,6 +4,7 @@ module Language.Haskell.Names.Open.Base where
 
 import qualified Language.Haskell.Names.GlobalSymbolTable as Global
 import qualified Language.Haskell.Names.LocalSymbolTable as Local
+import Language.Haskell.Names.Types
 import Language.Haskell.Names.GetBound
 import Language.Haskell.Exts.Annotated
 import Control.Applicative
@@ -22,16 +23,30 @@ data NameContext
   | ReferenceV
   | Other -- ^ we don't expect names in this context
 
+-- | Information about the names being introduced by a record wildcard
+--
+-- Non-trivial values of this type are created when we process a record
+-- pattern or construction, and are used when we reach the wildcard itself.
+--
+-- If this is 'Nothing', then we don't expect a wildcard.
+--
+-- If it's 'Just', then it contains, for each wildcard field, the OrigName
+-- of the selector and the Name which is either introduced (in case of the
+-- pattern) or referenced (in case of the expression). This is redundant,
+-- but convenient.
+type WcNames = Maybe [(OrigName, Name ())]
+
 data Scope = Scope
   { _gTable :: Global.Table
   , _lTable :: Local.Table
   , _nameCtx :: NameContext
+  , _wcNames :: WcNames
   }
 
 makeLens ''Scope
 
 initialScope :: Global.Table -> Scope
-initialScope tbl = Scope tbl Local.empty Other
+initialScope tbl = Scope tbl Local.empty Other Nothing
 
 newtype Alg w = Alg
   { runAlg :: forall d . Resolvable d => d -> Scope -> w d }
@@ -77,6 +92,12 @@ intro node sc =
 
 setNameCtx :: NameContext -> Scope -> Scope
 setNameCtx ctx = setL nameCtx ctx
+
+setWcNames :: WcNames -> Scope -> Scope
+setWcNames = setL wcNames
+
+getWcNames :: Scope -> WcNames
+getWcNames = getL wcNames
 
 binderV :: Scope -> Scope
 binderV = setNameCtx BindingV
