@@ -13,10 +13,12 @@ import Language.Haskell.Names.Types
 import Language.Haskell.Names.Open.Base
 import Language.Haskell.Names.Open.Derived ()
 import Language.Haskell.Names.GetBound
+import Language.Haskell.Names.RecordWildcards
 import Language.Haskell.Exts.Annotated
 import qualified Data.Data as D
 import Control.Applicative
 import Data.Typeable
+import Data.Lens.Common
 
 c :: Applicative w => c -> w c
 c = pure
@@ -133,10 +135,14 @@ instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (Pat l) where
           <| exprV sc -: qn
           <| sc       -: pat
       PRec l qn pfs ->
+        let
+          scWc =
+            setWcNames (patWcNames (sc ^. gTable) qn pfs) sc
+        in
         c PRec
           <| sc       -: l
           <| exprV sc -: qn
-          <| sc       -: pfs
+          <| scWc     -: pfs
       PAsPat l n pat ->
         c PAsPat
           <| sc         -: l

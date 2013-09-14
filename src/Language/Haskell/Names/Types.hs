@@ -174,6 +174,9 @@ data NameInfo l
       -- ^ part of an @import@ declaration
     | Export      Symbols
       -- ^ @export@ declaration, and the symbols it exports
+    | RecPatWildcard [OrigName]
+      -- ^ wildcard in a record pattern. The list contains resolved names
+      -- of the fields that are brought in scope by this pattern.
     | None
       -- ^ no annotation
     | ScopeError  (Error l)

@@ -53,6 +53,12 @@ annotateRec _ sc a = go sc a where
       = case a of
           FieldPun l n -> FieldPun l (lookupUnqualValue n sc <$ n)
           _ -> rmap go sc a
+    | Just (Eq :: PatField (Scoped l) :~: a) <- dynamicEq
+    , PFieldWildcard l <- a
+      = PFieldWildcard $
+          Scoped
+            (RecPatWildcard $ map fst $ sc ^. wcNames)
+            (sLoc l)
     | otherwise
       = rmap go sc a
 
