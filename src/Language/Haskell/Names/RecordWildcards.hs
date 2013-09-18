@@ -45,10 +45,11 @@ getElidedFields gt con fields =
 
     -- FIXME must report error when the constructor cannot be
     -- resolved
-    mbConOrigName =
+    (mbConOrigName, mbTypeOrigName) =
       case Global.lookupValue con gt of
-        Global.Result info@SymConstructor{} -> Just $ sv_origName info
-        _ -> Nothing
+        Global.Result info@SymConstructor{} ->
+          (Just $ sv_origName info, Just $ sv_typeName info)
+        _ -> (Nothing, Nothing)
 
     allValueInfos :: Set.Set (SymValueInfo OrigName)
     allValueInfos = Set.unions $ Map.elems $ Global.values gt
@@ -64,6 +65,17 @@ getElidedFields gt con fields =
                 | conOrigName `elem` sv_constructors -> True
               _ -> False
 
+    existsGlobalValue :: Name () -> Bool
+    existsGlobalValue name =
+      case Global.lookupValue (UnQual () name) gt of
+        Global.Result info
+          | Just typeOrigName <- mbTypeOrigName
+          , SymSelector {} <- info
+          , sv_typeName info == typeOrigName
+            -> False -- this is the field selector
+          | otherwise -> True -- exists, but not this field's selector
+        _ -> False -- doesn't exist or ambiguous
+
     ourFieldNames :: Map.Map (Name ()) WcField
     ourFieldNames =
       Map.fromList $
@@ -75,7 +87,7 @@ getElidedFields gt con fields =
               WcField
               { wcFieldName = name
               , wcFieldOrigName = orig
-              -- XXX wcExistsGlobalValue
+              , wcExistsGlobalValue = existsGlobalValue name
               }
           ) . sv_origName
         )
