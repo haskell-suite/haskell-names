@@ -8,6 +8,13 @@ A        at 6:19 is a global data type, Records.A
 c        at 6:22 is a value bound here
 A        at 6:27 is a global data type, Records.A
 A        at 6:27 is a global data type, Records.A
+X        at 6:33 is a value bound here
+b        at 6:37 is a value bound here
+A        at 6:42 is a global data type, Records.A
+A        at 6:42 is a global data type, Records.A
+xxx      at 6:45 is a value bound here
+A        at 6:52 is a global data type, Records.A
+A        at 6:52 is a global data type, Records.A
 undefined at  8:1 is a value bound here
 undefined at 8:13 is a global value, Records.undefined
 undefined at 8:13 is a global value, Records.undefined
@@ -139,3 +146,11 @@ A        at 61:31 is a global constructor, Records.A
 A        at 61:31 is a global constructor, Records.A
 c        at 61:35 is a local value defined at 61:13
 ..       at 61:38 is a record construction wildcard which assigns the following fields: Records.b = (a local value defined at 61:11)
+r5       at 64:1 is a value bound here
+b        at 64:11 is a value bound here
+xxx      at 64:14 is a value bound here
+undefined at 64:21 is a global value, Records.undefined
+undefined at 64:21 is a global value, Records.undefined
+A        at 64:34 is a global constructor, Records.A
+A        at 64:34 is a global constructor, Records.A
+..       at 64:38 is a record construction wildcard which assigns the following fields: Records.b = (a local value defined at 64:11)

@@ -3,7 +3,7 @@ module Records where
 
 import qualified Prelude
 
-data A = A { b :: A, c :: A }
+data A = A { b :: A, c :: A } | X { b :: A, xxx :: A }
 
 undefined = undefined
 
@@ -59,3 +59,6 @@ r3 = let b = undefined in A { c = undefined, .. }
 
 -- mixed simple construction and pun
 r4 = let (b,c) = undefined in A { c, .. }
+
+-- test that we don't bring fields from other constructors
+r5 = let (b, xxx) = undefined in A { .. }
