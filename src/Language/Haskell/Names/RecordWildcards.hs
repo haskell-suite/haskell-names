@@ -125,13 +125,12 @@ expWcNames
   -> [FieldUpdate l]
   -> WcNames
 expWcNames gt lt con patfs =
-  filter (isInScope . wcFieldName) $
+  filter isInScope $
   getElidedFields gt con $
   mapMaybe nameOfUpdField patfs
   where
-    isInScope name
-      | Global.Result {} <- Global.lookupValue qn gt = True
+    isInScope field
       | Right {} <- Local.lookupValue qn lt = True
-      | otherwise = False
+      | otherwise = wcExistsGlobalValue field
       where
-        qn = UnQual () name
+        qn = UnQual () $ wcFieldName field
