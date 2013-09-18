@@ -46,3 +46,16 @@ f2 A { b = v, .. } = (v, c)
 
 -- mixed wildcard and pun
 f3 A { b, .. } = (b, c)
+
+-- simple wildcard construction
+r1 = let b = 1 in A { .. }
+
+-- wildcard construction referring to a global and a local values
+-- (global values are defined above with a top-level pattern wildcard)
+r2 = let selector2 = undefined in Prelude.DataTypeWithSelectors { .. }
+
+-- mixed simple construction and wildcard
+r3 = let b = undefined in A { c = undefined, .. }
+
+-- mixed simple construction and pun
+r4 = let (b,c) = undefined in A { c, .. }
