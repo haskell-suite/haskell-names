@@ -11,6 +11,7 @@ module Language.Haskell.Names.Annotated
   ) where
 
 import Language.Haskell.Names.Types
+import Language.Haskell.Names.RecordWildcards
 import Language.Haskell.Names.Open.Base
 import Language.Haskell.Names.Open.Instances ()
 import qualified Language.Haskell.Names.GlobalSymbolTable as Global
@@ -20,7 +21,6 @@ import Data.Proxy
 import Data.Lens.Common
 import Data.Typeable
 import Control.Applicative
-import Control.Arrow
 
 -- This should be incorporated into Data.Typeable soon
 import Type.Eq
@@ -59,14 +59,17 @@ annotateRec _ sc a = go sc a where
               resolve n =
                 let Scoped info _ = lookupValue (sLoc l <$ UnQual () n) sc
                 in info
-              namesRes = map (second resolve) namesUnres
+              namesRes =
+                map
+                  (\f -> (wcFieldOrigName f, resolve $ wcFieldName f))
+                  namesUnres
             in FieldWildcard $ Scoped (RecExpWildcard namesRes) (sLoc l)
           _ -> rmap go sc a
     | Just (Eq :: PatField (Scoped l) :~: a) <- dynamicEq
     , PFieldWildcard l <- a
       = PFieldWildcard $
           Scoped
-            (RecPatWildcard $ map fst $ sc ^. wcNames)
+            (RecPatWildcard $ map wcFieldOrigName $ sc ^. wcNames)
             (sLoc l)
     | otherwise
       = rmap go sc a

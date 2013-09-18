@@ -5,7 +5,6 @@ module Language.Haskell.Names.RecordWildcards where
 import qualified Data.Map as Map
 import qualified Data.Set as Set
 import Data.Maybe
-import Data.Tuple
 import Control.Monad
 
 import Language.Haskell.Exts.Annotated
@@ -20,18 +19,24 @@ import qualified Language.Haskell.Names.LocalSymbolTable as Local
 -- we process PRec or RecConstr, even if it doesn't contain a wildcard.
 --
 -- Then, if the pattern or construction actually contains a wildcard, we use the computed value.
---
--- It contains, for each wildcard field, the OrigName of the selector and
--- the Name which is either introduced (in case of the pattern) or
--- referenced (in case of the expression). This is redundant, but
--- convenient.
-type WcNames = [(OrigName, Name ())]
+type WcNames = [WcField]
+
+-- | Information about a field in the wildcard
+data WcField = WcField
+  { wcFieldName :: Name ()
+    -- ^ the field's simple name
+  , wcFieldOrigName :: OrigName
+    -- ^ the field's original name
+  , wcExistsGlobalValue :: Bool
+    -- ^ whether there is a global value in scope with the same name as
+    -- the field but different from the field selector
+  }
 
 getElidedFields
   :: Global.Table
   -> QName l
   -> [Name l] -- mentioned field names
-  -> Map.Map (Name ()) OrigName
+  -> WcNames
 getElidedFields gt con fields =
   let
     givenFieldNames :: Map.Map (Name ()) ()
@@ -59,19 +64,24 @@ getElidedFields gt con fields =
                 | conOrigName `elem` sv_constructors -> True
               _ -> False
 
-    ourFieldNames :: Map.Map (Name ()) OrigName
+    ourFieldNames :: Map.Map (Name ()) WcField
     ourFieldNames =
       Map.fromList $
       map
         (
           (\orig ->
-            ( stringToName . (\(GName _ n) -> n) . origGName $ orig
-            , orig)
+            let name = stringToName . (\(GName _ n) -> n) . origGName $ orig in
+            (name, ) $
+              WcField
+              { wcFieldName = name
+              , wcFieldOrigName = orig
+              -- XXX wcExistsGlobalValue
+              }
           ) . sv_origName
         )
         $ Set.toList ourFieldInfos
 
-  in ourFieldNames `Map.difference` givenFieldNames
+  in Map.elems $ ourFieldNames `Map.difference` givenFieldNames
 
 nameOfPatField :: PatField l -> Maybe (Name l)
 nameOfPatField pf =
@@ -93,8 +103,6 @@ patWcNames
   -> [PatField l]
   -> WcNames
 patWcNames gt con patfs =
-  map swap $
-  Map.toList $
   getElidedFields gt con $
   mapMaybe nameOfPatField patfs
 
@@ -105,9 +113,7 @@ expWcNames
   -> [FieldUpdate l]
   -> WcNames
 expWcNames gt lt con patfs =
-  map swap $
-  filter (isInScope . fst) $
-  Map.toList $
+  filter (isInScope . wcFieldName) $
   getElidedFields gt con $
   mapMaybe nameOfUpdField patfs
   where

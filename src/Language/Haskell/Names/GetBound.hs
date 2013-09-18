@@ -120,7 +120,7 @@ instance (Data l) => GetBound (Pat l) l where
       varp (PRec _ con fs) =
         [ n
         | -- (lazily) compute elided fields for the case when 'f' below is a wildcard
-          let elidedFields = map snd $ patWcNames gt con fs
+          let elidedFields = map wcFieldName $ patWcNames gt con fs
         , f <- fs
         , n <- getRecVars elidedFields f
         ]
