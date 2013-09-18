@@ -122,4 +122,4 @@ expWcNames gt lt con patfs =
       | Right {} <- Local.lookupValue qn lt = True
       | otherwise = False
       where
-        qn = UnQual () (void name)
+        qn = UnQual () name
