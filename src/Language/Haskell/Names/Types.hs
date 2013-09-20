@@ -123,7 +123,10 @@ type ModuleNameS = String
 
 -- | Possibly qualified name. If the name is not qualified,
 -- 'ModuleNameS' is the empty string.
-data GName = GName ModuleNameS NameS
+data GName = GName
+  { gModule :: ModuleNameS
+  , gName :: NameS
+  }
   deriving (Eq, Ord, Show, Data, Typeable)
 
 -- | Display a 'GName'
