@@ -82,7 +82,7 @@ getElidedFields gt con fields =
       map
         (
           (\orig ->
-            let name = stringToName . (\(GName _ n) -> n) . origGName $ orig in
+            let name = stringToName . gName . origGName $ orig in
             (name, ) $
               WcField
               { wcFieldName = name

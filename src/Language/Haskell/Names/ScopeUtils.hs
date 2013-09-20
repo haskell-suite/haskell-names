@@ -58,9 +58,7 @@ computeSymbolTable qual (ModuleName _ mod) syms =
     unqualified = renameSyms ""
     renameSyms mod = (map (rename mod) vs, map (rename mod) ts)
     rename :: HasOrigName i => ModuleNameS -> i OrigName -> (GName, i OrigName)
-    rename m v =
-      let OrigName _pkg (GName _ n) = origName v
-      in (GName m n, v)
+    rename m v = ((origGName . origName $ v) { gModule = m }, v)
 
 resolveCName
   :: Symbols
@@ -73,7 +71,7 @@ resolveCName syms parent notFound cn =
     vs =
       [ info
       | info <- Set.toList $ syms^.valSyms
-      , let GName _ name = origGName $ sv_origName info
+      , let name = gName . origGName $ sv_origName info
       , nameToString (unCName cn) == name
       , Just p <- return $ sv_parent info
       , p == parent
