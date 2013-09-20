@@ -9,9 +9,13 @@ module Language.Haskell.Names.Open
   , gTable
   , lTable
   , nameCtx
+  , WcNames
+  , WcField(..)
+  , wcNames
   )
   where
 
 import Language.Haskell.Names.Open.Base
 import Language.Haskell.Names.Open.Instances ()
 import Language.Haskell.Names.Open.Derived ()
+import Language.Haskell.Names.RecordWildcards
