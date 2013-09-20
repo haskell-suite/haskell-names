@@ -2,8 +2,6 @@
 -- | This module is designed to be imported qualified.
 module Language.Haskell.Names.GlobalSymbolTable
   ( Table
-  , GName
-  , OrigName
   , empty
   , Result(..)
   , lookupValue
