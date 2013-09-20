@@ -1,6 +1,32 @@
 Changes
 =======
 
+Version 0.3
+-----------
+
+This release brings support for record puns and wildcards.
+
+### Interface file format changes
+
+For field selectors, the new field `constructors` is added. It contains a list
+of constructors that contain that field.
+
+### API changes
+
+* The `sv_constructors` field is added to `SymSelector`
+* Add `Language.Haskell.Names.SyntaxUtils.stringToName`
+* The class `GetBound` is moved to a new module,
+  `Language.Haskell.Names.GetBound`. Its method, `getBound`, now has a new
+  argument, the global symbol table
+* `NameInfo` got two more constructors to annotate wildcards,
+  `RecPatWildcard` and `RecExpWildcard`
+* `Scope` now has a new field of type `WcNames`, which can be accessed
+  through the `wcNames` lens. This is needed for record wildcards
+  resolution.
+* Add field selectors to `GName`
+* Don't export `GName` and `OrigName` from `GlobalSymbolTable`
+
+
 Version 0.2.1
 -------------
 
