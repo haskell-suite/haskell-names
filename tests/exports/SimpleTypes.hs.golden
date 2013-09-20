@@ -4,21 +4,24 @@ Symbols (
         { sv_origName = OrigName
                           { origPackage = Nothing
                           , origGName = GName
-                                          "SimpleTypes"
-                                          "c"
+                                          { gModule = "SimpleTypes"
+                                          , gName = "c"
+                                          }
                           }
         , sv_fixity = Nothing
         , sv_typeName = OrigName
                           { origPackage = Nothing
                           , origGName = GName
-                                          "SimpleTypes"
-                                          "A"
+                                          { gModule = "SimpleTypes"
+                                          , gName = "A"
+                                          }
                           }
         , sv_constructors = [ OrigName
                                 { origPackage = Nothing
                                 , origGName = GName
-                                                "SimpleTypes"
-                                                "B"
+                                                { gModule = "SimpleTypes"
+                                                , gName = "B"
+                                                }
                                 }
                             ]
         }
@@ -26,30 +29,34 @@ Symbols (
         { sv_origName = OrigName
                           { origPackage = Nothing
                           , origGName = GName
-                                          "SimpleTypes"
-                                          "B"
+                                          { gModule = "SimpleTypes"
+                                          , gName = "B"
+                                          }
                           }
         , sv_fixity = Nothing
         , sv_typeName = OrigName
                           { origPackage = Nothing
                           , origGName = GName
-                                          "SimpleTypes"
-                                          "A"
+                                          { gModule = "SimpleTypes"
+                                          , gName = "A"
+                                          }
                           }
         }
     , SymConstructor
         { sv_origName = OrigName
                           { origPackage = Nothing
                           , origGName = GName
-                                          "SimpleTypes"
-                                          "H"
+                                          { gModule = "SimpleTypes"
+                                          , gName = "H"
+                                          }
                           }
         , sv_fixity = Nothing
         , sv_typeName = OrigName
                           { origPackage = Nothing
                           , origGName = GName
-                                          "SimpleTypes"
-                                          "G"
+                                          { gModule = "SimpleTypes"
+                                          , gName = "G"
+                                          }
                           }
         }
     ] ) (
@@ -58,8 +65,9 @@ Symbols (
         { st_origName = OrigName
                           { origPackage = Nothing
                           , origGName = GName
-                                          "SimpleTypes"
-                                          "L"
+                                          { gModule = "SimpleTypes"
+                                          , gName = "L"
+                                          }
                           }
         , st_fixity = Nothing
         }
@@ -67,8 +75,9 @@ Symbols (
         { st_origName = OrigName
                           { origPackage = Nothing
                           , origGName = GName
-                                          "SimpleTypes"
-                                          "A"
+                                          { gModule = "SimpleTypes"
+                                          , gName = "A"
+                                          }
                           }
         , st_fixity = Nothing
         }
@@ -76,8 +85,9 @@ Symbols (
         { st_origName = OrigName
                           { origPackage = Nothing
                           , origGName = GName
-                                          "SimpleTypes"
-                                          "G"
+                                          { gModule = "SimpleTypes"
+                                          , gName = "G"
+                                          }
                           }
         , st_fixity = Nothing
         }

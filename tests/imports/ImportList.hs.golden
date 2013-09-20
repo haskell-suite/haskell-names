@@ -1,114 +1,130 @@
 Table (
   fromList
     [ ( GName
-          ""
-          "Constructor1"
+          { gModule = ""
+          , gName = "Constructor1"
+          }
       , fromList
           [ SymConstructor
               { sv_origName = OrigName
                                 { origPackage = Nothing
                                 , origGName = GName
-                                                "Prelude"
-                                                "Constructor1"
+                                                { gModule = "Prelude"
+                                                , gName = "Constructor1"
+                                                }
                                 }
               , sv_fixity = Nothing
               , sv_typeName = OrigName
                                 { origPackage = Nothing
                                 , origGName = GName
-                                                "Prelude"
-                                                "DataType"
+                                                { gModule = "Prelude"
+                                                , gName = "DataType"
+                                                }
                                 }
               }
           ]
       )
     , ( GName
-          ""
-          "Constructor2"
+          { gModule = ""
+          , gName = "Constructor2"
+          }
       , fromList
           [ SymConstructor
               { sv_origName = OrigName
                                 { origPackage = Nothing
                                 , origGName = GName
-                                                "Prelude"
-                                                "Constructor2"
+                                                { gModule = "Prelude"
+                                                , gName = "Constructor2"
+                                                }
                                 }
               , sv_fixity = Nothing
               , sv_typeName = OrigName
                                 { origPackage = Nothing
                                 , origGName = GName
-                                                "Prelude"
-                                                "DataType"
+                                                { gModule = "Prelude"
+                                                , gName = "DataType"
+                                                }
                                 }
               }
           ]
       )
     , ( GName
-          ""
-          "function"
+          { gModule = ""
+          , gName = "function"
+          }
       , fromList
           [ SymValue
               { sv_origName = OrigName
                                 { origPackage = Nothing
                                 , origGName = GName
-                                                "Prelude"
-                                                "function"
+                                                { gModule = "Prelude"
+                                                , gName = "function"
+                                                }
                                 }
               , sv_fixity = Nothing
               }
           ]
       )
     , ( GName
-          "Prelude"
-          "Constructor1"
+          { gModule = "Prelude"
+          , gName = "Constructor1"
+          }
       , fromList
           [ SymConstructor
               { sv_origName = OrigName
                                 { origPackage = Nothing
                                 , origGName = GName
-                                                "Prelude"
-                                                "Constructor1"
+                                                { gModule = "Prelude"
+                                                , gName = "Constructor1"
+                                                }
                                 }
               , sv_fixity = Nothing
               , sv_typeName = OrigName
                                 { origPackage = Nothing
                                 , origGName = GName
-                                                "Prelude"
-                                                "DataType"
+                                                { gModule = "Prelude"
+                                                , gName = "DataType"
+                                                }
                                 }
               }
           ]
       )
     , ( GName
-          "Prelude"
-          "Constructor2"
+          { gModule = "Prelude"
+          , gName = "Constructor2"
+          }
       , fromList
           [ SymConstructor
               { sv_origName = OrigName
                                 { origPackage = Nothing
                                 , origGName = GName
-                                                "Prelude"
-                                                "Constructor2"
+                                                { gModule = "Prelude"
+                                                , gName = "Constructor2"
+                                                }
                                 }
               , sv_fixity = Nothing
               , sv_typeName = OrigName
                                 { origPackage = Nothing
                                 , origGName = GName
-                                                "Prelude"
-                                                "DataType"
+                                                { gModule = "Prelude"
+                                                , gName = "DataType"
+                                                }
                                 }
               }
           ]
       )
     , ( GName
-          "Prelude"
-          "function"
+          { gModule = "Prelude"
+          , gName = "function"
+          }
       , fromList
           [ SymValue
               { sv_origName = OrigName
                                 { origPackage = Nothing
                                 , origGName = GName
-                                                "Prelude"
-                                                "function"
+                                                { gModule = "Prelude"
+                                                , gName = "function"
+                                                }
                                 }
               , sv_fixity = Nothing
               }
@@ -117,30 +133,34 @@ Table (
     ] ) (
   fromList
     [ ( GName
-          ""
-          "DataType"
+          { gModule = ""
+          , gName = "DataType"
+          }
       , fromList
           [ SymData
               { st_origName = OrigName
                                 { origPackage = Nothing
                                 , origGName = GName
-                                                "Prelude"
-                                                "DataType"
+                                                { gModule = "Prelude"
+                                                , gName = "DataType"
+                                                }
                                 }
               , st_fixity = Nothing
               }
           ]
       )
     , ( GName
-          "Prelude"
-          "DataType"
+          { gModule = "Prelude"
+          , gName = "DataType"
+          }
       , fromList
           [ SymData
               { st_origName = OrigName
                                 { origPackage = Nothing
                                 , origGName = GName
-                                                "Prelude"
-                                                "DataType"
+                                                { gModule = "Prelude"
+                                                , gName = "DataType"
+                                                }
                                 }
               , st_fixity = Nothing
               }

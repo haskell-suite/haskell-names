@@ -4,8 +4,9 @@ Symbols (
         { sv_origName = OrigName
                           { origPackage = Nothing
                           , origGName = GName
-                                          "Rec1"
-                                          "rec1_1"
+                                          { gModule = "Rec1"
+                                          , gName = "rec1_1"
+                                          }
                           }
         , sv_fixity = Nothing
         }
@@ -13,8 +14,9 @@ Symbols (
         { sv_origName = OrigName
                           { origPackage = Nothing
                           , origGName = GName
-                                          "Rec1"
-                                          "rec1_2"
+                                          { gModule = "Rec1"
+                                          , gName = "rec1_2"
+                                          }
                           }
         , sv_fixity = Nothing
         }
@@ -22,8 +24,9 @@ Symbols (
         { sv_origName = OrigName
                           { origPackage = Nothing
                           , origGName = GName
-                                          "Rec3"
-                                          "rec3"
+                                          { gModule = "Rec3"
+                                          , gName = "rec3"
+                                          }
                           }
         , sv_fixity = Nothing
         }

@@ -4,36 +4,41 @@ Symbols (
         { sv_origName = OrigName
                           { origPackage = Nothing
                           , origGName = GName
-                                          "ExportListMembers"
-                                          "x"
+                                          { gModule = "ExportListMembers"
+                                          , gName = "x"
+                                          }
                           }
         , sv_fixity = Nothing
         , sv_className = OrigName
                            { origPackage = Nothing
                            , origGName = GName
-                                           "ExportListMembers"
-                                           "Bar"
+                                           { gModule = "ExportListMembers"
+                                           , gName = "Bar"
+                                           }
                            }
         }
     , SymSelector
         { sv_origName = OrigName
                           { origPackage = Nothing
                           , origGName = GName
-                                          "ExportListMembers"
-                                          "c"
+                                          { gModule = "ExportListMembers"
+                                          , gName = "c"
+                                          }
                           }
         , sv_fixity = Nothing
         , sv_typeName = OrigName
                           { origPackage = Nothing
                           , origGName = GName
-                                          "ExportListMembers"
-                                          "Foo"
+                                          { gModule = "ExportListMembers"
+                                          , gName = "Foo"
+                                          }
                           }
         , sv_constructors = [ OrigName
                                 { origPackage = Nothing
                                 , origGName = GName
-                                                "ExportListMembers"
-                                                "Foo2"
+                                                { gModule = "ExportListMembers"
+                                                , gName = "Foo2"
+                                                }
                                 }
                             ]
         }
@@ -41,45 +46,51 @@ Symbols (
         { sv_origName = OrigName
                           { origPackage = Nothing
                           , origGName = GName
-                                          "ExportListMembers"
-                                          "Foo1"
+                                          { gModule = "ExportListMembers"
+                                          , gName = "Foo1"
+                                          }
                           }
         , sv_fixity = Nothing
         , sv_typeName = OrigName
                           { origPackage = Nothing
                           , origGName = GName
-                                          "ExportListMembers"
-                                          "Foo"
+                                          { gModule = "ExportListMembers"
+                                          , gName = "Foo"
+                                          }
                           }
         }
     , SymConstructor
         { sv_origName = OrigName
                           { origPackage = Nothing
                           , origGName = GName
-                                          "ExportListMembers"
-                                          "Foo3"
+                                          { gModule = "ExportListMembers"
+                                          , gName = "Foo3"
+                                          }
                           }
         , sv_fixity = Nothing
         , sv_typeName = OrigName
                           { origPackage = Nothing
                           , origGName = GName
-                                          "ExportListMembers"
-                                          "Foo"
+                                          { gModule = "ExportListMembers"
+                                          , gName = "Foo"
+                                          }
                           }
         }
     , SymConstructor
         { sv_origName = OrigName
                           { origPackage = Nothing
                           , origGName = GName
-                                          "ExportListMembers"
-                                          "N"
+                                          { gModule = "ExportListMembers"
+                                          , gName = "N"
+                                          }
                           }
         , sv_fixity = Nothing
         , sv_typeName = OrigName
                           { origPackage = Nothing
                           , origGName = GName
-                                          "ExportListMembers"
-                                          "N"
+                                          { gModule = "ExportListMembers"
+                                          , gName = "N"
+                                          }
                           }
         }
     ] ) (
@@ -88,8 +99,9 @@ Symbols (
         { st_origName = OrigName
                           { origPackage = Nothing
                           , origGName = GName
-                                          "ExportListMembers"
-                                          "Foo"
+                                          { gModule = "ExportListMembers"
+                                          , gName = "Foo"
+                                          }
                           }
         , st_fixity = Nothing
         }
@@ -97,8 +109,9 @@ Symbols (
         { st_origName = OrigName
                           { origPackage = Nothing
                           , origGName = GName
-                                          "ExportListMembers"
-                                          "N"
+                                          { gModule = "ExportListMembers"
+                                          , gName = "N"
+                                          }
                           }
         , st_fixity = Nothing
         }
@@ -106,8 +119,9 @@ Symbols (
         { st_origName = OrigName
                           { origPackage = Nothing
                           , origGName = GName
-                                          "ExportListMembers"
-                                          "Bar"
+                                          { gModule = "ExportListMembers"
+                                          , gName = "Bar"
+                                          }
                           }
         , st_fixity = Nothing
         }

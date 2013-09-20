@@ -4,36 +4,41 @@ Symbols (
         { sv_origName = OrigName
                           { origPackage = Nothing
                           , origGName = GName
-                                          "ExportListWildcards"
-                                          "x"
+                                          { gModule = "ExportListWildcards"
+                                          , gName = "x"
+                                          }
                           }
         , sv_fixity = Nothing
         , sv_className = OrigName
                            { origPackage = Nothing
                            , origGName = GName
-                                           "ExportListWildcards"
-                                           "Bar"
+                                           { gModule = "ExportListWildcards"
+                                           , gName = "Bar"
+                                           }
                            }
         }
     , SymSelector
         { sv_origName = OrigName
                           { origPackage = Nothing
                           , origGName = GName
-                                          "ExportListWildcards"
-                                          "c"
+                                          { gModule = "ExportListWildcards"
+                                          , gName = "c"
+                                          }
                           }
         , sv_fixity = Nothing
         , sv_typeName = OrigName
                           { origPackage = Nothing
                           , origGName = GName
-                                          "ExportListWildcards"
-                                          "Foo"
+                                          { gModule = "ExportListWildcards"
+                                          , gName = "Foo"
+                                          }
                           }
         , sv_constructors = [ OrigName
                                 { origPackage = Nothing
                                 , origGName = GName
-                                                "ExportListWildcards"
-                                                "Foo3"
+                                                { gModule = "ExportListWildcards"
+                                                , gName = "Foo3"
+                                                }
                                 }
                             ]
         }
@@ -41,21 +46,24 @@ Symbols (
         { sv_origName = OrigName
                           { origPackage = Nothing
                           , origGName = GName
-                                          "ExportListWildcards"
-                                          "unN"
+                                          { gModule = "ExportListWildcards"
+                                          , gName = "unN"
+                                          }
                           }
         , sv_fixity = Nothing
         , sv_typeName = OrigName
                           { origPackage = Nothing
                           , origGName = GName
-                                          "ExportListWildcards"
-                                          "N"
+                                          { gModule = "ExportListWildcards"
+                                          , gName = "N"
+                                          }
                           }
         , sv_constructors = [ OrigName
                                 { origPackage = Nothing
                                 , origGName = GName
-                                                "ExportListWildcards"
-                                                "N"
+                                                { gModule = "ExportListWildcards"
+                                                , gName = "N"
+                                                }
                                 }
                             ]
         }
@@ -63,60 +71,68 @@ Symbols (
         { sv_origName = OrigName
                           { origPackage = Nothing
                           , origGName = GName
-                                          "ExportListWildcards"
-                                          "Foo1"
+                                          { gModule = "ExportListWildcards"
+                                          , gName = "Foo1"
+                                          }
                           }
         , sv_fixity = Nothing
         , sv_typeName = OrigName
                           { origPackage = Nothing
                           , origGName = GName
-                                          "ExportListWildcards"
-                                          "Foo"
+                                          { gModule = "ExportListWildcards"
+                                          , gName = "Foo"
+                                          }
                           }
         }
     , SymConstructor
         { sv_origName = OrigName
                           { origPackage = Nothing
                           , origGName = GName
-                                          "ExportListWildcards"
-                                          "Foo2"
+                                          { gModule = "ExportListWildcards"
+                                          , gName = "Foo2"
+                                          }
                           }
         , sv_fixity = Nothing
         , sv_typeName = OrigName
                           { origPackage = Nothing
                           , origGName = GName
-                                          "ExportListWildcards"
-                                          "Foo"
+                                          { gModule = "ExportListWildcards"
+                                          , gName = "Foo"
+                                          }
                           }
         }
     , SymConstructor
         { sv_origName = OrigName
                           { origPackage = Nothing
                           , origGName = GName
-                                          "ExportListWildcards"
-                                          "Foo3"
+                                          { gModule = "ExportListWildcards"
+                                          , gName = "Foo3"
+                                          }
                           }
         , sv_fixity = Nothing
         , sv_typeName = OrigName
                           { origPackage = Nothing
                           , origGName = GName
-                                          "ExportListWildcards"
-                                          "Foo"
+                                          { gModule = "ExportListWildcards"
+                                          , gName = "Foo"
+                                          }
                           }
         }
     , SymConstructor
         { sv_origName = OrigName
                           { origPackage = Nothing
                           , origGName = GName
-                                          "ExportListWildcards"
-                                          "N"
+                                          { gModule = "ExportListWildcards"
+                                          , gName = "N"
+                                          }
                           }
         , sv_fixity = Nothing
         , sv_typeName = OrigName
                           { origPackage = Nothing
                           , origGName = GName
-                                          "ExportListWildcards"
-                                          "N"
+                                          { gModule = "ExportListWildcards"
+                                          , gName = "N"
+                                          }
                           }
         }
     ] ) (
@@ -125,8 +141,9 @@ Symbols (
         { st_origName = OrigName
                           { origPackage = Nothing
                           , origGName = GName
-                                          "ExportListWildcards"
-                                          "Foo"
+                                          { gModule = "ExportListWildcards"
+                                          , gName = "Foo"
+                                          }
                           }
         , st_fixity = Nothing
         }
@@ -134,8 +151,9 @@ Symbols (
         { st_origName = OrigName
                           { origPackage = Nothing
                           , origGName = GName
-                                          "ExportListWildcards"
-                                          "N"
+                                          { gModule = "ExportListWildcards"
+                                          , gName = "N"
+                                          }
                           }
         , st_fixity = Nothing
         }
@@ -143,8 +161,9 @@ Symbols (
         { st_origName = OrigName
                           { origPackage = Nothing
                           , origGName = GName
-                                          "ExportListWildcards"
-                                          "Bar"
+                                          { gModule = "ExportListWildcards"
+                                          , gName = "Bar"
+                                          }
                           }
         , st_fixity = Nothing
         }

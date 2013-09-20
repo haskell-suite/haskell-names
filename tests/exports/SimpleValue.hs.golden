@@ -4,8 +4,9 @@ Symbols (
         { sv_origName = OrigName
                           { origPackage = Nothing
                           , origGName = GName
-                                          "SimpleValue"
-                                          "a"
+                                          { gModule = "SimpleValue"
+                                          , gName = "a"
+                                          }
                           }
         , sv_fixity = Nothing
         }
