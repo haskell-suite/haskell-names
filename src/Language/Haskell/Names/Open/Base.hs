@@ -1,3 +1,8 @@
+-- | This module provides a more flexible way to process Haskell code —
+-- using an open-recursive traversal.
+--
+-- You can look at "Language.Haskell.Exts.Annotated" source as an example
+-- of how to use this module.
 {-# LANGUAGE RankNTypes, FlexibleInstances, FlexibleContexts, UndecidableInstances, DefaultSignatures, OverlappingInstances, TemplateHaskell, ScopedTypeVariables #-}
 {-# LANGUAGE ImplicitParams, KindSignatures #-}
 module Language.Haskell.Names.Open.Base where
@@ -16,13 +21,16 @@ import Data.Generics.Traversable
 import Data.Typeable
 import GHC.Exts (Constraint)
 
+-- | Describes how we should treat names in the current context
 data NameContext
   = BindingT
   | BindingV
   | ReferenceT
   | ReferenceV
-  | Other -- ^ we don't expect names in this context
+  | Other
 
+-- | Contains information about the node's enclosing scope. Can be
+-- accessed through the lenses: 'gTable', 'lTable', 'nameCtx', 'wcNames'.
 data Scope = Scope
   { _gTable :: Global.Table
   , _lTable :: Local.Table
@@ -32,9 +40,12 @@ data Scope = Scope
 
 makeLens ''Scope
 
+-- | Create an initial scope
 initialScope :: Global.Table -> Scope
 initialScope tbl = Scope tbl Local.empty Other []
 
+-- | The algebra for 'rtraverse'. It's newtype-wrapped because an implicit
+-- parameter cannot be polymorphic.
 newtype Alg w = Alg
   { runAlg :: forall d . Resolvable d => d -> Scope -> w d }
 
@@ -50,7 +61,14 @@ defaultRtraverse a sc =
   let ?c = ConstraintProxy :: ConstraintProxy Resolvable
   in gtraverse (\a -> alg a sc) a
 
--- We use Typeable here rather than a class-based approach.
+-- | A type that implements 'Resolvable' provides a way to perform
+-- a shallow scope-aware traversal.
+
+-- There is a generic implementation, 'defaultRtraverse', which is based on
+-- 'GTraversable'. It can be used when there the scope of all the immediate
+-- children is the same as the scope of the current node.
+--
+-- We use 'Typeable' here rather than a class-based approach.
 -- Otherwise, hand-written instances would carry extremely long lists of
 -- constraints, saying that the subterms satisfy the user-supplied class.
 class Typeable a => Resolvable a where
@@ -61,7 +79,7 @@ class Typeable a => Resolvable a where
 instance (Typeable a, GTraversable Resolvable a) => Resolvable a where
   rtraverse = defaultRtraverse
 
--- analogous to gmap, but for Resolvable
+-- | Analogous to 'gmap', but for 'Resolvable'
 rmap
   :: Resolvable a
   => (forall b. Resolvable b => Scope -> b -> b)
