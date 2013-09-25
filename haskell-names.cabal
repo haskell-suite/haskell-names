@@ -243,6 +243,7 @@ Library
       base >= 4 && < 5
     , haskell-src-exts >= 1.14
     , mtl
+    , transformers
     , filepath >= 1.1
     , containers >= 0.2
     , hse-cpp

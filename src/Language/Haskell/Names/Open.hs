@@ -3,6 +3,7 @@ module Language.Haskell.Names.Open
   ( Resolvable(..)
   , Alg(..)
   , rmap
+  , rfoldMap
   , Scope
   , NameContext(..)
   , initialScope

@@ -19,6 +19,8 @@ import Data.Lens.Common
 import Data.Lens.Template
 import Data.Generics.Traversable
 import Data.Typeable
+import Data.Monoid
+import Data.Functor.Constant
 import GHC.Exts (Constraint)
 
 -- | Describes how we should treat names in the current context
@@ -87,6 +89,15 @@ rmap
 rmap f sc =
   let ?alg = Alg $ \a sc -> Identity (f sc a)
   in runIdentity . flip rtraverse sc
+
+-- | Analogous to 'gmap', but for 'Resolvable'
+rfoldMap
+  :: (Monoid r, Resolvable a)
+  => (forall b. Resolvable b => Scope -> b -> r)
+  -> Scope -> a -> r
+rfoldMap f sc =
+  let ?alg = Alg $ \a sc -> Constant (f sc a)
+  in getConstant . flip rtraverse sc
 
 intro :: (SrcInfo l, GetBound a l) => a -> Scope -> Scope
 intro node sc =
