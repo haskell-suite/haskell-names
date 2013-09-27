@@ -1,6 +1,12 @@
 Changes
 =======
 
+Version 0.3.1
+-------------
+
+* Documentation improvements
+* Add `rfoldMap`
+
 Version 0.3
 -----------
 
