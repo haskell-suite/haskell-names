@@ -8,6 +8,7 @@ module Language.Haskell.Names.ModuleSymbols
 import Data.Maybe
 import Data.Either
 import Data.Lens.Common
+import Data.List (genericLength)
 import Data.Monoid
 import Data.Data
 import qualified Data.Set as Set
@@ -56,7 +57,7 @@ moduleSymbols impTbl m =
 type TypeName = GName
 type ConName = Name ()
 type SelectorName = Name ()
-type Constructors = [(ConName, [SelectorName])]
+type Constructors = [(ConName, ConstructorInfo SelectorName)]
 
 -- Extract names that get bound by a top level declaration.
 getTopDeclSymbols
@@ -82,10 +83,12 @@ getTopDeclSymbols impTbl mdl d =
         cons = do -- list monad
           QualConDecl _ _ _ conDecl <- qualConDecls
           case conDecl of
-            ConDecl _ n _ -> return (void n, [])
-            InfixConDecl _ _ n _ -> return (void n, [])
+            ConDecl _ n fields ->
+              return (void n, PositionalConstructor (genericLength fields))
+            InfixConDecl _ _ n _ ->
+              return (void n, PositionalConstructor 2)
             RecDecl _ n fields ->
-              return (void n , [void f | FieldDecl _ fNames _ <- fields, f <- fNames])
+              return (void n, NamedFieldConstructor [void f | FieldDecl _ fNames _ <- fields, f <- fNames])
 
         dq = hname dh
 
@@ -104,8 +107,9 @@ getTopDeclSymbols impTbl mdl d =
         dq = hname dh
       in
           Right (dataOrNewCon dataOrNew dq Nothing) :
-        [ Left (SymConstructor { sv_origName = qname cn, sv_fixity = Nothing, sv_typeName = dq })
-        | GadtDecl _ cn _ <- gadtDecls
+        [ Left (SymConstructor { sv_origName = qname cn, sv_fixity = Nothing, sv_typeName = dq, sv_info = fields })
+        | GadtDecl _ cn ty <- gadtDecls
+        , let fields = PositionalConstructor (arityOfType ty)
         ]
 
     ClassDecl _ _ dh _ mds ->
@@ -141,13 +145,17 @@ getTopDeclSymbols impTbl mdl d =
     constructorsToInfos ty cons = conInfos ++ selInfos
       where
         conInfos =
-          [ SymConstructor { sv_origName = qname con, sv_fixity = Nothing, sv_typeName = ty }
-          | (con, _) <- cons
+          [ SymConstructor { sv_origName = qname con, sv_fixity = Nothing, sv_typeName = ty, sv_info = fmap qname fields }
+          | (con, fields) <- cons
           ]
 
         selectorsMap :: Map.Map SelectorName [ConName]
-        selectorsMap =
-          Map.unionsWith (++) . flip map cons $ \(c, fs) ->
+        selectorsMap = Map.unionsWith (++) . map buildSelectorsMap $ cons
+
+        buildSelectorsMap
+          :: (ConName, ConstructorInfo SelectorName) -> Map.Map SelectorName [ConName]
+        buildSelectorsMap (_, PositionalConstructor _) = Map.empty
+        buildSelectorsMap (c, NamedFieldConstructor fs) =
             Map.unionsWith (++) . flip map fs $ \f ->
               Map.singleton f [c]
 
@@ -155,3 +163,12 @@ getTopDeclSymbols impTbl mdl d =
           [ (SymSelector { sv_origName = qname f, sv_fixity = Nothing, sv_typeName = ty, sv_constructors = map qname fCons })
           | (f, fCons) <- Map.toList selectorsMap
           ]
+
+    arityOfType :: Type l -> Integer
+    arityOfType = go
+      where
+        go (TyForall _ _ _ t) = go t
+        go (TyFun _ _ t) = succ $! go t
+        go (TyParen _ t) = go t
+        go (TyKind _ t _) = go t
+        go _ = 1

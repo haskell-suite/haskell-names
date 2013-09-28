@@ -47,8 +47,16 @@ data SymValueInfo name
       { sv_origName :: name
       , sv_fixity :: Maybe SymFixity
       , sv_typeName :: name
+      , sv_info :: ConstructorInfo name
       }
       -- ^ data constructor
+    deriving (Eq, Ord, Show, Data, Typeable, Functor, Foldable, Traversable)
+
+data ConstructorInfo name
+    = PositionalConstructor Integer
+      -- ^ data constructor with anonymous fields
+    | NamedFieldConstructor [name]
+      -- ^ data constructor with named fields
     deriving (Eq, Ord, Show, Data, Typeable, Functor, Foldable, Traversable)
 
 -- | Information about a type-level entitity
