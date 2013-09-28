@@ -84,8 +84,12 @@ instance ToJSON name => ToJSON (SymValueInfo name) where
         SymSelector { sv_typeName = ty, sv_constructors = cons } ->
           [("type", toJSON ty)
           ,("constructors", toJSON cons)]
-        SymConstructor { sv_typeName = ty } ->
-          [("type", toJSON ty)]
+        SymConstructor { sv_typeName = ty, sv_info = PositionalConstructor x } ->
+          [("type", toJSON ty)
+          ,("arity", toJSON x)]
+        SymConstructor { sv_typeName = ty, sv_info = NamedFieldConstructor x } ->
+          [("type", toJSON ty)
+          ,("fields", toJSON x)]
 
       valueEntity :: SymValueInfo a -> String
       valueEntity i = case i of
@@ -107,7 +111,11 @@ instance FromJSON name => FromJSON (SymValueInfo name) where
         SymSelector name fixity
           <$> v .: "type"
           <*> v .: "constructors"
-      "constructor" -> SymConstructor name fixity <$> v .: "type"
+      "constructor" -> SymConstructor name fixity
+          <$> v .: "type"
+          <*> ((PositionalConstructor <$> v .: "arity")
+            <|>
+              (NamedFieldConstructor <$> v .: "fields"))
       _ -> mzero
 
   parseJSON _ = mzero
