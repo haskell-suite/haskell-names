@@ -62,7 +62,7 @@ getElidedFields gt con fields =
           flip Set.filter allValueInfos $ \v ->
             case v of
               SymSelector { sv_constructors }
-                | conOrigName `elem` sv_constructors -> True
+                | conOrigName `elem` (map selConstructor sv_constructors) -> True
               _ -> False
 
     existsGlobalValue :: Name () -> Bool
