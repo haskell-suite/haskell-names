@@ -40,15 +40,24 @@ data SymValueInfo name
       { sv_origName :: name
       , sv_fixity :: Maybe SymFixity
       , sv_typeName :: name
-      , sv_constructors :: [name]
+      , sv_constructors :: [SelectorInfo name]
       }
       -- ^ record field selector
     | SymConstructor
       { sv_origName :: name
       , sv_fixity :: Maybe SymFixity
       , sv_typeName :: name
+      , sv_arity :: Integer
       }
       -- ^ data constructor
+    deriving (Eq, Ord, Show, Data, Typeable, Functor, Foldable, Traversable)
+
+-- | Information about a selector w.r.t. a constructor
+data SelectorInfo name
+    = SelectorInfo
+    { selConstructor :: name
+    , selPosition :: Integer
+    }
     deriving (Eq, Ord, Show, Data, Typeable, Functor, Foldable, Traversable)
 
 -- | Information about a type-level entitity
