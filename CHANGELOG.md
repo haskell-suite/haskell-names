@@ -6,6 +6,7 @@ Version 0.3.1
 
 * Documentation improvements
 * Add `rfoldMap`
+* Relax Cabal dependency constraint to include Cabal-1.14
 
 Version 0.3
 -----------
