@@ -5,6 +5,7 @@ module Language.Haskell.Names.SyntaxUtils
   , getImports
   , getExportSpecList
   , splitDeclHead
+  , getDeclHead
   , getDeclHeadName
   , getModuleDecls
   , isTypeDecl
