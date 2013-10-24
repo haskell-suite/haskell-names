@@ -310,7 +310,7 @@ Test-suite test
     , tasty-golden
     , filemanip
     , utf8-string
-    , pretty-show
+    , pretty-show == 1.5.*
     , Cabal
     , haskell-names
     , tagged
