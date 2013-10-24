@@ -16,6 +16,12 @@ Cabal-Version:          >= 1.10
 extra-source-files:
   README.md
   CHANGELOG.md
+  tests/annotations/*.hs.golden
+  tests/annotations/*.hs
+  tests/imports/*.hs.golden
+  tests/imports/*.hs
+  tests/exports/*.hs.golden
+  tests/exports/*.hs
 data-files:
   libraries/integer-simple-0.1.1.0/GHC/Integer/Logarithms/Internals.names
   libraries/integer-simple-0.1.1.0/GHC/Integer/Simple/Internals.names
