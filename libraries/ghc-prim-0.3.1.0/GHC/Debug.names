@@ -1,1 +1,1 @@
-[{"entity":"value","origin":{"package":"ghc-prim-0.3.1.0","module":"GHC.Debug","name":"debugErrLn"},"fixity":null},{"entity":"value","origin":{"package":"ghc-prim-0.3.1.0","module":"GHC.Debug","name":"debugLn"},"fixity":null}]
+[{"origin":{"name":"debugErrLn","module":"GHC.Debug","package":"ghc-prim-0.3.1.0"},"fixity":null,"entity":"value"},{"origin":{"name":"debugLn","module":"GHC.Debug","package":"ghc-prim-0.3.1.0"},"fixity":null,"entity":"value"}]

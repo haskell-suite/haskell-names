@@ -1,1 +1,1 @@
-[{"entity":"value","origin":{"package":"base-4.7.0.0","module":"Foreign.Concurrent","name":"addForeignPtrFinalizer"},"fixity":null},{"entity":"value","origin":{"package":"base-4.7.0.0","module":"Foreign.Concurrent","name":"newForeignPtr"},"fixity":null}]
+[{"origin":{"name":"addForeignPtrFinalizer","module":"Foreign.Concurrent","package":"base-4.7.0.0"},"fixity":null,"entity":"value"},{"origin":{"name":"newForeignPtr","module":"Foreign.Concurrent","package":"base-4.7.0.0"},"fixity":null,"entity":"value"}]

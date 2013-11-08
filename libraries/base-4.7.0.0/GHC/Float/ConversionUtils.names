@@ -1,1 +1,1 @@
-[{"entity":"value","origin":{"package":"base-4.7.0.0","module":"GHC.Float.ConversionUtils","name":"elimZerosInt#"},"fixity":null},{"entity":"value","origin":{"package":"base-4.7.0.0","module":"GHC.Float.ConversionUtils","name":"elimZerosInteger"},"fixity":null}]
+[{"origin":{"name":"elimZerosInt#","module":"GHC.Float.ConversionUtils","package":"base-4.7.0.0"},"fixity":null,"entity":"value"},{"origin":{"name":"elimZerosInteger","module":"GHC.Float.ConversionUtils","package":"base-4.7.0.0"},"fixity":null,"entity":"value"}]

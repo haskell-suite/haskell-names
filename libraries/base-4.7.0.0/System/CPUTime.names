@@ -1,1 +1,1 @@
-[{"entity":"value","origin":{"package":"base-4.7.0.0","module":"System.CPUTime","name":"cpuTimePrecision"},"fixity":null},{"entity":"value","origin":{"package":"base-4.7.0.0","module":"System.CPUTime","name":"getCPUTime"},"fixity":null}]
+[{"origin":{"name":"cpuTimePrecision","module":"System.CPUTime","package":"base-4.7.0.0"},"fixity":null,"entity":"value"},{"origin":{"name":"getCPUTime","module":"System.CPUTime","package":"base-4.7.0.0"},"fixity":null,"entity":"value"}]

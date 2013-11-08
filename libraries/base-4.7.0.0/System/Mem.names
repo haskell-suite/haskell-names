@@ -1,1 +1,1 @@
-[{"entity":"value","origin":{"package":"base-4.7.0.0","module":"System.Mem","name":"performGC"},"fixity":null}]
+[{"origin":{"name":"performGC","module":"System.Mem","package":"base-4.7.0.0"},"fixity":null,"entity":"value"}]

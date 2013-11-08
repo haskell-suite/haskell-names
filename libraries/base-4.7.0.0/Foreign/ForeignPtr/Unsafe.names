@@ -1,1 +1,1 @@
-[{"entity":"value","origin":{"package":"base-4.7.0.0","module":"GHC.ForeignPtr","name":"unsafeForeignPtrToPtr"},"fixity":null}]
+[{"origin":{"name":"unsafeForeignPtrToPtr","module":"GHC.ForeignPtr","package":"base-4.7.0.0"},"fixity":null,"entity":"value"}]

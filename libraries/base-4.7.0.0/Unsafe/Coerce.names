@@ -1,1 +1,1 @@
-[{"entity":"value","origin":{"package":"base-4.7.0.0","module":"Unsafe.Coerce","name":"unsafeCoerce"},"fixity":null}]
+[{"origin":{"name":"unsafeCoerce","module":"Unsafe.Coerce","package":"base-4.7.0.0"},"fixity":null,"entity":"value"}]

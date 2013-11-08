@@ -1,1 +1,1 @@
-[{"entity":"value","origin":{"package":"base-4.7.0.0","module":"System.Timeout","name":"timeout"},"fixity":null}]
+[{"origin":{"name":"timeout","module":"System.Timeout","package":"base-4.7.0.0"},"fixity":null,"entity":"value"}]
