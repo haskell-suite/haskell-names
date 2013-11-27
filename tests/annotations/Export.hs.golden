@@ -1,0 +1,9 @@
+function at  2:5 is a global value, Prelude.function
+function at  2:5 is a global value, Prelude.function
+Newtype  at  3:5 is a global newtype, Prelude.Newtype
+Newtype  at  3:5 is a global newtype, Prelude.Newtype
+DataType at  4:5 is a global data type, Prelude.DataType
+DataType at  4:5 is a global data type, Prelude.DataType
+DataTypeWithSelectors at  5:5 is a global data type, Prelude.DataTypeWithSelectors
+DataTypeWithSelectors at  5:5 is a global data type, Prelude.DataTypeWithSelectors
+selector1 at 5:27 is a global selector, Prelude.selector1
