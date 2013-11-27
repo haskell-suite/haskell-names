@@ -45,21 +45,25 @@ resolveExportSpec
   -> m (ExportSpec (Scoped l), Symbols)
 resolveExportSpec tbl exp =
   case exp of
-    EVar _ qn -> return $
+    EVar l qn -> return $
       case Global.lookupValue qn tbl of
         Global.Error err ->
           (scopeError err exp, mempty)
         Global.Result i ->
           let s = mkVal i
-          in (Scoped (Export s) <$> exp, s)
+          in
+            (EVar (Scoped (Export s) l)
+              (Scoped (GlobalValue i) <$> qn), s)
         Global.Special {} -> error "Global.Special in export list?"
-    EAbs _ qn -> return $
+    EAbs l qn -> return $
       case Global.lookupType qn tbl of
         Global.Error err ->
           (scopeError err exp, mempty)
         Global.Result i ->
           let s = mkTy i
-          in (Scoped (Export s) <$> exp, s)
+          in
+            (EAbs (Scoped (Export s) l)
+              (Scoped (GlobalType i) <$> qn), s)
         Global.Special {} -> error "Global.Special in export list?"
     EThingAll l qn -> return $
       case Global.lookupType qn tbl of
