@@ -1,6 +1,14 @@
 Changes
 =======
 
+Version 0.3.2
+-------------
+
+* Export `getDeclHead` from `Language.Haskell.Names.SyntaxUtils`
+* Annotate `QName`s in export lists
+* Update the bundled library interfaces (they were broken in earlier 0.3.*
+  versions because of the interface format change)
+
 Version 0.3.1
 -------------
 
