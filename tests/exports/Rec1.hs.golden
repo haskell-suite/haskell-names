@@ -1,44 +1,36 @@
-Symbols (
-  fromList
-    [ SymValue
-        { sv_origName = OrigName
-                          { origPackage = Nothing
-                          , origGName = GName
-                                          { gModule = "Rec1"
-                                          , gName = "rec1_1"
-                                          }
-                          }
-        , sv_fixity = Nothing
-        }
-    , SymValue
-        { sv_origName = OrigName
-                          { origPackage = Nothing
-                          , origGName = GName
-                                          { gModule = "Rec1"
-                                          , gName = "rec1_2"
-                                          }
-                          }
-        , sv_fixity = Nothing
-        }
-    , SymValue
-        { sv_origName = OrigName
-                          { origPackage = Nothing
-                          , origGName = GName
-                                          { gModule = "Rec2"
-                                          , gName = "rec2"
-                                          }
-                          }
-        , sv_fixity = Nothing
-        }
-    , SymValue
-        { sv_origName = OrigName
-                          { origPackage = Nothing
-                          , origGName = GName
-                                          { gModule = "Rec3"
-                                          , gName = "rec3"
-                                          }
-                          }
-        , sv_fixity = Nothing
-        }
-    ] ) (
-  fromList [] )
+Symbols
+  (fromList
+     [ SymValue
+         { sv_origName =
+             OrigName
+               { origPackage = Nothing
+               , origGName = GName { gModule = "Rec1" , gName = "rec1_1" }
+               }
+         , sv_fixity = Nothing
+         }
+     , SymValue
+         { sv_origName =
+             OrigName
+               { origPackage = Nothing
+               , origGName = GName { gModule = "Rec1" , gName = "rec1_2" }
+               }
+         , sv_fixity = Nothing
+         }
+     , SymValue
+         { sv_origName =
+             OrigName
+               { origPackage = Nothing
+               , origGName = GName { gModule = "Rec2" , gName = "rec2" }
+               }
+         , sv_fixity = Nothing
+         }
+     , SymValue
+         { sv_origName =
+             OrigName
+               { origPackage = Nothing
+               , origGName = GName { gModule = "Rec3" , gName = "rec3" }
+               }
+         , sv_fixity = Nothing
+         }
+     ])
+  (fromList [])

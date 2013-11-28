@@ -1,269 +1,223 @@
-Symbols (
-  fromList
-    [ SymValue
-        { sv_origName = OrigName
-                          { origPackage = Nothing
-                          , origGName = GName
-                                          { gModule = "Prelude"
-                                          , gName = "function"
-                                          }
-                          }
-        , sv_fixity = Nothing
-        }
-    , SymMethod
-        { sv_origName = OrigName
-                          { origPackage = Nothing
-                          , origGName = GName
-                                          { gModule = "Prelude"
-                                          , gName = "method1"
-                                          }
-                          }
-        , sv_fixity = Nothing
-        , sv_className = OrigName
-                           { origPackage = Nothing
-                           , origGName = GName
-                                           { gModule = "Prelude"
-                                           , gName = "Class"
-                                           }
-                           }
-        }
-    , SymMethod
-        { sv_origName = OrigName
-                          { origPackage = Nothing
-                          , origGName = GName
-                                          { gModule = "Prelude"
-                                          , gName = "method2"
-                                          }
-                          }
-        , sv_fixity = Nothing
-        , sv_className = OrigName
-                           { origPackage = Nothing
-                           , origGName = GName
-                                           { gModule = "Prelude"
-                                           , gName = "Class"
-                                           }
-                           }
-        }
-    , SymSelector
-        { sv_origName = OrigName
-                          { origPackage = Nothing
-                          , origGName = GName
-                                          { gModule = "Prelude"
-                                          , gName = "selector1"
-                                          }
-                          }
-        , sv_fixity = Nothing
-        , sv_typeName = OrigName
-                          { origPackage = Nothing
-                          , origGName = GName
-                                          { gModule = "Prelude"
-                                          , gName = "DataTypeWithSelectors"
-                                          }
-                          }
-        , sv_constructors = [ OrigName
-                                { origPackage = Nothing
-                                , origGName = GName
-                                                { gModule = "Prelude"
-                                                , gName = "DataTypeWithSelectors"
-                                                }
-                                }
-                            ]
-        }
-    , SymSelector
-        { sv_origName = OrigName
-                          { origPackage = Nothing
-                          , origGName = GName
-                                          { gModule = "Prelude"
-                                          , gName = "selector2"
-                                          }
-                          }
-        , sv_fixity = Nothing
-        , sv_typeName = OrigName
-                          { origPackage = Nothing
-                          , origGName = GName
-                                          { gModule = "Prelude"
-                                          , gName = "DataTypeWithSelectors"
-                                          }
-                          }
-        , sv_constructors = [ OrigName
-                                { origPackage = Nothing
-                                , origGName = GName
-                                                { gModule = "Prelude"
-                                                , gName = "DataTypeWithSelectors"
-                                                }
-                                }
-                            ]
-        }
-    , SymSelector
-        { sv_origName = OrigName
-                          { origPackage = Nothing
-                          , origGName = GName
-                                          { gModule = "Prelude"
-                                          , gName = "unNewtype"
-                                          }
-                          }
-        , sv_fixity = Nothing
-        , sv_typeName = OrigName
-                          { origPackage = Nothing
-                          , origGName = GName
-                                          { gModule = "Prelude"
-                                          , gName = "NewtypeWithSelectors"
-                                          }
-                          }
-        , sv_constructors = [ OrigName
-                                { origPackage = Nothing
-                                , origGName = GName
-                                                { gModule = "Prelude"
-                                                , gName = "NewtypeWithSelectors"
-                                                }
-                                }
-                            ]
-        }
-    , SymConstructor
-        { sv_origName = OrigName
-                          { origPackage = Nothing
-                          , origGName = GName
-                                          { gModule = "Prelude"
-                                          , gName = "Constructor1"
-                                          }
-                          }
-        , sv_fixity = Nothing
-        , sv_typeName = OrigName
-                          { origPackage = Nothing
-                          , origGName = GName
-                                          { gModule = "Prelude"
-                                          , gName = "DataType"
-                                          }
-                          }
-        }
-    , SymConstructor
-        { sv_origName = OrigName
-                          { origPackage = Nothing
-                          , origGName = GName
-                                          { gModule = "Prelude"
-                                          , gName = "Constructor2"
-                                          }
-                          }
-        , sv_fixity = Nothing
-        , sv_typeName = OrigName
-                          { origPackage = Nothing
-                          , origGName = GName
-                                          { gModule = "Prelude"
-                                          , gName = "DataType"
-                                          }
-                          }
-        }
-    , SymConstructor
-        { sv_origName = OrigName
-                          { origPackage = Nothing
-                          , origGName = GName
-                                          { gModule = "Prelude"
-                                          , gName = "DataTypeWithSelectors"
-                                          }
-                          }
-        , sv_fixity = Nothing
-        , sv_typeName = OrigName
-                          { origPackage = Nothing
-                          , origGName = GName
-                                          { gModule = "Prelude"
-                                          , gName = "DataTypeWithSelectors"
-                                          }
-                          }
-        }
-    , SymConstructor
-        { sv_origName = OrigName
-                          { origPackage = Nothing
-                          , origGName = GName
-                                          { gModule = "Prelude"
-                                          , gName = "Newtype"
-                                          }
-                          }
-        , sv_fixity = Nothing
-        , sv_typeName = OrigName
-                          { origPackage = Nothing
-                          , origGName = GName
-                                          { gModule = "Prelude"
-                                          , gName = "Newtype"
-                                          }
-                          }
-        }
-    , SymConstructor
-        { sv_origName = OrigName
-                          { origPackage = Nothing
-                          , origGName = GName
-                                          { gModule = "Prelude"
-                                          , gName = "NewtypeWithSelectors"
-                                          }
-                          }
-        , sv_fixity = Nothing
-        , sv_typeName = OrigName
-                          { origPackage = Nothing
-                          , origGName = GName
-                                          { gModule = "Prelude"
-                                          , gName = "NewtypeWithSelectors"
-                                          }
-                          }
-        }
-    ] ) (
-  fromList
-    [ SymType
-        { st_origName = OrigName
-                          { origPackage = Nothing
-                          , origGName = GName
-                                          { gModule = "Prelude"
-                                          , gName = "TypeSynonym"
-                                          }
-                          }
-        , st_fixity = Nothing
-        }
-    , SymData
-        { st_origName = OrigName
-                          { origPackage = Nothing
-                          , origGName = GName
-                                          { gModule = "Prelude"
-                                          , gName = "DataType"
-                                          }
-                          }
-        , st_fixity = Nothing
-        }
-    , SymData
-        { st_origName = OrigName
-                          { origPackage = Nothing
-                          , origGName = GName
-                                          { gModule = "Prelude"
-                                          , gName = "DataTypeWithSelectors"
-                                          }
-                          }
-        , st_fixity = Nothing
-        }
-    , SymNewType
-        { st_origName = OrigName
-                          { origPackage = Nothing
-                          , origGName = GName
-                                          { gModule = "Prelude"
-                                          , gName = "Newtype"
-                                          }
-                          }
-        , st_fixity = Nothing
-        }
-    , SymNewType
-        { st_origName = OrigName
-                          { origPackage = Nothing
-                          , origGName = GName
-                                          { gModule = "Prelude"
-                                          , gName = "NewtypeWithSelectors"
-                                          }
-                          }
-        , st_fixity = Nothing
-        }
-    , SymClass
-        { st_origName = OrigName
-                          { origPackage = Nothing
-                          , origGName = GName
-                                          { gModule = "Prelude"
-                                          , gName = "Class"
-                                          }
-                          }
-        , st_fixity = Nothing
-        }
-    ] )
+Symbols
+  (fromList
+     [ SymValue
+         { sv_origName =
+             OrigName
+               { origPackage = Nothing
+               , origGName = GName { gModule = "Prelude" , gName = "function" }
+               }
+         , sv_fixity = Nothing
+         }
+     , SymMethod
+         { sv_origName =
+             OrigName
+               { origPackage = Nothing
+               , origGName = GName { gModule = "Prelude" , gName = "method1" }
+               }
+         , sv_fixity = Nothing
+         , sv_className =
+             OrigName
+               { origPackage = Nothing
+               , origGName = GName { gModule = "Prelude" , gName = "Class" }
+               }
+         }
+     , SymMethod
+         { sv_origName =
+             OrigName
+               { origPackage = Nothing
+               , origGName = GName { gModule = "Prelude" , gName = "method2" }
+               }
+         , sv_fixity = Nothing
+         , sv_className =
+             OrigName
+               { origPackage = Nothing
+               , origGName = GName { gModule = "Prelude" , gName = "Class" }
+               }
+         }
+     , SymSelector
+         { sv_origName =
+             OrigName
+               { origPackage = Nothing
+               , origGName = GName { gModule = "Prelude" , gName = "selector1" }
+               }
+         , sv_fixity = Nothing
+         , sv_typeName =
+             OrigName
+               { origPackage = Nothing
+               , origGName =
+                   GName { gModule = "Prelude" , gName = "DataTypeWithSelectors" }
+               }
+         , sv_constructors =
+             [ OrigName
+                 { origPackage = Nothing
+                 , origGName =
+                     GName { gModule = "Prelude" , gName = "DataTypeWithSelectors" }
+                 }
+             ]
+         }
+     , SymSelector
+         { sv_origName =
+             OrigName
+               { origPackage = Nothing
+               , origGName = GName { gModule = "Prelude" , gName = "selector2" }
+               }
+         , sv_fixity = Nothing
+         , sv_typeName =
+             OrigName
+               { origPackage = Nothing
+               , origGName =
+                   GName { gModule = "Prelude" , gName = "DataTypeWithSelectors" }
+               }
+         , sv_constructors =
+             [ OrigName
+                 { origPackage = Nothing
+                 , origGName =
+                     GName { gModule = "Prelude" , gName = "DataTypeWithSelectors" }
+                 }
+             ]
+         }
+     , SymSelector
+         { sv_origName =
+             OrigName
+               { origPackage = Nothing
+               , origGName = GName { gModule = "Prelude" , gName = "unNewtype" }
+               }
+         , sv_fixity = Nothing
+         , sv_typeName =
+             OrigName
+               { origPackage = Nothing
+               , origGName =
+                   GName { gModule = "Prelude" , gName = "NewtypeWithSelectors" }
+               }
+         , sv_constructors =
+             [ OrigName
+                 { origPackage = Nothing
+                 , origGName =
+                     GName { gModule = "Prelude" , gName = "NewtypeWithSelectors" }
+                 }
+             ]
+         }
+     , SymConstructor
+         { sv_origName =
+             OrigName
+               { origPackage = Nothing
+               , origGName =
+                   GName { gModule = "Prelude" , gName = "Constructor1" }
+               }
+         , sv_fixity = Nothing
+         , sv_typeName =
+             OrigName
+               { origPackage = Nothing
+               , origGName = GName { gModule = "Prelude" , gName = "DataType" }
+               }
+         }
+     , SymConstructor
+         { sv_origName =
+             OrigName
+               { origPackage = Nothing
+               , origGName =
+                   GName { gModule = "Prelude" , gName = "Constructor2" }
+               }
+         , sv_fixity = Nothing
+         , sv_typeName =
+             OrigName
+               { origPackage = Nothing
+               , origGName = GName { gModule = "Prelude" , gName = "DataType" }
+               }
+         }
+     , SymConstructor
+         { sv_origName =
+             OrigName
+               { origPackage = Nothing
+               , origGName =
+                   GName { gModule = "Prelude" , gName = "DataTypeWithSelectors" }
+               }
+         , sv_fixity = Nothing
+         , sv_typeName =
+             OrigName
+               { origPackage = Nothing
+               , origGName =
+                   GName { gModule = "Prelude" , gName = "DataTypeWithSelectors" }
+               }
+         }
+     , SymConstructor
+         { sv_origName =
+             OrigName
+               { origPackage = Nothing
+               , origGName = GName { gModule = "Prelude" , gName = "Newtype" }
+               }
+         , sv_fixity = Nothing
+         , sv_typeName =
+             OrigName
+               { origPackage = Nothing
+               , origGName = GName { gModule = "Prelude" , gName = "Newtype" }
+               }
+         }
+     , SymConstructor
+         { sv_origName =
+             OrigName
+               { origPackage = Nothing
+               , origGName =
+                   GName { gModule = "Prelude" , gName = "NewtypeWithSelectors" }
+               }
+         , sv_fixity = Nothing
+         , sv_typeName =
+             OrigName
+               { origPackage = Nothing
+               , origGName =
+                   GName { gModule = "Prelude" , gName = "NewtypeWithSelectors" }
+               }
+         }
+     ])
+  (fromList
+     [ SymType
+         { st_origName =
+             OrigName
+               { origPackage = Nothing
+               , origGName = GName { gModule = "Prelude" , gName = "TypeSynonym" }
+               }
+         , st_fixity = Nothing
+         }
+     , SymData
+         { st_origName =
+             OrigName
+               { origPackage = Nothing
+               , origGName = GName { gModule = "Prelude" , gName = "DataType" }
+               }
+         , st_fixity = Nothing
+         }
+     , SymData
+         { st_origName =
+             OrigName
+               { origPackage = Nothing
+               , origGName =
+                   GName { gModule = "Prelude" , gName = "DataTypeWithSelectors" }
+               }
+         , st_fixity = Nothing
+         }
+     , SymNewType
+         { st_origName =
+             OrigName
+               { origPackage = Nothing
+               , origGName = GName { gModule = "Prelude" , gName = "Newtype" }
+               }
+         , st_fixity = Nothing
+         }
+     , SymNewType
+         { st_origName =
+             OrigName
+               { origPackage = Nothing
+               , origGName =
+                   GName { gModule = "Prelude" , gName = "NewtypeWithSelectors" }
+               }
+         , st_fixity = Nothing
+         }
+     , SymClass
+         { st_origName =
+             OrigName
+               { origPackage = Nothing
+               , origGName = GName { gModule = "Prelude" , gName = "Class" }
+               }
+         , st_fixity = Nothing
+         }
+     ])
