@@ -1,6 +1,11 @@
 Changes
 =======
 
+Version 0.3.2.2
+---------------
+
+Allow `pretty-show-1.6.2` in the test suite
+
 Version 0.3.2.1
 ---------------
 
