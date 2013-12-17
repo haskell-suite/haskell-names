@@ -91,11 +91,12 @@ packages:
 Suppose you need to compile any of the core packages by hand — for example, to
 get a different version than the one bundled with haskell-names.
 
-Core packages, such as `ghc-prim`, `integer-simple`, and `base`, are highly
-GHC-specific and need to be tweaked a bit before they can be processed by
+Core packages, such as `ghc-prim`, `integer-simple`, `array`, and `base`, are
+highly GHC-specific and need to be tweaked a bit before they can be processed by
 haskell-names. Get our modified versions:
 
 * [ghc-prim](https://github.com/haskell-suite/ghc-prim)
+* [array](https://github.com/haskell-suite/array)
 * [base](https://github.com/haskell-suite/base)
 * [integer-simple](https://github.com/haskell-suite/integer-simple)
 
