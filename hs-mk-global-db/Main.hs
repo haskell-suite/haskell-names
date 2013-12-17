@@ -23,7 +23,7 @@ main =
         strOption (long "package-db") <*>
         strOption (short 'o')
 
-pkgNames = map PackageName ["base", "ghc-prim", "integer-simple"]
+pkgNames = map PackageName ["base", "ghc-prim", "integer-simple", "array"]
 
 genDb :: FilePath -> FilePath -> IO ()
 genDb pkgDb dest = do
