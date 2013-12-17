@@ -1,6 +1,11 @@
 Changes
 =======
 
+Version 0.3.2.3
+---------------
+
+Include interfaces for `array`
+
 Version 0.3.2.2
 ---------------
 
