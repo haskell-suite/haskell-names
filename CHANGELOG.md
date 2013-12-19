@@ -1,6 +1,11 @@
 Changes
 =======
 
+Version 0.3.2.4
+---------------
+
+Make haskell-names build GHC 7.8
+
 Version 0.3.2.3
 ---------------
 
