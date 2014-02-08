@@ -272,3 +272,11 @@ See the [list of all issues][issues].
 [#25]: https://github.com/haskell-suite/haskell-names/issues/25
 [#32]: https://github.com/haskell-suite/haskell-names/issues/32
 [validation]: https://github.com/haskell-suite/haskell-names/issues?labels=validation&page=1&state=open
+
+Maintainers
+-----------
+
+[Roman Cheplyaka](https://github.com/feuerbach) is the primary maintainer.
+
+[Adam Bergmark](https://github.com/bergmark) is the backup maintainer. Please
+get in touch with him if the primary maintainer cannot be reached.
