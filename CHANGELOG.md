@@ -1,6 +1,11 @@
 Changes
 =======
 
+Version 0.3.2.5
+---------------
+
+Relax `pretty-show` version bound
+
 Version 0.3.2.4
 ---------------
 
