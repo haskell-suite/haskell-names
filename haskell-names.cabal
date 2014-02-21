@@ -1,5 +1,5 @@
 Name:                   haskell-names
-Version:                0.3.2.4
+Version:                0.3.2.5
 License:                BSD3
 Author:                 Roman Cheplyaka, Lennart Augustsson
 Maintainer:             Roman Cheplyaka <roma@ro-che.info>
@@ -322,7 +322,7 @@ Test-suite test
     , utf8-string
       -- we have to fix the pretty-show version, because the change in the
       -- output format may affect the tests success
-    , pretty-show >= 1.6.1 && <= 1.6.2
+    , pretty-show >= 1.6.1 && < 1.7
     , Cabal
     , haskell-names
     , tagged
