@@ -10,6 +10,7 @@ import Test.Tasty.Golden.Manage
 
 import System.FilePath
 import System.FilePath.Find
+import System.IO
 import System.Exit
 import Data.Monoid
 import Data.List hiding (find)
@@ -76,7 +77,7 @@ exportTest file iface =
   where
     golden = file <.> "golden"
     out = file <.> "out"
-    run = writeFile out $ ppShow iface
+    run = writeBinaryFile out $ ppShow iface
 
 exportTests :: MT TestTree
 exportTests = do
@@ -105,7 +106,7 @@ importTest file tbl =
     golden = file <.> "golden"
     out = file <.> "out"
     run = do
-      writeFile out $ ppShow tbl
+      writeBinaryFile out $ ppShow tbl
 
 getGlobalTable :: FilePath -> MT Global.Table
 getGlobalTable file = do
@@ -169,7 +170,7 @@ annotationTest file annotatedMod = goldenTest file golden out run
     golden = file <.> "golden"
     out = file <.> "out"
     run = do
-      liftIO $ writeFile out $ printAnns annotatedMod
+      liftIO $ writeBinaryFile out $ printAnns annotatedMod
 
 getAnnotated file = do
   mod <- liftIO $ parseAndPrepare file
@@ -243,4 +244,7 @@ formatAnn name (Scoped info loc) =
     name
     (formatLoc loc)
     (formatInfo info)
+
+writeBinaryFile :: FilePath -> String -> IO ()
+writeBinaryFile f txt = withBinaryFile f WriteMode (\hdl -> hPutStr hdl txt)
 -- }}}
