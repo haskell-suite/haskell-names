@@ -244,7 +244,4 @@ formatAnn name (Scoped info loc) =
     name
     (formatLoc loc)
     (formatInfo info)
-
-writeBinaryFile :: FilePath -> String -> IO ()
-writeBinaryFile f txt = withBinaryFile f WriteMode (\hdl -> hPutStr hdl txt)
 -- }}}
