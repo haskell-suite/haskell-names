@@ -1,6 +1,11 @@
 Changes
 =======
 
+Version 0.3.2.6
+---------------
+
+Work around a regression in `type-eq`
+
 Version 0.3.2.5
 ---------------
 
