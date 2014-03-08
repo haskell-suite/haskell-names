@@ -1,6 +1,11 @@
 Changes
 =======
 
+Version 0.3.2.8
+---------------
+
+Introduce a lower dependency bound on `tasty-golden` in the test suite
+
 Version 0.3.2.7
 ---------------
 

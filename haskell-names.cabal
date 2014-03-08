@@ -1,5 +1,5 @@
 Name:                   haskell-names
-Version:                0.3.2.7
+Version:                0.3.2.8
 License:                BSD3
 Author:                 Roman Cheplyaka, Lennart Augustsson
 Maintainer:             Roman Cheplyaka <roma@ro-che.info>
@@ -317,7 +317,7 @@ Test-suite test
     , bytestring
     , haskell-packages
     , tasty
-    , tasty-golden
+    , tasty-golden >= 2.2.1
     , filemanip
     , utf8-string
       -- we have to fix the pretty-show version, because the change in the
