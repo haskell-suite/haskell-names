@@ -1,6 +1,11 @@
 Changes
 =======
 
+Version 0.3.2.7
+---------------
+
+`type-eq` is fixed; depend on the new version
+
 Version 0.3.2.6
 ---------------
 
