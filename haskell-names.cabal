@@ -271,7 +271,7 @@ Library
     , data-lens-template
     , tagged
     , traverse-with-class
-    , type-eq == 0.4
+    , type-eq >= 0.4.2
     , Cabal >= 1.14 && < 1.20
   Hs-source-dirs:       src
   Ghc-options:          -Wall -fno-warn-name-shadowing
