@@ -2,6 +2,7 @@
 module Language.Haskell.Names.ModuleSymbols
   ( moduleSymbols
   , moduleTable
+  , getTopDeclSymbols
   )
   where
 
