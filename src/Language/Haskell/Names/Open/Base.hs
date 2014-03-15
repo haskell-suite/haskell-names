@@ -46,6 +46,12 @@ makeLens ''Scope
 initialScope :: Global.Table -> Scope
 initialScope tbl = Scope tbl Local.empty Other []
 
+-- | Merge local tables of two scopes. The other fields of the scopes are
+-- assumed to be the same.
+mergeLocalScopes :: Scope -> Scope -> Scope
+mergeLocalScopes sc1 sc2 =
+  modL lTable (<> sc2 ^. lTable) sc1
+
 -- | The algebra for 'rtraverse'. It's newtype-wrapped because an implicit
 -- parameter cannot be polymorphic.
 newtype Alg w = Alg
