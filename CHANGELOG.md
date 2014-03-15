@@ -1,6 +1,13 @@
 Changes
 =======
 
+Version 0.3.3
+-------------
+
+* Expose `Language.Haskell.Names.ModuleSymbols.getTopDecls`
+* Define a `Monoid` instance for `LocalSymbolTable.Table`
+* Support for parallel list comprehensions
+
 Version 0.3.2.8
 ---------------
 
