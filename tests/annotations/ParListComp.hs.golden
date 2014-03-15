@@ -1,0 +1,44 @@
+l1       at  1:1 is a value bound here
+ax       at  1:4 is a value bound here
+ay       at  1:7 is a value bound here
+az       at 1:10 is a value bound here
+x        at  2:6 is a local value defined at 3:5
+x        at  2:6 is a local value defined at 3:5
+y        at  2:8 is a local value defined at 4:5
+y        at  2:8 is a local value defined at 4:5
+z        at 2:10 is a local value defined at 5:5
+z        at 2:10 is a local value defined at 5:5
+x        at  3:5 is a value bound here
+ax       at 3:10 is a local value defined at 1:4
+ax       at 3:10 is a local value defined at 1:4
+y        at  4:5 is a value bound here
+ay       at 4:10 is a local value defined at 1:7
+ay       at 4:10 is a local value defined at 1:7
+z        at  5:5 is a value bound here
+az       at 5:10 is a local value defined at 1:10
+az       at 5:10 is a local value defined at 1:10
+l2       at  8:1 is a value bound here
+ax       at  8:4 is a value bound here
+ay       at  8:7 is a value bound here
+az       at 8:10 is a value bound here
+x        at  9:6 is a local value defined at 10:5
+x        at  9:6 is a local value defined at 10:5
+y        at  9:8 is a local value defined at 11:5
+y        at  9:8 is a local value defined at 11:5
+z        at 9:10 is a local value defined at 12:5
+z        at 9:10 is a local value defined at 12:5
+x        at 10:5 is a value bound here
+ax       at 10:10 is a local value defined at 8:4
+ax       at 10:10 is a local value defined at 8:4
+x        at 10:13 is not in scope
+x        at 10:13 is not in scope
+y        at 11:5 is a value bound here
+ay       at 11:10 is a local value defined at 8:7
+ay       at 11:10 is a local value defined at 8:7
+x        at 11:13 is not in scope
+x        at 11:13 is not in scope
+z        at 12:5 is a value bound here
+az       at 12:10 is a local value defined at 8:10
+az       at 12:10 is a local value defined at 8:10
+x        at 12:13 is not in scope
+x        at 12:13 is not in scope
