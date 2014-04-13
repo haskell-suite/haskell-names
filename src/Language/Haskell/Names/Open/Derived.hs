@@ -136,3 +136,7 @@ deriveGTraversable ''Alt
 deriveGTraversable ''GuardedAlts
 
 deriveGTraversable ''GuardedAlt
+
+deriveGTraversable ''Promoted
+
+deriveGTraversable ''IfAlt
