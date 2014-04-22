@@ -1,5 +1,5 @@
 Name:                   haskell-names
-Version:                0.3.3.1
+Version:                0.3.3.2
 License:                BSD3
 Author:                 Roman Cheplyaka, Lennart Augustsson
 Maintainer:             Roman Cheplyaka <roma@ro-che.info>
@@ -272,7 +272,7 @@ Library
     , tagged
     , traverse-with-class
     , type-eq >= 0.4.2
-    , Cabal >= 1.14 && < 1.20
+    , Cabal >= 1.14
   Hs-source-dirs:       src
   Ghc-options:          -Wall -fno-warn-name-shadowing
 
