@@ -1,4 +1,5 @@
 -- | This module is designed to be imported qualified.
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
 module Language.Haskell.Names.LocalSymbolTable
   ( Table
   , empty
@@ -7,12 +8,14 @@ module Language.Haskell.Names.LocalSymbolTable
   ) where
 
 import qualified Data.Map as Map
+import Data.Monoid
 import Language.Haskell.Exts.Annotated
 import Language.Haskell.Names.SyntaxUtils
 import Language.Haskell.Names.Types
 
 -- | Local symbol table — contains locally bound names
 newtype Table = Table (Map.Map NameS SrcLoc)
+  deriving Monoid
 
 addValue :: SrcInfo l => Name l -> Table -> Table
 addValue n (Table vs) =

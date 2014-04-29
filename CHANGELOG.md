@@ -1,6 +1,23 @@
 Changes
 =======
 
+Version 0.3.3.2
+---------------
+
+Remove the upper version bound on Cabal
+
+Version 0.3.3.1
+---------------
+
+Update to work with haskell-src-exts 1.15
+
+Version 0.3.3
+-------------
+
+* Expose `Language.Haskell.Names.ModuleSymbols.getTopDecls`
+* Define a `Monoid` instance for `LocalSymbolTable.Table`
+* Support for parallel list comprehensions
+
 Version 0.3.2.8
 ---------------
 

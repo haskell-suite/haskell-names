@@ -19,6 +19,8 @@ import qualified Data.Data as D
 import Control.Applicative
 import Data.Typeable
 import Data.Lens.Common
+import Data.List
+import qualified Data.Traversable as T
 
 c :: Applicative w => c -> w c
 c = pure
@@ -255,6 +257,17 @@ instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (Exp l) where
           <|  sc -: l
           <|  scWithStmts -: e
           <*> stmts'
+
+      ParComp l e stmtss ->
+        let
+          (stmtss', scsWithStmts) =
+            unzip $ map (\stmts -> chain stmts sc) stmtss
+          scWithAllStmtss = foldl1' mergeLocalScopes scsWithStmts
+        in
+        c ParComp
+          <|  sc -: l
+          <|  scWithAllStmtss -: e
+          <*> T.sequenceA stmtss'
 
       Proc l pat e ->
         let scWithPat = intro pat sc
