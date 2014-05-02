@@ -18,7 +18,7 @@ import Language.Haskell.Exts.Annotated
 import qualified Data.Data as D
 import Control.Applicative
 import Data.Typeable
-import Data.Lens.Common
+import Data.Lens.Light
 import Data.List
 import qualified Data.Traversable as T
 

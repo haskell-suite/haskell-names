@@ -23,7 +23,7 @@ import Data.Typeable
 import Data.Data
 import Control.Arrow
 import Control.Applicative hiding (empty)
-import Data.Lens.Common
+import Data.Lens.Light
 
 import Language.Haskell.Names.Types
 import Language.Haskell.Names.SyntaxUtils

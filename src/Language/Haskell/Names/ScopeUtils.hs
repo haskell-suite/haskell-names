@@ -4,7 +4,7 @@ import Control.Applicative
 import Control.Arrow
 import qualified Data.Set as Set
 import Data.Monoid
-import Data.Lens.Common
+import Data.Lens.Light
 import Language.Haskell.Names.Types
 import Language.Haskell.Names.SyntaxUtils
 import Language.Haskell.Exts.Annotated

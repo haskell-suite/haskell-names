@@ -8,7 +8,7 @@ module Language.Haskell.Names.ModuleSymbols
 
 import Data.Maybe
 import Data.Either
-import Data.Lens.Common
+import Data.Lens.Light
 import Data.Monoid
 import Data.Data
 import qualified Data.Set as Set

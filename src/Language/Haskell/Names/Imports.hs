@@ -11,7 +11,7 @@ import qualified Data.Map as Map
 import Data.Monoid
 import Data.Maybe
 import Data.Either
-import Data.Lens.Common
+import Data.Lens.Light
 import Data.Foldable (foldMap, fold)
 import Control.Applicative
 import Control.Arrow

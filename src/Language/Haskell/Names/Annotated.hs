@@ -18,7 +18,7 @@ import qualified Language.Haskell.Names.GlobalSymbolTable as Global
 import qualified Language.Haskell.Names.LocalSymbolTable as Local
 import Language.Haskell.Exts.Annotated
 import Data.Proxy
-import Data.Lens.Common
+import Data.Lens.Light
 import Data.Typeable (Typeable)
   -- in GHC 7.8 Data.Typeable exports (:~:). Be careful to avoid the clash.
 import Control.Applicative

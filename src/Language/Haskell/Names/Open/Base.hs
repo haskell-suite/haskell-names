@@ -15,8 +15,7 @@ import Language.Haskell.Exts.Annotated
 import Control.Applicative
 import Control.Monad.Identity
 import Data.List
-import Data.Lens.Common
-import Data.Lens.Template
+import Data.Lens.Light
 import Data.Generics.Traversable
 import Data.Typeable
 import Data.Monoid

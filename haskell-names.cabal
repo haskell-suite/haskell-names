@@ -267,8 +267,7 @@ Library
     , aeson
     , bytestring
     , haskell-packages >= 0.2
-    , data-lens
-    , data-lens-template
+    , data-lens-light
     , tagged
     , traverse-with-class
     , type-eq >= 0.4.2

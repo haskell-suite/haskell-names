@@ -6,7 +6,7 @@ import Language.Haskell.Exts.Annotated
 import Data.Typeable
 import Data.Data
 import Data.Monoid
-import Data.Lens.Common
+import Data.Lens.Light
 import qualified Data.Set as Set
 import {-# SOURCE #-} qualified Language.Haskell.Names.GlobalSymbolTable as Global
 import Distribution.Package
