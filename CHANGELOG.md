@@ -1,6 +1,11 @@
 Changes
 =======
 
+Version 0.4
+-----------
+
+Replace `data-lens` with `data-lens-light`
+
 Version 0.3.3.2
 ---------------
 
