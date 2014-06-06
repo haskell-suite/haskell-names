@@ -109,6 +109,10 @@ getTopDeclSymbols impTbl mdl d =
         | GadtDecl _ cn _ <- gadtDecls
         ]
 
+    DataFamDecl _ _ dh _ ->
+      let tn = hname dh
+      in [Right (SymDataFam { st_origName = tn, st_fixity = Nothing })]
+
     ClassDecl _ _ dh _ mds ->
       let
         ms = getBound impTbl d

@@ -1,0 +1,12 @@
+Symbols
+  (fromList [])
+  (fromList
+     [ SymDataFam
+         { st_origName =
+             OrigName
+               { origPackage = Nothing
+               , origGName = GName { gModule = "DataFamilies" , gName = "Vector" }
+               }
+         , st_fixity = Nothing
+         }
+     ])
