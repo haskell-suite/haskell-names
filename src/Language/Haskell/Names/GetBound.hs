@@ -54,7 +54,7 @@ instance (Data l) => GetBound (Decl l) l where
       FunBind _ [] -> error "getBound: FunBind []"
       FunBind _ (Match _ n _ _ _ : _) -> [n]
       FunBind _ (InfixMatch _ _ n _ _ _ : _) -> [n]
-      PatBind _ p _ _ _ -> getBound ctx p
+      PatBind _ p _ _ -> getBound ctx p
       ForImp _ _ _ _ n _ -> [n]
       ForExp _ _ _ n _ -> [n]
       RulePragmaDecl{} -> []
