@@ -53,7 +53,7 @@ annotateRec _ sc a = go sc a where
       = Scoped TypeBinder (sLoc . ann $ a) <$ a
     | Just (Eq :: FieldUpdate (Scoped l) :~: a) <- dynamicEq
       = case a of
-          FieldPun l n -> FieldPun l (lookupUnqualValue n sc <$ n)
+          FieldPun l n -> FieldPun l (lookupValue (sLoc <$> n) sc <$ n)
           FieldWildcard l ->
             let
               namesUnres = sc ^. wcNames
@@ -74,9 +74,6 @@ annotateRec _ sc a = go sc a where
             (sLoc l)
     | otherwise
       = rmap go sc a
-
-lookupUnqualValue :: Name (Scoped l) -> Scope -> Scoped l
-lookupUnqualValue n = lookupValue (UnQual (sLoc $ ann n) (sLoc <$> n))
 
 lookupValue :: QName l -> Scope -> Scoped l
 lookupValue qn sc = Scoped nameInfo (ann qn)
