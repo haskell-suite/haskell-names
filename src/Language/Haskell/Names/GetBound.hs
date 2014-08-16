@@ -71,7 +71,15 @@ instance (Data l) => GetBound (QualConDecl l) l where
     getBound ctx (QualConDecl _ _ _ d) = getBound ctx d
 
 instance (Data l) => GetBound (GadtDecl l) l where
-    getBound _ctx (GadtDecl _ n _) = [n]
+    getBound _ctx (GadtDecl _l conName mbFieldDecls _ty) =
+      -- GADT constructor name
+      [conName] ++
+      -- GADT selector names
+      [ fieldName
+      | Just fieldDecls <- return mbFieldDecls
+      , FieldDecl _l' fieldNames _fieldTy <- fieldDecls
+      , fieldName <- fieldNames
+      ]
 
 instance (Data l) => GetBound (ConDecl l) l where
     getBound ctx e = case e of
