@@ -11,6 +11,7 @@ import Control.Applicative
 
 import Language.Haskell.Exts.Annotated
 import Language.Haskell.Names.RecordWildcards
+import Language.Haskell.Names.SyntaxUtils
 import qualified Language.Haskell.Names.GlobalSymbolTable as Global
 
 -- | Get bound value identifiers.
@@ -140,7 +141,7 @@ instance (Data l) => GetBound (Pat l) l where
 
       getRecVars :: [Name ()] -> PatField l -> [Name l]
       getRecVars _ PFieldPat {} = [] -- this is already found by the generic algorithm
-      getRecVars _ (PFieldPun _ n) = [n]
+      getRecVars _ (PFieldPun _ qn) = [qNameToName qn]
       getRecVars elidedFields (PFieldWildcard l) = map (l <$) elidedFields
 
 getBoundSign :: Decl l -> [Name l]
