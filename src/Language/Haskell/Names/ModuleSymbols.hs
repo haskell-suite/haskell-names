@@ -138,7 +138,7 @@ getTopDeclSymbols impTbl mdl d =
   where
     ModuleName _ smdl = mdl
     qname = GName smdl . nameToString
-    hname = qname . fst . splitDeclHead
+    hname = qname . getDeclHeadName
     toOrig = OrigName Nothing
     dataOrNewCon dataOrNew = case dataOrNew of DataType {} -> SymData; NewType {} -> SymNewType
 
