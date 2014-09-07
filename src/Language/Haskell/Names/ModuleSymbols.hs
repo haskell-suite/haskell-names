@@ -128,7 +128,7 @@ getTopDeclSymbols impTbl mdl d =
       let vn : _ = getBound impTbl ms
       in  [ Left  (SymValue { sv_origName = qname vn, sv_fixity = Nothing }) ]
 
-    PatBind _ p _ _ _ ->
+    PatBind _ p _ _ ->
       [ Left  (SymValue { sv_origName = qname vn, sv_fixity = Nothing }) | vn <- getBound impTbl p ]
 
     ForImp _ _ _ _ fn _ ->
