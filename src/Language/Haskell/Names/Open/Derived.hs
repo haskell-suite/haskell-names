@@ -142,3 +142,5 @@ deriveGTraversable ''BooleanFormula
 deriveGTraversable ''TypeEqn
 
 deriveGTraversable ''Overlap
+
+deriveGTraversable ''Sign
