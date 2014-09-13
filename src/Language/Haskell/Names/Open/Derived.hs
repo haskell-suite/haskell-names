@@ -144,3 +144,5 @@ deriveGTraversable ''TypeEqn
 deriveGTraversable ''Overlap
 
 deriveGTraversable ''Sign
+
+deriveGTraversable ''Namespace
