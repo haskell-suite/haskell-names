@@ -162,10 +162,10 @@ instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (PatField l) where
           <| sc       -: l
           <| exprV sc -: qn
           <| sc       -: pat
-      PFieldPun l n ->
+      PFieldPun l qn ->
         c PFieldPun
           <| sc -: l
-          <| binderV sc -: n
+          <| exprV sc -: qn
       -- In future we might want to annotate PFieldWildcard with the names
       -- it introduces.
       PFieldWildcard {} -> defaultRtraverse e sc
