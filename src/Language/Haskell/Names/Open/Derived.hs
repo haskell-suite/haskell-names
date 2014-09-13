@@ -49,6 +49,8 @@ deriveGTraversable ''DeclHead
 
 deriveGTraversable ''InstHead
 
+deriveGTraversable ''InstRule
+
 deriveGTraversable ''Deriving
 
 deriveGTraversable ''Binds
@@ -133,10 +135,14 @@ deriveGTraversable ''FieldUpdate
 
 deriveGTraversable ''Alt
 
-deriveGTraversable ''GuardedAlts
-
-deriveGTraversable ''GuardedAlt
-
 deriveGTraversable ''Promoted
 
-deriveGTraversable ''IfAlt
+deriveGTraversable ''BooleanFormula
+
+deriveGTraversable ''TypeEqn
+
+deriveGTraversable ''Overlap
+
+deriveGTraversable ''Sign
+
+deriveGTraversable ''Namespace

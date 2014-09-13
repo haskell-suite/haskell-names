@@ -4,7 +4,6 @@ module Language.Haskell.Names.SyntaxUtils
   , getModuleName
   , getImports
   , getExportSpecList
-  , splitDeclHead
   , getDeclHead
   , getDeclHeadName
   , getModuleDecls
@@ -27,6 +26,7 @@ import Data.Maybe
 import Data.Either
 import Data.Foldable
 import qualified Data.Set as Set
+import Data.Generics.Uniplate.Data
 import Language.Haskell.Exts.Annotated
 import Language.Haskell.Names.Types
 
@@ -58,7 +58,7 @@ getExportSpecList m = me where ModuleHead _ _ _ me = getModuleHead m
 getModuleHead :: Module l -> ModuleHead l
 getModuleHead (Module _ (Just mh) _ _ _) = mh
 getModuleHead (XmlHybrid _ (Just mh) _ _ _ _ _ _ _) = mh
-getModuleHead m = ModuleHead l (main_mod l) Nothing (Just (ExportSpecList l [EVar l (UnQual l (Ident l "main"))]))
+getModuleHead m = ModuleHead l (main_mod l) Nothing (Just (ExportSpecList l [EVar l (NoNamespace l) (UnQual l (Ident l "main"))]))
   where l = ann m
 
 qNameToName :: QName l -> Name l
@@ -82,13 +82,13 @@ getDeclHead (DataFamDecl _ _ dhead _) = Just dhead
 getDeclHead (ClassDecl _ _ dhead _ _) = Just dhead
 getDeclHead _ = Nothing
 
-splitDeclHead :: DeclHead l -> (Name l, [TyVarBind l])
-splitDeclHead (DHead _ n vs) = (n, vs)
-splitDeclHead (DHInfix _ v1 n v2) = (n, [v1, v2])
-splitDeclHead (DHParen _ dhead) = splitDeclHead dhead
-
-getDeclHeadName :: Decl l -> Name l
-getDeclHeadName = fst . splitDeclHead . fromMaybe (error "getDeclHeadName") . getDeclHead
+getDeclHeadName :: DeclHead l -> Name l
+getDeclHeadName dh =
+  case dh of
+    DHead _ n -> n
+    DHInfix _ _ n -> n
+    DHParen _ dh' -> getDeclHeadName dh'
+    DHApp _ dh' _ -> getDeclHeadName dh'
 
 ----------------------------------------------------
 

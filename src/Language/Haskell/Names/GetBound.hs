@@ -11,6 +11,7 @@ import Control.Applicative
 
 import Language.Haskell.Exts.Annotated
 import Language.Haskell.Names.RecordWildcards
+import Language.Haskell.Names.SyntaxUtils
 import qualified Language.Haskell.Names.GlobalSymbolTable as Global
 
 -- | Get bound value identifiers.
@@ -54,7 +55,7 @@ instance (Data l) => GetBound (Decl l) l where
       FunBind _ [] -> error "getBound: FunBind []"
       FunBind _ (Match _ n _ _ _ : _) -> [n]
       FunBind _ (InfixMatch _ _ n _ _ _ : _) -> [n]
-      PatBind _ p _ _ _ -> getBound ctx p
+      PatBind _ p _ _ -> getBound ctx p
       ForImp _ _ _ _ n _ -> [n]
       ForExp _ _ _ n _ -> [n]
       RulePragmaDecl{} -> []
@@ -71,7 +72,15 @@ instance (Data l) => GetBound (QualConDecl l) l where
     getBound ctx (QualConDecl _ _ _ d) = getBound ctx d
 
 instance (Data l) => GetBound (GadtDecl l) l where
-    getBound _ctx (GadtDecl _ n _) = [n]
+    getBound _ctx (GadtDecl _l conName mbFieldDecls _ty) =
+      -- GADT constructor name
+      [conName] ++
+      -- GADT selector names
+      [ fieldName
+      | Just fieldDecls <- return mbFieldDecls
+      , FieldDecl _l' fieldNames _fieldTy <- fieldDecls
+      , fieldName <- fieldNames
+      ]
 
 instance (Data l) => GetBound (ConDecl l) l where
     getBound ctx e = case e of
@@ -132,7 +141,7 @@ instance (Data l) => GetBound (Pat l) l where
 
       getRecVars :: [Name ()] -> PatField l -> [Name l]
       getRecVars _ PFieldPat {} = [] -- this is already found by the generic algorithm
-      getRecVars _ (PFieldPun _ n) = [n]
+      getRecVars _ (PFieldPun _ qn) = [qNameToName qn]
       getRecVars elidedFields (PFieldWildcard l) = map (l <$) elidedFields
 
 getBoundSign :: Decl l -> [Name l]

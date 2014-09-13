@@ -99,14 +99,14 @@ nameOfPatField :: PatField l -> Maybe (Name l)
 nameOfPatField pf =
   case pf of
     PFieldPat _ qn _ -> Just $ qNameToName qn
-    PFieldPun _ n -> Just n
+    PFieldPun _ qn -> Just $ qNameToName qn
     PFieldWildcard {} -> Nothing
 
 nameOfUpdField :: FieldUpdate l -> Maybe (Name l)
 nameOfUpdField pf =
   case pf of
     FieldUpdate _ qn _ -> Just $ qNameToName qn
-    FieldPun _ n -> Just n
+    FieldPun _ qn -> Just $ qNameToName qn
     FieldWildcard {} -> Nothing
 
 patWcNames

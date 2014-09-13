@@ -45,7 +45,7 @@ resolveExportSpec
   -> m (ExportSpec (Scoped l), Symbols)
 resolveExportSpec tbl exp =
   case exp of
-    EVar l qn -> return $
+    EVar l ns@(NoNamespace {}) qn -> return $
       case Global.lookupValue qn tbl of
         Global.Error err ->
           (scopeError err exp, mempty)
@@ -53,8 +53,10 @@ resolveExportSpec tbl exp =
           let s = mkVal i
           in
             (EVar (Scoped (Export s) l)
+              (noScope ns)
               (Scoped (GlobalValue i) <$> qn), s)
         Global.Special {} -> error "Global.Special in export list?"
+    EVar _ (TypeNamespace {}) _ -> error "'type' namespace is not supported yet" -- FIXME
     EAbs l qn -> return $
       case Global.lookupType qn tbl of
         Global.Error err ->

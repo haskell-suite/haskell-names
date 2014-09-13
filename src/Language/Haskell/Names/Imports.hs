@@ -78,7 +78,7 @@ resolveImportDecl
   :: Symbols
   -> ImportDecl l
   -> (ImportDecl (Scoped l), Global.Table)
-resolveImportDecl syms (ImportDecl l mod qual src pkg mbAs mbSpecList) =
+resolveImportDecl syms (ImportDecl l mod qual src impSafe pkg mbAs mbSpecList) =
   let
     (mbSpecList', impSyms) =
       (fmap fst &&& maybe syms snd) $
@@ -95,6 +95,7 @@ resolveImportDecl syms (ImportDecl l mod qual src pkg mbAs mbSpecList) =
       (Scoped (ImportPart syms) <$> mod)
       qual
       src
+      impSafe
       pkg
       (fmap noScope mbAs)
       mbSpecList'
@@ -150,7 +151,7 @@ resolveImportSpec
 -- NB: this can be made more efficient
 resolveImportSpec mod isHiding syms spec =
   case spec of
-    IVar _ n ->
+    IVar _ (NoNamespace {}) n ->
       let
         matches = mconcat $
           -- Strictly speaking, the isConstructor check is unnecessary
@@ -166,6 +167,7 @@ resolveImportSpec mod isHiding syms spec =
           matches
           spec
     -- FIXME think about data families etc.
+    IVar _ (TypeNamespace {}) _ -> error "'type' namespace is not supported yet" -- FIXME
     IAbs _ n
       | isHiding ->
           -- This is a bit special. 'C' may match both types/classes and

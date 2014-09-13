@@ -46,14 +46,13 @@ instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (Decl l) where
       --
       -- If this is a local binding, then we have already introduced these
       -- variables when processing the enclosing Binds.
-      PatBind l pat mbType rhs mbWhere ->
+      PatBind l pat rhs mbWhere ->
         let
           scWithWhere = intro mbWhere sc
         in
         c PatBind
           <| sc                -: l
           <| sc                -: pat
-          <| sc                -: mbType
           <| exprV scWithWhere -: rhs
           <| sc                -: mbWhere
       -- FunBind consists of Matches, which we handle below anyway.
@@ -70,17 +69,15 @@ instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (Type l) where
 instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (DeclHead l) where
   rtraverse e sc =
     case e of
-      DHead l name tyVars ->
+      DHead l name ->
         c DHead
           <| sc -: l
           <| binderT sc -: name
-          <| sc -: tyVars
-      DHInfix l v1 name v2 ->
+      DHInfix l v1 name ->
         c DHInfix
           <| sc -: l
           <| sc -: v1
           <| binderT sc -: name
-          <| sc -: v2
       _ -> defaultRtraverse e sc
 
 instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (ConDecl l) where
@@ -165,10 +162,10 @@ instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (PatField l) where
           <| sc       -: l
           <| exprV sc -: qn
           <| sc       -: pat
-      PFieldPun l n ->
+      PFieldPun l qn ->
         c PFieldPun
           <| sc -: l
-          <| binderV sc -: n
+          <| exprV sc -: qn
       -- In future we might want to annotate PFieldWildcard with the names
       -- it introduces.
       PFieldWildcard {} -> defaultRtraverse e sc
@@ -308,17 +305,6 @@ instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (Alt l) where
           <| sc -: pat
           <| scWithBinds -: guardedAlts
           <| scWithBinds -: mbWhere
-
-instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (GuardedAlt l) where
-  rtraverse e sc =
-    case e of
-      GuardedAlt l stmts exp ->
-        let (stmts', scWithStmts) = chain stmts sc
-        in
-        c GuardedAlt
-          <|  sc -: l
-          <*> stmts'
-          <|  scWithStmts -: exp
 
 instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (GuardedRhs l) where
   rtraverse e sc =

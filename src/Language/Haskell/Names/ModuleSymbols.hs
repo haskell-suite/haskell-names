@@ -1,4 +1,4 @@
-{-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE ScopedTypeVariables, ViewPatterns #-}
 module Language.Haskell.Names.ModuleSymbols
   ( moduleSymbols
   , moduleTable
@@ -96,18 +96,18 @@ getTopDeclSymbols impTbl mdl d =
         Right (dataOrNewCon dataOrNew dq Nothing) : map Left infos
 
     GDataDecl _ dataOrNew _ dh _ gadtDecls _ ->
-      -- As of 1.14.0, HSE doesn't support GADT records.
-      -- When it does, this code should be rewritten similarly to the
-      -- DataDecl case.
-      -- (Also keep in mind that GHC doesn't create selectors for fields
-      -- with existential type variables.)
+      -- FIXME: We shouldn't create selectors for fields with existential type variables!
       let
         dq = hname dh
+
+        cons :: Constructors
+        cons = do -- list monad
+          GadtDecl _ cn (fromMaybe [] -> fields) _ty <- gadtDecls
+          return (void cn , [void f | FieldDecl _ fNames _ <- fields, f <- fNames])
+
+        infos = constructorsToInfos dq cons
       in
-          Right (dataOrNewCon dataOrNew dq Nothing) :
-        [ Left (SymConstructor { sv_origName = qname cn, sv_fixity = Nothing, sv_typeName = dq })
-        | GadtDecl _ cn _ <- gadtDecls
-        ]
+          Right (dataOrNewCon dataOrNew dq Nothing) : map Left infos
 
     DataFamDecl _ _ dh _ ->
       let tn = hname dh
@@ -128,7 +128,7 @@ getTopDeclSymbols impTbl mdl d =
       let vn : _ = getBound impTbl ms
       in  [ Left  (SymValue { sv_origName = qname vn, sv_fixity = Nothing }) ]
 
-    PatBind _ p _ _ _ ->
+    PatBind _ p _ _ ->
       [ Left  (SymValue { sv_origName = qname vn, sv_fixity = Nothing }) | vn <- getBound impTbl p ]
 
     ForImp _ _ _ _ fn _ ->
@@ -138,7 +138,7 @@ getTopDeclSymbols impTbl mdl d =
   where
     ModuleName _ smdl = mdl
     qname = GName smdl . nameToString
-    hname = qname . fst . splitDeclHead
+    hname = qname . getDeclHeadName
     toOrig = OrigName Nothing
     dataOrNewCon dataOrNew = case dataOrNew of DataType {} -> SymData; NewType {} -> SymNewType
 
