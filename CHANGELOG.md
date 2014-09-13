@@ -1,6 +1,12 @@
 Changes
 =======
 
+Version 0.4.1
+-------------
+
+* Export types defined by top level data family declarations
+* Update to haskell-src-exts 1.16
+
 Version 0.4
 -----------
 
