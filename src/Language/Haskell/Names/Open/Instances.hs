@@ -14,6 +14,7 @@ import Language.Haskell.Names.Open.Base
 import Language.Haskell.Names.Open.Derived ()
 import Language.Haskell.Names.GetBound
 import Language.Haskell.Names.RecordWildcards
+import Language.Haskell.Names.SyntaxUtils
 import Language.Haskell.Exts.Annotated
 import qualified Data.Data as D
 import Control.Applicative
@@ -58,9 +59,11 @@ instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (Decl l) where
       -- FunBind consists of Matches, which we handle below anyway.
       TypeSig l names ty ->
         c TypeSig
-          <| sc       -: l
-          <| exprV sc -: names
-          <| sc       -: ty
+          <|  sc       -: l
+          <*> fmap (map qNameToName) (rtraverse (map nameToQName names) (exprV sc))
+          <|  sc       -: ty
+      -- Because we don't annotate `Name`s we traverse them as `QName`s.
+      -- (see https://github.com/haskell-suite/haskell-names/issues/34)
       _ -> defaultRtraverse e sc
 
 instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (Type l) where

@@ -1,4 +1,4 @@
-foo      at  5:1 is none
+foo      at  5:1 is a global value, Global.foo
 Newtype  at  5:8 is a global newtype, Prelude.Newtype
 Newtype  at  5:8 is a global newtype, Prelude.Newtype
 foo      at  6:1 is a value bound here

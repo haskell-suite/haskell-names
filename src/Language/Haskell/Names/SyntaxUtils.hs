@@ -14,6 +14,7 @@ module Language.Haskell.Names.SyntaxUtils
   , stringToName
   , specialConToString
   , qNameToName
+  , nameToQName
   , unCName
   , getErrors
     -- export ExtensionSet here for the outside users
@@ -65,6 +66,9 @@ qNameToName :: QName l -> Name l
 qNameToName (UnQual _ n) = n
 qNameToName (Qual _ _ n) = n
 qNameToName (Special l s) = Ident l (specialConToString s)
+
+nameToQName :: Name l -> QName l
+nameToQName n = UnQual (ann n) n
 
 {-
 getImportDecls :: Module l -> [ImportDecl l]
