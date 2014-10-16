@@ -39,31 +39,22 @@ etc.) exported by every module. For example, here are a couple of entries from
 ``` json
 [
   {
-    "fixity": null,
-    "origin": {
-      "name": "map",
-      "module": "GHC.Base",
-      "package": "base-4.7.0.0"
-    },
-    "entity": "value"
+    "name": "map",
+    "entity": "value",
+    "module": "GHC.Base"
   },
   {
-    "fixity": null,
-    "origin": {
-      "name": "IO",
-      "module": "GHC.Types",
-      "package": "ghc-prim-0.3.1.0"
-    },
-    "entity": "data"
+    "name": "IO",
+    "entity": "newtype",
+    "module": "GHC.Types"
   },
   ...
 ]
 ```
 
-As you see, each entity is annotated with the module and package where it was
-originally defined, and also with its fixity. Additionally, class methods, field
-selectors, and data constructors are annotated with the class or type they
-belong to.
+As you see, each entity is annotated with the module where it was
+originally defined. Additionally, class methods, field selectors, and data
+constructors are annotated with the class or type they belong to.
 
 ### Generating interfaces
 
@@ -82,9 +73,10 @@ haskell-names comes with the global package database populated with some core
 packages:
 
     % hs-gen-iface pkg list --global
+    array-0.4.0.2
     base-4.7.0.0
-    ghc-prim-0.3.1.0
     integer-simple-0.1.1.0
+    ghc-prim-0.3.1.0
 
 #### Compiling core packages by hand
 
@@ -122,14 +114,9 @@ the package database `NamesDB` defined in `Language.Haskell.Modules.Interfaces`.
 Name resolution
 ---------------
 
-There are two approaches to name resolution.
+The `annotateModule` function annotates the module with scoping information.
 
-A simpler one is provided by the `annotateModule` function which annotates the
-module with scoping information.
-
-A more advanced interface is given by the `Language.Haskell.Names.Open` module.
 Its essence is described in the article [Open your name resolution][openrec].
-It is, however, very experimental.
 
 [openrec]: http://ro-che.info/articles/2013-03-04-open-name-resolution.html
 
@@ -139,7 +126,10 @@ Let's say you have a module and you want to find out whether it uses
 `Prelude.head`.
 
 ``` haskell
+module Main where
+
 import Language.Haskell.Exts.Annotated
+import qualified Language.Haskell.Exts as UnAnn (Name(Ident))
 import Language.Haskell.Names
 import Language.Haskell.Names.Interfaces
 import Distribution.HaskellSuite
@@ -148,12 +138,12 @@ import Distribution.Simple.Compiler
 import Data.Maybe
 import Data.List
 import Data.Proxy
-import qualified Data.Set as Set
 import qualified Data.Foldable as Foldable
 import Text.Printf
 import Control.Applicative
 import Control.Monad
 
+main :: IO ()
 main = do
 
   -- read the program's source from stdin
@@ -178,44 +168,46 @@ main = do
   when (null headUsages) $
     printf "Congratulations! Your code doesn't use Prelude.head\n"
 
--- this is a computation in a ModuleT monad, because we need access to
--- modules' interfaces
-findHeads :: Module SrcSpanInfo -> ModuleT Symbols IO [SrcSpanInfo]
-findHeads ast = do
-  -- first of all, figure out the canonical name of "Prelude.head"
-  -- (hint: it's "GHC.List.head")
-  Symbols values _types <- fromMaybe (error "Prelude not found") <$> getModuleInfo "Prelude"
-  let
-    headOrigName =
-      fromMaybe (error "Prelude.head not found") $
-      listToMaybe
-        -- this looks a bit scary, but we're just walking through all
-        -- values defined in Prelude and looking for one with unqualified
-        -- name "head"
-        [ origName
-        | SymValue { sv_origName = origName@(OrigName _pkg (GName _mod "head")) } <- Set.toList values
-        ]
-  
-  -- annotate our ast with name binding information
-  annotatedAst <-
-    annotateModule
-      Haskell2010 -- base language
-      []          -- set of extensions
-      ast
+-- | The `findHeads` function finds all occurrences of the `head` symbol in
+-- a given AST of a Haskell module. It needs access to stored name information
+-- and therefore runs in `ModuleT`.
+    findHeads :: Module SrcSpanInfo -> ModuleT [Symbol] IO [SrcSpanInfo]
+    findHeads ast = do
 
-  
-  let
-    -- get list of all annotations
-    annotations = Foldable.toList annotatedAst
+-- First we get all symbols exported from `Prelude` with `getModuleInfo`.
+      symbols <- fromMaybe (error "Prelude not found") <$>
+        getModuleInfo "Prelude"
 
-    -- look for headOrigName
-    headUsages = nub
-      [ location
-      | Scoped (GlobalValue valueInfo) location <- annotations 
-      , sv_origName valueInfo == headOrigName
-      ]
+-- Then we filter those for the one with name `"head"`.
+      let
+        headSymbol =
+          fromMaybe (error "Prelude.head not found") (listToMaybe (do
+            symbol <- symbols
+            guard (symbolName symbol == UnAnn.Ident "head")
+            return symbol))
 
-  return headUsages
+-- We annotate the given ast.
+      annotatedAst <-
+        annotateModule
+          Haskell2010 -- base language
+          []          -- set of extensions
+          ast
+
+-- We get a list of all annotations from the annotated module.
+      let
+        annotations = Foldable.toList annotatedAst
+
+-- A `GlobalSymbol` annotation means that the annotated name refers to a
+-- global symbol. It also contains the qualified name that corresponds
+-- to how it is referenced but that is not needed here.
+        headUsages = nub (do
+          Scoped (GlobalSymbol globalSymbol _) location <- annotations
+          guard (globalSymbol == headSymbol)
+          return location)
+
+-- And finally we return all found usages.
+     return headUsages
+
 ```
 
 #### Example invocation
@@ -263,20 +255,18 @@ See the [list of all issues][issues].
 * Symbol fixities are not recorded ([#1][])
 * Type variables are not resolved ([#2][])
 * Arrows are not fully supported ([#8][])
-* Type/data families and associated types are not fully supported ([#25][])
 
 [issues]: https://github.com/haskell-suite/haskell-names/issues/
 [#1]: https://github.com/haskell-suite/haskell-names/issues/1
 [#2]: https://github.com/haskell-suite/haskell-names/issues/2
 [#8]: https://github.com/haskell-suite/haskell-names/issues/8
-[#25]: https://github.com/haskell-suite/haskell-names/issues/25
 [#32]: https://github.com/haskell-suite/haskell-names/issues/32
 [validation]: https://github.com/haskell-suite/haskell-names/issues?labels=validation&page=1&state=open
 
 Maintainers
 -----------
 
-[Roman Cheplyaka](https://github.com/feuerbach) is the primary maintainer.
+[Philipp Schuster](https://github.com/phischu) is the primary maintainer.
 
 [Adam Bergmark](https://github.com/bergmark) is the backup maintainer. Please
 get in touch with him if the primary maintainer cannot be reached.

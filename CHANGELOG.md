@@ -1,6 +1,16 @@
 Changes
 =======
 
+Version 0.5.0
+-------------
+
+* Unify type-level and value-level symbols
+* Remove fixities from symbol type
+* Properly annotate classes and instances
+* Inline original name into symbol type
+* Remove original package from symbol type
+* Annotate symbol references with the way they are referenced
+
 Version 0.4.1
 -------------
 
