@@ -8,6 +8,7 @@ module Language.Haskell.Names.GlobalSymbolTable
   , addValue
   , lookupType
   , addType
+  , lookupMethod
   , fromMaps
   , fromLists
   , types
@@ -40,6 +41,12 @@ valLens = lens (\(Table vs _) -> vs) (\vs (Table _ ts) -> Table vs ts)
 
 tyLens :: Lens Table (Map.Map GName (Set.Set (SymTypeInfo OrigName)))
 tyLens = lens (\(Table _ ts) -> ts) (\ts (Table vs _) -> Table vs ts)
+
+unqualValLens :: Lens Table (Map.Map GName (Set.Set (SymValueInfo OrigName)))
+unqualValLens = lens
+  (\(Table vs _) -> Map.mapKeysWith Set.union removeQualification vs)
+  (\vs (Table _ ts) -> Table vs ts) where
+    removeQualification (GName _ name) = GName "" name
 
 instance Monoid Table where
   mempty = empty
@@ -82,6 +89,20 @@ data Result l a
 
 lookupValue :: QName l -> Table -> Result l (SymValueInfo OrigName)
 lookupValue = lookupL valLens
+
+-- | This is a hack to work around an issue with unqualified reference of
+--   methods that are only in scope qualified.
+--   https://www.haskell.org/pipermail/haskell-prime/2008-April/002569.html
+--   The test for this is tests/annotations/QualifiedMethods.hs
+lookupMethod :: QName l -> Table -> Result l (SymValueInfo OrigName)
+lookupMethod qn tbl =
+  let isMethod (SymMethod _ _ _) = True
+      isMethod _                 = False
+  in case filter isMethod . Set.toList <$> (Map.lookup (toGName qn) $ getL unqualValLens tbl) of
+    Nothing -> Error $ ENotInScope qn
+    Just [] -> Error $ ENotInScope qn
+    Just [i] -> Result i
+    Just is -> Error $ EAmbiguous qn (map origName is)
 
 lookupType :: QName l -> Table -> Result l (SymTypeInfo OrigName)
 lookupType  = lookupL tyLens

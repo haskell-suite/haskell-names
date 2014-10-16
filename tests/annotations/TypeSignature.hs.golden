@@ -1,0 +1,20 @@
+f        at  3:1 is a global value, TypeSignature.f
+g        at  3:3 is a global value, TypeSignature.g
+Int      at  3:8 is not in scope
+Int      at  3:8 is not in scope
+Int      at 3:15 is not in scope
+Int      at 3:15 is not in scope
+f        at  4:1 is a value bound here
+x        at  4:3 is a value bound here
+*        at  4:9 is not in scope
+*        at  4:9 is not in scope
+x        at 4:11 is a local value defined at 4:3
+x        at 4:11 is a local value defined at 4:3
+g        at  5:1 is a value bound here
+x        at  5:3 is a value bound here
+x        at  5:7 is a local value defined at 5:3
+x        at  5:7 is a local value defined at 5:3
++        at  5:9 is not in scope
++        at  5:9 is not in scope
+x        at 5:11 is a local value defined at 5:3
+x        at 5:11 is a local value defined at 5:3

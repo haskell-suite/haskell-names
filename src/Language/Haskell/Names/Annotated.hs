@@ -16,6 +16,7 @@ import Language.Haskell.Names.Open.Base
 import Language.Haskell.Names.Open.Instances ()
 import qualified Language.Haskell.Names.GlobalSymbolTable as Global
 import qualified Language.Haskell.Names.LocalSymbolTable as Local
+import Language.Haskell.Names.SyntaxUtils (nameToQName)
 import Language.Haskell.Exts.Annotated
 import Data.Proxy
 import Data.Lens.Light
@@ -45,6 +46,9 @@ annotateRec _ sc a = go sc a where
     | ReferenceT <- getL nameCtx sc
     , Just (Eq :: QName (Scoped l) :~: a) <- dynamicEq
       = lookupType (fmap sLoc a) sc <$ a
+    | ReferenceM <- getL nameCtx sc
+    , Just (Eq :: Name (Scoped l) :~: a) <- dynamicEq
+      = lookupMethod (fmap sLoc a) sc <$ a
     | BindingV <- getL nameCtx sc
     , Just (Eq :: Name (Scoped l) :~: a) <- dynamicEq
       = Scoped ValueBinder (sLoc . ann $ a) <$ a
@@ -95,3 +99,16 @@ lookupType qn sc = Scoped nameInfo (ann qn)
         Global.Result r -> GlobalType r
         Global.Error e -> ScopeError e
         Global.Special -> None
+
+lookupMethod :: Name l -> Scope -> Scoped l
+lookupMethod name sc = Scoped nameInfo (ann name)
+  where
+    qn = nameToQName name
+    nameInfo =
+      case Local.lookupValue qn $ getL lTable sc of
+        Right r -> LocalValue r
+        _ ->
+          case Global.lookupMethod qn $ getL gTable sc of
+            Global.Result r -> GlobalValue r
+            Global.Error e -> ScopeError e
+            Global.Special -> None

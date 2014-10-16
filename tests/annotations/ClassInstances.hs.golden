@@ -1,0 +1,66 @@
+D        at  3:6 is a type or class defined here
+a        at  3:8 is none
+D        at 3:12 is a value bound here
+Bool     at 3:14 is not in scope
+Bool     at 3:14 is not in scope
+a        at 3:19 is none
+C        at  5:7 is a type or class defined here
+a        at  5:9 is none
+wiggle   at  6:5 is a value bound here
+a        at 6:15 is none
+a        at 6:20 is none
+woe      at  7:5 is a value bound here
+a        at 7:12 is none
+$$$      at  8:5 is a value bound here
+a        at 8:14 is none
+a        at 8:19 is none
+a        at 8:24 is none
+C        at 10:11 is a global type class, ClassInstances.C
+C        at 10:11 is a global type class, ClassInstances.C
+a        at 10:13 is none
+C        at 10:19 is a global type class, ClassInstances.C
+C        at 10:19 is a global type class, ClassInstances.C
+D        at 10:22 is a global data type, ClassInstances.D
+D        at 10:22 is a global data type, ClassInstances.D
+a        at 10:24 is none
+wiggle   at 11:5 is a global method, ClassInstances.wiggle
+D        at 11:13 is a global constructor, ClassInstances.D
+D        at 11:13 is a global constructor, ClassInstances.D
+b        at 11:15 is a value bound here
+a        at 11:17 is a value bound here
+D        at 11:22 is a global constructor, ClassInstances.D
+D        at 11:22 is a global constructor, ClassInstances.D
+b        at 11:24 is a local value defined at 11:15
+b        at 11:24 is a local value defined at 11:15
+f        at 11:27 is a global value, ClassInstances.f
+f        at 11:27 is a global value, ClassInstances.f
+a        at 11:29 is a local value defined at 11:17
+a        at 11:29 is a local value defined at 11:17
+woe      at 12:5 is a global method, ClassInstances.woe
+D        at 12:11 is a global constructor, ClassInstances.D
+D        at 12:11 is a global constructor, ClassInstances.D
+False    at 12:13 is not in scope
+False    at 12:13 is not in scope
+woe      at 12:19 is a global method, ClassInstances.woe
+woe      at 12:19 is a global method, ClassInstances.woe
+f        at 13:5 is a value bound here
+$$$      at 13:7 is a global method, ClassInstances.($$$)
+x        at 13:11 is a value bound here
+$$$      at 13:15 is a global method, ClassInstances.($$$)
+$$$      at 13:15 is a global method, ClassInstances.($$$)
+f        at 13:21 is a local value defined at 13:5
+f        at 13:21 is a local value defined at 13:5
+x        at 13:23 is a local value defined at 13:11
+x        at 13:23 is a local value defined at 13:11
+f        at 15:1 is a global value, ClassInstances.f
+C        at 15:7 is a global type class, ClassInstances.C
+C        at 15:7 is a global type class, ClassInstances.C
+a        at 15:9 is none
+a        at 15:15 is none
+a        at 15:20 is none
+f        at 16:1 is a value bound here
+x        at 16:3 is a value bound here
+wiggle   at 16:7 is a global method, ClassInstances.wiggle
+wiggle   at 16:7 is a global method, ClassInstances.wiggle
+x        at 16:14 is a local value defined at 16:3
+x        at 16:14 is a local value defined at 16:3
