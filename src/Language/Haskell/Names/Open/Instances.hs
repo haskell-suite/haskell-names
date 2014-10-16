@@ -327,6 +327,20 @@ instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (QualStmt l) where
       QualStmt {} -> defaultRtraverse e sc
       _ -> error "haskell-names: TransformListComp is not supported yet"
 
+instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (InstHead l) where
+  rtraverse e sc =
+    case e of
+      IHCon l qn ->
+        c IHCon
+          <| sc       -: l
+          <| exprT sc -: qn
+      IHInfix l t qn ->
+        c IHInfix
+          <| sc       -: l
+          <| sc       -: t
+          <| exprT sc -: qn
+      _ -> defaultRtraverse e sc
+
 {-
 Note [Nested pattern scopes]
 ~~~~~~~~~~~~~~~~~~~~~~
