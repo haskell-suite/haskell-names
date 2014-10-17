@@ -382,9 +382,17 @@ instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (InstDecl l) where
                   in back <$> rtraverse equivalentMatch sc))
       _ -> defaultRtraverse e sc
 
-rInsDeclBind :: Scope -> Match l -> f (Match l)
-rInsDeclBind = undefined
-
+instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (ClassDecl l) where
+  rtraverse e sc =
+    case e of
+      ClsDecl l (TypeSig sl [n] t) ->
+        c ClsDecl
+          <| sc -: l
+          <*> (c TypeSig
+            <| sc         -: sl
+            <| binderV sc -: [n]
+            <| sc         -: t)
+      _ -> defaultRtraverse e sc
 {-
 Note [Nested pattern scopes]
 ~~~~~~~~~~~~~~~~~~~~~~
