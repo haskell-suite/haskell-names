@@ -7,3 +7,6 @@ class C a where
 
 instance C D where
     wiggle (D b _) = b
+
+f :: (C a) => a -> Bool
+f x = wiggle x

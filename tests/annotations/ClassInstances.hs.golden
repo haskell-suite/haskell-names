@@ -5,7 +5,7 @@ Bool     at 3:12 is not in scope
 ()       at 3:17 is none
 C        at  5:7 is a type or class defined here
 a        at  5:9 is none
-wiggle   at  6:5 is none
+wiggle   at  6:5 is a value bound here
 a        at 6:15 is none
 Bool     at 6:20 is not in scope
 Bool     at 6:20 is not in scope
@@ -13,9 +13,22 @@ C        at 8:10 is a global type class, ClassInstances.C
 C        at 8:10 is a global type class, ClassInstances.C
 D        at 8:12 is a global data type, ClassInstances.D
 D        at 8:12 is a global data type, ClassInstances.D
-wiggle   at  9:5 is a value bound here
+wiggle   at  9:5 is a global method, ClassInstances.wiggle
 D        at 9:13 is a global constructor, ClassInstances.D
 D        at 9:13 is a global constructor, ClassInstances.D
 b        at 9:15 is a value bound here
 b        at 9:22 is a local value defined at 9:15
 b        at 9:22 is a local value defined at 9:15
+f        at 11:1 is none
+C        at 11:7 is a global type class, ClassInstances.C
+C        at 11:7 is a global type class, ClassInstances.C
+a        at 11:9 is none
+a        at 11:15 is none
+Bool     at 11:20 is not in scope
+Bool     at 11:20 is not in scope
+f        at 12:1 is a value bound here
+x        at 12:3 is a value bound here
+wiggle   at 12:7 is a global method, ClassInstances.wiggle
+wiggle   at 12:7 is a global method, ClassInstances.wiggle
+x        at 12:14 is a local value defined at 12:3
+x        at 12:14 is a local value defined at 12:3
