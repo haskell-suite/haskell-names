@@ -341,6 +341,50 @@ instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (InstHead l) where
           <| exprT sc -: qn
       _ -> defaultRtraverse e sc
 
+instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (InstDecl l) where
+  rtraverse e sc =
+    case e of
+      InsDecl dl (PatBind pl (PVar vl n) rhs mbs) ->
+        c InsDecl
+          <| sc -: dl
+          <*> (c PatBind
+            <| sc -: pl
+            <*> (c PVar
+              <| sc       -: vl
+              <| exprV sc -: n)
+            <| sc -: rhs
+            <| sc -: mbs)
+      InsDecl dl (FunBind bl ms) ->
+        c InsDecl
+          <| sc -: dl
+          <*> (c FunBind
+            <| sc -: bl
+            <*> T.for ms (\m -> case m of
+                Match l name pats rhs mbWhere ->
+                    -- f x y z = ...
+                    --   where ...
+                  let
+                    (pats', scWithPats) = chain pats sc
+                    scWithWhere = intro mbWhere scWithPats
+                  in
+                    c Match
+                      <| sc              -: l
+                      <| exprV sc        -: name
+                      <*> pats' -- has been already traversed
+                      <| exprV scWithWhere -: rhs
+                      <| scWithPats        -: mbWhere
+                InfixMatch l pat1 name patsRest rhs mbWhere ->
+                  let
+                    equivalentMatch = Match l name (pat1:patsRest) rhs mbWhere
+                    back (Match l name (pat1:patsRest) rhs mbWhere) =
+                      InfixMatch l pat1 name patsRest rhs mbWhere
+                    back _ = error "InfixMatch"
+                  in back <$> rtraverse equivalentMatch sc))
+      _ -> defaultRtraverse e sc
+
+rInsDeclBind :: Scope -> Match l -> f (Match l)
+rInsDeclBind = undefined
+
 {-
 Note [Nested pattern scopes]
 ~~~~~~~~~~~~~~~~~~~~~~
