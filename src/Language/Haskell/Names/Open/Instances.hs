@@ -23,8 +23,6 @@ import Data.Lens.Light
 import Data.List
 import qualified Data.Traversable as T
 
-import Debug.Trace
-
 c :: Applicative w => c -> w c
 c = pure
 
@@ -61,9 +59,9 @@ instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (Decl l) where
       -- FunBind consists of Matches, which we handle below anyway.
       TypeSig l names ty ->
         c TypeSig
-          <| sc       -: l
-          <| exprV sc -: names
-          <| sc       -: ty
+          <|  sc       -: l
+          <*> fmap (map qNameToName) (rtraverse (map nameToQName names) (exprV sc))
+          <|  sc       -: ty
       _ -> defaultRtraverse e sc
 
 instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (Type l) where
