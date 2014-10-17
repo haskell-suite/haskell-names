@@ -15,12 +15,15 @@ import Language.Haskell.Names.Open.Derived ()
 import Language.Haskell.Names.GetBound
 import Language.Haskell.Names.RecordWildcards
 import Language.Haskell.Exts.Annotated
+import Language.Haskell.Names.SyntaxUtils
 import qualified Data.Data as D
 import Control.Applicative
 import Data.Typeable
 import Data.Lens.Light
 import Data.List
 import qualified Data.Traversable as T
+
+import Debug.Trace
 
 c :: Applicative w => c -> w c
 c = pure
@@ -368,8 +371,8 @@ instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (InstDecl l) where
                     scWithWhere = intro mbWhere scWithPats
                   in
                     c Match
-                      <| sc              -: l
-                      <| exprV sc        -: name
+                      <| sc                -: l
+                      <*> fmap (\(UnQual qnl n) -> setAnn qnl n) (alg (nameToQName name) (exprV sc))
                       <*> pats' -- has been already traversed
                       <| exprV scWithWhere -: rhs
                       <| scWithPats        -: mbWhere
@@ -393,6 +396,7 @@ instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (ClassDecl l) where
             <| binderV sc -: [n]
             <| sc         -: t)
       _ -> defaultRtraverse e sc
+
 {-
 Note [Nested pattern scopes]
 ~~~~~~~~~~~~~~~~~~~~~~
