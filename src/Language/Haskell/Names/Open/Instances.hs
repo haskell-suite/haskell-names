@@ -328,18 +328,15 @@ instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (QualStmt l) where
       QualStmt {} -> defaultRtraverse e sc
       _ -> error "haskell-names: TransformListComp is not supported yet"
 
-instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (InstHead l) where
+instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (InstRule l) where
   rtraverse e sc =
     case e of
-      IHCon l qn ->
-        c IHCon
-          <| sc       -: l
-          <| exprT sc -: qn
-      IHInfix l t qn ->
-        c IHInfix
-          <| sc       -: l
-          <| sc       -: t
-          <| exprT sc -: qn
+      IRule l mtv mc ih ->
+        c IRule
+          <| sc -: l
+          <| sc -: mtv
+          <| exprT sc -: mc
+          <| exprT sc -: ih
       _ -> defaultRtraverse e sc
 
 instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (InstDecl l) where

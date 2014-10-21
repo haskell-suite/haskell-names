@@ -1,11 +1,11 @@
 module ClassInstances where
 
-data D = D Bool ()
+data D a = D Bool a
 
 class C a where
     wiggle :: a -> Bool
 
-instance C D where
+instance (C a) => C (D a) where
     wiggle (D b _) = b
 
 f :: (C a) => a -> Bool
