@@ -19,7 +19,7 @@ D        at 9:13 is a global constructor, ClassInstances.D
 b        at 9:15 is a value bound here
 b        at 9:22 is a local value defined at 9:15
 b        at 9:22 is a local value defined at 9:15
-f        at 11:1 is none
+f        at 11:1 is a global value, ClassInstances.f
 C        at 11:7 is a global type class, ClassInstances.C
 C        at 11:7 is a global type class, ClassInstances.C
 a        at 11:9 is none
