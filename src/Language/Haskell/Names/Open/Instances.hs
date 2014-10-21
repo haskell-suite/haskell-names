@@ -15,6 +15,7 @@ import Language.Haskell.Names.Open.Derived ()
 import Language.Haskell.Names.GetBound
 import Language.Haskell.Names.RecordWildcards
 import Language.Haskell.Exts.Annotated
+import Language.Haskell.Names.SyntaxUtils
 import qualified Data.Data as D
 import Control.Applicative
 import Data.Typeable
@@ -58,9 +59,9 @@ instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (Decl l) where
       -- FunBind consists of Matches, which we handle below anyway.
       TypeSig l names ty ->
         c TypeSig
-          <| sc       -: l
-          <| exprV sc -: names
-          <| sc       -: ty
+          <|  sc       -: l
+          <*> fmap (map qNameToName) (rtraverse (map nameToQName names) (exprV sc))
+          <|  sc       -: ty
       _ -> defaultRtraverse e sc
 
 instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (Type l) where
@@ -326,6 +327,70 @@ instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (QualStmt l) where
     case e of
       QualStmt {} -> defaultRtraverse e sc
       _ -> error "haskell-names: TransformListComp is not supported yet"
+
+instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (InstRule l) where
+  rtraverse e sc =
+    case e of
+      IRule l mtv mc ih ->
+        c IRule
+          <| sc -: l
+          <| sc -: mtv
+          <| exprT sc -: mc
+          <| exprT sc -: ih
+      _ -> defaultRtraverse e sc
+
+instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (InstDecl l) where
+  rtraverse e sc =
+    case e of
+      InsDecl dl (PatBind pl (PVar vl n) rhs mbs) ->
+        c InsDecl
+          <| sc -: dl
+          <*> (c PatBind
+            <| sc -: pl
+            <*> (c PVar
+              <| sc       -: vl
+              <| exprV sc -: n)
+            <| sc -: rhs
+            <| sc -: mbs)
+      InsDecl dl (FunBind bl ms) ->
+        c InsDecl
+          <| sc -: dl
+          <*> (c FunBind
+            <| sc -: bl
+            <*> T.for ms (\m -> case m of
+                Match l name pats rhs mbWhere ->
+                    -- f x y z = ...
+                    --   where ...
+                  let
+                    (pats', scWithPats) = chain pats sc
+                    scWithWhere = intro mbWhere scWithPats
+                  in
+                    c Match
+                      <| sc                -: l
+                      <*> fmap (\(UnQual qnl n) -> setAnn qnl n) (alg (nameToQName name) (exprV sc))
+                      <*> pats' -- has been already traversed
+                      <| exprV scWithWhere -: rhs
+                      <| scWithPats        -: mbWhere
+                InfixMatch l pat1 name patsRest rhs mbWhere ->
+                  let
+                    equivalentMatch = Match l name (pat1:patsRest) rhs mbWhere
+                    back (Match l name (pat1:patsRest) rhs mbWhere) =
+                      InfixMatch l pat1 name patsRest rhs mbWhere
+                    back _ = error "InfixMatch"
+                  in back <$> rtraverse equivalentMatch sc))
+      _ -> defaultRtraverse e sc
+
+instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (ClassDecl l) where
+  rtraverse e sc =
+    case e of
+      ClsDecl l (TypeSig sl [n] t) ->
+        c ClsDecl
+          <| sc -: l
+          <*> (c TypeSig
+            <| sc         -: sl
+            <| binderV sc -: [n]
+            <| sc         -: t)
+      _ -> defaultRtraverse e sc
 
 {-
 Note [Nested pattern scopes]

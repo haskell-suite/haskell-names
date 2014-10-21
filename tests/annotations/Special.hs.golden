@@ -1,4 +1,4 @@
-foo      at  3:1 is none
+foo      at  3:1 is a global value, Special.foo
 ()       at  3:8 is none
 foo      at  4:1 is a value bound here
 ()       at  4:7 is none
