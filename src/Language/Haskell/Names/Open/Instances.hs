@@ -14,7 +14,6 @@ import Language.Haskell.Names.Open.Base
 import Language.Haskell.Names.Open.Derived ()
 import Language.Haskell.Names.GetBound
 import Language.Haskell.Names.RecordWildcards
-import Language.Haskell.Names.SyntaxUtils
 import Language.Haskell.Exts.Annotated
 import Language.Haskell.Names.SyntaxUtils
 import qualified Data.Data as D
@@ -63,6 +62,12 @@ instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (Decl l) where
           <|  sc       -: l
           <*> fmap (map qNameToName) (rtraverse (map nameToQName names) (exprV sc))
           <|  sc       -: ty
+      InfixDecl l assoc mp ops ->
+        c InfixDecl
+          <| sc       -: l
+          <| sc       -: assoc
+          <| sc       -: mp
+          <| exprV sc -: ops
       _ -> defaultRtraverse e sc
 
 instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (Type l) where
@@ -404,6 +409,19 @@ instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (ClassDecl l) where
             <| binderV sc -: [n]
             <| sc         -: t)
       _ -> defaultRtraverse e sc
+
+instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (Op l) where
+  rtraverse e sc =
+    case e of
+      VarOp l name ->
+        c VarOp
+          <| sc -: l
+          <*> fmap qNameToName (alg (nameToQName name) (exprV sc))
+      ConOp l name ->
+        c ConOp
+          <| sc -: l
+          <*> fmap qNameToName (alg (nameToQName name) (exprV sc))
+
 
 {-
 Note [Nested pattern scopes]
