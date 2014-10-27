@@ -62,6 +62,8 @@ instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (Decl l) where
           <|  sc       -: l
           <*> fmap (map qNameToName) (rtraverse (map nameToQName names) (exprV sc))
           <|  sc       -: ty
+      -- Because we don't annotate `Name`s we traverse them as `QName`s.
+      -- (see https://github.com/haskell-suite/haskell-names/issues/34)
       _ -> defaultRtraverse e sc
 
 instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (Type l) where
