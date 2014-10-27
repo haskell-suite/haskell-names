@@ -18,7 +18,7 @@ A        at 9:10 is a global data type, Types.A
 A        at 9:10 is a global data type, Types.A
 C        at 11:7 is a type or class defined here
 a        at 11:9 is none
-f        at 12:3 is none
+f        at 12:3 is a global method, Types.f
 X        at 12:8 is a global type synonym, Types.X
 X        at 12:8 is a global type synonym, Types.X
 A        at 12:13 is a global data type, Types.A
