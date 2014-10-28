@@ -24,7 +24,7 @@ import Prelude hiding (concatMap)
 import Data.Char
 import Data.Maybe
 import Data.Either
-import Data.Foldable
+import Data.Foldable hiding (elem)
 import qualified Data.Set as Set
 import Data.Generics.Uniplate.Data
 import Language.Haskell.Exts.Annotated
@@ -114,8 +114,13 @@ nameToString (Ident _ s) = s
 nameToString (Symbol _ s) = s
 
 stringToName :: String -> Name ()
-stringToName s@(c:_) | isSymbol c = Symbol () s
+stringToName s@(c:_) | isHSymbol c = Symbol () s
 stringToName s = Ident () s
+
+isHSymbol :: Char -> Bool
+isHSymbol c =
+  c `elem` ":!#%&*./?@\\-" ||
+  ((isSymbol c || isPunctuation c) && not (c `elem` "(),;[]`{}_\"'"))
 
 specialConToString :: SpecialCon l -> String
 specialConToString (UnitCon _)            = "()"
