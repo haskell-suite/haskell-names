@@ -19,6 +19,7 @@ module Language.Haskell.Names.SyntaxUtils
     -- export ExtensionSet here for the outside users
   , ExtensionSet
   , moduleExtensions
+  , getModuleExtensions
   ) where
 import Prelude hiding (concatMap)
 import Data.Char
