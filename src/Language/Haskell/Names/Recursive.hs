@@ -43,7 +43,7 @@ groupModules modules =
 -- to run 'computeInterfaces' first, unless you have one module in
 -- isolation.
 annotateModule
-  :: (MonadModule m, ModuleInfo m ~ Symbols, Data l, SrcInfo l, Eq l)
+  :: (MonadModule m, ModuleInfo m ~ [Symbol], Data l, SrcInfo l, Eq l)
   => Language -- ^ base language
   -> [Extension] -- ^ global extensions (e.g. specified on the command line)
   -> Module l -- ^ input module
@@ -75,7 +75,7 @@ annotateModule _ _ _ = error "annotateModule: non-standard modules are not suppo
 -- | Compute interfaces for a set of mutually recursive modules and write
 -- the results to the cache. Return the set of import/export errors.
 findFixPoint
-  :: (Ord l, Data l, MonadModule m, ModuleInfo m ~ Symbols)
+  :: (Ord l, Data l, MonadModule m, ModuleInfo m ~ [Symbol])
   => [(Module l, ExtensionSet)]
       -- ^ module and all extensions with which it is to be compiled.
       -- Use 'moduleExtensions' to build this list.
@@ -101,7 +101,7 @@ findFixPoint mods = go mods (map (const mempty) mods) where
 -- registered in the cache regardless of whether there are any errors, but
 -- if there are errors, the interfaces may be incomplete.
 computeInterfaces
-  :: (MonadModule m, ModuleInfo m ~ Symbols, Data l, SrcInfo l, Ord l)
+  :: (MonadModule m, ModuleInfo m ~ [Symbol], Data l, SrcInfo l, Ord l)
   => Language -- ^ base language
   -> [Extension] -- ^ global extensions (e.g. specified on the command line)
   -> [Module l] -- ^ input modules
@@ -114,11 +114,11 @@ computeInterfaces lang exts =
 -- | Like 'computeInterfaces', but also returns a list of interfaces, one
 -- per module and in the same order
 getInterfaces
-  :: (MonadModule m, ModuleInfo m ~ Symbols, Data l, SrcInfo l, Ord l)
+  :: (MonadModule m, ModuleInfo m ~ [Symbol], Data l, SrcInfo l, Ord l)
   => Language -- ^ base language
   -> [Extension] -- ^ global extensions (e.g. specified on the command line)
   -> [Module l] -- ^ input modules
-  -> m ([Symbols], Set.Set (Error l)) -- ^ output modules, and errors in export or import lists
+  -> m ([[Symbol]], Set.Set (Error l)) -- ^ output modules, and errors in export or import lists
 getInterfaces lang exts mods = do
   errs <- computeInterfaces lang exts mods
   ifaces <- forM mods $ \mod ->

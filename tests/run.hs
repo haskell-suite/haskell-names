@@ -23,7 +23,8 @@ import Text.Show.Pretty (ppShow)
 import Text.Printf
 import qualified Data.Foldable as F
 
-import Language.Haskell.Exts.Annotated
+import Language.Haskell.Exts.Annotated hiding (NewType)
+import qualified Language.Haskell.Exts.Annotated as Syntax (DataOrNew(NewType))
 import Language.Haskell.Names
 import Language.Haskell.Names.Interfaces
 import Language.Haskell.Names.Exports
@@ -41,7 +42,7 @@ import Data.Proxy
 -- }}}
 
 -- Common definitions {{{
-type MT = ModuleT Symbols IO
+type MT = ModuleT [Symbol] IO
 
 main = defaultMain . testGroup "Tests" =<< tests
 
@@ -194,44 +195,36 @@ formatLoc srcInfo =
     (srcLine   loc)
     (srcColumn loc)
 
-formatValueNamespace SymValue {} = "value"
-formatValueNamespace SymMethod {} = "method"
-formatValueNamespace SymSelector {} = "selector"
-formatValueNamespace SymConstructor {} = "constructor"
-
-formatTypeNamespace SymType {} = "type synonym"
-formatTypeNamespace SymData {} = "data type"
-formatTypeNamespace SymNewType {} = "newtype"
-formatTypeNamespace SymTypeFam {} = "type family"
-formatTypeNamespace SymDataFam {} = "data family"
-formatTypeNamespace SymClass {} = "type class"
-
-formatOrigin :: HasOrigName i => i OrigName -> String
-formatOrigin = ppOrigName . origName
+formatSymbol Value {} = "value"
+formatSymbol Method {} = "method"
+formatSymbol Selector {} = "selector"
+formatSymbol Constructor {} = "constructor"
+formatSymbol Type {} = "type synonym"
+formatSymbol Data {} = "data type"
+formatSymbol NewType {} = "newtype"
+formatSymbol TypeFam {} = "type family"
+formatSymbol DataFam {} = "data family"
+formatSymbol Class {} = "type class"
 
 formatInfo :: NameInfo SrcSpan -> String
 formatInfo (LocalValue loc) =
   printf "a local value defined at %s" $ formatLoc loc
-formatInfo (GlobalValue info) =
+formatInfo (GlobalSymbol symbol _) =
   printf "a global %s, %s"
-    (formatValueNamespace info)
-    (formatOrigin info)
-formatInfo (GlobalType info) =
-  printf "a global %s, %s"
-    (formatTypeNamespace info)
-    (formatOrigin info)
+    (formatSymbol symbol)
+    (ppSymbol symbol)
 formatInfo ValueBinder = "a value bound here"
 formatInfo TypeBinder = "a type or class defined here"
-formatInfo (RecPatWildcard names) =
+formatInfo (RecPatWildcard symbols) =
   printf
     "a record pattern wildcard which brings the following fields: %s"
-    (intercalate ", " $ map ppOrigName names)
-formatInfo (RecExpWildcard names) =
+    (intercalate ", " $ map ppSymbol symbols)
+formatInfo (RecExpWildcard symbols) =
   printf
     "a record construction wildcard which assigns the following fields: %s"
     $ intercalate ", "
-      [ printf "%s = (%s)" (ppOrigName field) valueDesc
-      | (field, vinfo) <- names
+      [ printf "%s = (%s)" (prettyPrint field) valueDesc
+      | (field, vinfo) <- symbols
       , let valueDesc = formatInfo vinfo
       ]
 formatInfo (ScopeError (ENotInScope {})) = "not in scope"

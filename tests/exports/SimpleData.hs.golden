@@ -1,26 +1,8 @@
-Symbols
-  (fromList
-     [ SymConstructor
-         { sv_origName =
-             OrigName
-               { origPackage = Nothing
-               , origGName = GName { gModule = "SimpleData" , gName = "A" }
-               }
-         , sv_fixity = Nothing
-         , sv_typeName =
-             OrigName
-               { origPackage = Nothing
-               , origGName = GName { gModule = "SimpleData" , gName = "A" }
-               }
-         }
-     ])
-  (fromList
-     [ SymData
-         { st_origName =
-             OrigName
-               { origPackage = Nothing
-               , origGName = GName { gModule = "SimpleData" , gName = "A" }
-               }
-         , st_fixity = Nothing
-         }
-     ])
+[ Data
+    { symbolModule = ModuleName "SimpleData" , symbolName = Ident "A" }
+, Constructor
+    { symbolModule = ModuleName "SimpleData"
+    , symbolName = Ident "A"
+    , typeName = Ident "A"
+    }
+]

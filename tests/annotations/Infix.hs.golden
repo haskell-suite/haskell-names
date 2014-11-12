@@ -1,4 +1,4 @@
-$$$      at 3:10 is a global value, Infix.$$$
+$$$      at 3:10 is a global value, Infix.($$$)
 $$$      at  5:2 is a value bound here
 x        at  5:7 is a value bound here
 y        at  5:9 is a value bound here

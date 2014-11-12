@@ -1,12 +1,3 @@
-Symbols
-  (fromList
-     [ SymValue
-         { sv_origName =
-             OrigName
-               { origPackage = Nothing
-               , origGName = GName { gModule = "Main" , gName = "main" }
-               }
-         , sv_fixity = Nothing
-         }
-     ])
-  (fromList [])
+[ Value
+    { symbolModule = ModuleName "Main" , symbolName = Ident "main" }
+]

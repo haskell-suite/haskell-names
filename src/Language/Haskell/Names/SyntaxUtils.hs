@@ -1,6 +1,7 @@
 module Language.Haskell.Names.SyntaxUtils
   ( dropAnn
   , setAnn
+  , annName
   , getModuleName
   , getImports
   , getExportSpecList
@@ -27,7 +28,7 @@ import Data.Maybe
 import Data.Either
 import Data.Foldable
 import qualified Data.Set as Set
-import Data.Generics.Uniplate.Data
+import qualified Language.Haskell.Exts as UnAnn
 import Language.Haskell.Exts.Annotated
 import Language.Haskell.Names.Types
 
@@ -36,6 +37,10 @@ dropAnn = fmap (const ())
 
 setAnn :: (Functor a) => l' -> a l -> a l'
 setAnn l = fmap (const l)
+
+annName :: UnAnn.Name -> Name ()
+annName (UnAnn.Ident n) = Ident () n
+annName (UnAnn.Symbol n) = Symbol () n
 
 getModuleName :: Module l -> ModuleName l
 getModuleName (Module _ (Just (ModuleHead _ mn _ _)) _ _ _) = mn

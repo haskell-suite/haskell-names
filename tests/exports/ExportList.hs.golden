@@ -1,12 +1,3 @@
-Symbols
-  (fromList [])
-  (fromList
-     [ SymData
-         { st_origName =
-             OrigName
-               { origPackage = Nothing
-               , origGName = GName { gModule = "ExportList" , gName = "A" }
-               }
-         , st_fixity = Nothing
-         }
-     ])
+[ Data
+    { symbolModule = ModuleName "ExportList" , symbolName = Ident "A" }
+]

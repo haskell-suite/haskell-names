@@ -1,151 +1,99 @@
 {-# LANGUAGE DeriveDataTypeable #-}
 -- | This module is designed to be imported qualified.
-module Language.Haskell.Names.GlobalSymbolTable
-  ( Table
-  , empty
-  , Result(..)
-  , lookupValue
-  , addValue
-  , lookupType
-  , addType
-  , lookupMethod
-  , fromMaps
-  , fromLists
-  , types
-  , values
-  , toSymbols
-  ) where
+module Language.Haskell.Names.GlobalSymbolTable where
 
-import Language.Haskell.Exts.Annotated as HSE
-import Data.Monoid
-import qualified Data.Map as Map
-import qualified Data.Set as Set
-import Data.Typeable
-import Data.Data
+import Language.Haskell.Exts (
+    QName(Qual,UnQual,Special),ModuleName(ModuleName))
+import qualified Language.Haskell.Exts.Annotated as Ann (
+    QName(Qual,UnQual),Name,ann,ModuleName(ModuleName))
+import Language.Haskell.Exts.Annotated.Simplify (
+    sQName,sName)
+
+import Language.Haskell.Names.SyntaxUtils (setAnn,annName)
+
+import Data.Map (
+    Map)
+import qualified Data.Map as Map (
+    empty,unionWith,fromListWith,lookup,map,fromList,toList)
+
 import Control.Arrow
-import Control.Applicative hiding (empty)
-import Data.Lens.Light
+import Data.List as List (union)
+import Control.Monad (guard)
 
 import Language.Haskell.Names.Types
-import Language.Haskell.Names.SyntaxUtils
 
--- | Global symbol table — contains global names
-data Table =
-  Table
-    (Map.Map GName (Set.Set (SymValueInfo OrigName)))
-    (Map.Map GName (Set.Set (SymTypeInfo  OrigName)))
-    deriving (Eq, Ord, Show, Data, Typeable)
+-- | Global symbol table — contains names declared somewhere at the top level.
+type Table = Map QName [Symbol]
 
-valLens :: Lens Table (Map.Map GName (Set.Set (SymValueInfo OrigName)))
-valLens = lens (\(Table vs _) -> vs) (\vs (Table _ ts) -> Table vs ts)
-
-tyLens :: Lens Table (Map.Map GName (Set.Set (SymTypeInfo OrigName)))
-tyLens = lens (\(Table _ ts) -> ts) (\ts (Table vs _) -> Table vs ts)
-
-unqualValLens :: Lens Table (Map.Map GName (Set.Set (SymValueInfo OrigName)))
-unqualValLens = lens
-  (\(Table vs _) -> Map.mapKeysWith Set.union removeQualification vs)
-  (\vs (Table _ ts) -> Table vs ts) where
-    removeQualification (GName _ name) = GName "" name
-
-instance Monoid Table where
-  mempty = empty
-  mappend (Table vs1 ts1) (Table vs2 ts2) =
-    Table (j vs1 vs2) (j ts1 ts2)
-    where
-      j :: (Ord i, Ord k)
-        => Map.Map k (Set.Set i)
-        -> Map.Map k (Set.Set i)
-        -> Map.Map k (Set.Set i)
-      j = Map.unionWith Set.union
-
-toGName :: QName l -> GName
-toGName (UnQual _ n) = GName "" (nameToString n)
-toGName (Qual _ (ModuleName _ m) n) = GName m (nameToString n)
-toGName (HSE.Special _ _) = error "toGName: Special"
-
+-- | Empty global symbol table.
 empty :: Table
-empty = Table Map.empty Map.empty
+empty = Map.empty
 
-lookupL
-  :: HasOrigName i
-  => Lens Table (Map.Map GName (Set.Set (i OrigName)))
-  -> QName l
-  -> Table
-  -> Result l (i OrigName)
-lookupL _ (HSE.Special {}) _ =
-  Language.Haskell.Names.GlobalSymbolTable.Special
-lookupL lens qn tbl =
-  case Set.toList <$> (Map.lookup (toGName qn) $ getL lens tbl) of
-    Nothing -> Error $ ENotInScope qn
-    Just [] -> Error $ ENotInScope qn
-    Just [i] -> Result i
-    Just is -> Error $ EAmbiguous qn (map origName is)
+-- | For each name take the union of the lists of symbols they refer to.
+mergeTables :: Table -> Table -> Table
+mergeTables = Map.unionWith List.union
 
-data Result l a
-  = Result a
+data Result l
+  = SymbolFound Symbol
   | Error (Error l)
   | Special
 
-lookupValue :: QName l -> Table -> Result l (SymValueInfo OrigName)
-lookupValue = lookupL valLens
+lookupValue :: Ann.QName l -> Table -> Result l
+lookupValue qn = lookupName qn . filterTable isValue
 
--- | This is a hack to work around an issue with unqualified reference of
---   methods that are only in scope qualified.
+lookupType :: Ann.QName l -> Table -> Result l
+lookupType qn = lookupName qn . filterTable isType
+
+-- | Methods can sometimes be referenced unqualified and still be resolved to
+--   a symbols that is only in scope qualified.
 --   https://www.haskell.org/pipermail/haskell-prime/2008-April/002569.html
 --   The test for this is tests/annotations/QualifiedMethods.hs
-lookupMethod :: QName l -> Table -> Result l (SymValueInfo OrigName)
-lookupMethod qn tbl =
-  let isMethod (SymMethod _ _ _) = True
-      isMethod _                 = False
-  in case filter isMethod . Set.toList <$> (Map.lookup (toGName qn) $ getL unqualValLens tbl) of
+lookupMethod :: Ann.Name l -> Table -> (Result l,Maybe QName)
+lookupMethod name tbl = (case Map.lookup unqualifiedName qualificationTable of
+        Nothing -> (Error (ENotInScope (Ann.UnQual (Ann.ann name) name)),Nothing)
+        Just qn -> (lookupName qn (filterTable isMethod tbl),Just (sQName qn))) where
+    unqualifiedName = UnQual (sName name)
+    qualificationTable = Map.fromList (do
+        (qn,symbols) <- Map.toList tbl
+        guard (any isMethod symbols)
+        case qn of
+            Qual (ModuleName m) n -> return (UnQual n,Ann.Qual (Ann.ann name) (Ann.ModuleName (Ann.ann name) m) (setAnn (Ann.ann name) (annName n)))
+            UnQual n -> return (UnQual n,Ann.UnQual (Ann.ann name) (setAnn (Ann.ann name) (annName n)))
+            Language.Haskell.Exts.Special _ -> [])
+
+lookupName :: Ann.QName l -> Table -> Result l
+lookupName qn table = case Map.lookup (sQName qn) table of
     Nothing -> Error $ ENotInScope qn
     Just [] -> Error $ ENotInScope qn
-    Just [i] -> Result i
-    Just is -> Error $ EAmbiguous qn (map origName is)
+    Just [i] -> SymbolFound i
+    Just is -> Error $ EAmbiguous qn is
 
-lookupType :: QName l -> Table -> Result l (SymTypeInfo OrigName)
-lookupType  = lookupL tyLens
+filterTable :: (Symbol -> Bool) -> Table -> Table
+filterTable relevant = Map.map (filter relevant)
 
-addL
-  :: (HasOrigName i, Ord (i OrigName))
-  => Lens Table (Map.Map GName (Set.Set (i OrigName)))
-  -> QName l
-  -> i OrigName
-  -> Table -> Table
-addL lens qn i = modL lens (Map.insertWith Set.union (toGName qn) (Set.singleton i))
+isValue :: Symbol -> Bool
+isValue symbol = case symbol of
+    Value {} -> True
+    Method {} -> True
+    Selector {} -> True
+    Constructor {} -> True
+    _ -> False
 
-addValue :: QName l -> SymValueInfo OrigName -> Table -> Table
-addValue = addL valLens
+isType :: Symbol -> Bool
+isType symbol = case symbol of
+    Type {} -> True
+    Data {} -> True
+    NewType {} -> True
+    TypeFam {} -> True
+    DataFam {} -> True
+    Class   {} -> True
+    _ -> False
 
-addType :: QName l -> SymTypeInfo OrigName -> Table -> Table
-addType = addL tyLens
+isMethod :: Symbol -> Bool
+isMethod symbol = case symbol of
+    Method {} -> True
+    _ -> False
 
-fromMaps
-  :: Map.Map GName (Set.Set (SymValueInfo OrigName))
-  -> Map.Map GName (Set.Set (SymTypeInfo  OrigName))
-  -> Table
-fromMaps = Table
+fromList :: [(QName,Symbol)] -> Table
+fromList = Map.fromListWith List.union . map (second (:[]))
 
-fromLists
-  :: ([(GName, SymValueInfo OrigName)],
-      [(GName, SymTypeInfo OrigName)])
-  -> Table
-fromLists (vs, ts) =
-  fromMaps
-    (Map.fromListWith Set.union $ map (second Set.singleton) vs)
-    (Map.fromListWith Set.union $ map (second Set.singleton) ts)
-
-values :: Table -> Map.Map GName (Set.Set (SymValueInfo OrigName))
-types  :: Table -> Map.Map GName (Set.Set (SymTypeInfo  OrigName))
-values = getL valLens
-types = getL tyLens
-
-toSymbols :: Table -> Symbols
-toSymbols tbl =
-  Symbols
-    (gather $ values tbl)
-    (gather $ types  tbl)
-  where
-    gather :: Ord a => Map.Map k (Set.Set a) -> Set.Set a
-    gather = Map.foldl' Set.union Set.empty

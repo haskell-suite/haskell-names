@@ -9,18 +9,21 @@ import Control.Monad
 import Control.Monad.Writer
 import Data.Data
 import Distribution.HaskellSuite.Modules
+import qualified Language.Haskell.Exts as UnAnn (QName(Qual,UnQual))
+import Language.Haskell.Exts.Annotated.Simplify (sQName,sModuleName)
 import Language.Haskell.Exts.Annotated
 import Language.Haskell.Names.Types
 import Language.Haskell.Names.ScopeUtils
 import Language.Haskell.Names.SyntaxUtils
 import Language.Haskell.Names.ModuleSymbols
 import Language.Haskell.Names.GlobalSymbolTable as Global
+import Data.List (nub)
 
 processExports
-  :: (MonadModule m, ModuleInfo m ~ Symbols, Data l, Eq l)
+  :: (MonadModule m, ModuleInfo m ~ [Symbol], Data l, Eq l)
   => Global.Table
   -> Module l
-  -> m (Maybe (ExportSpecList (Scoped l)), Symbols)
+  -> m (Maybe (ExportSpecList (Scoped l)), [Symbol])
 processExports tbl m =
   case getExportSpecList m of
     Nothing ->
@@ -29,58 +32,54 @@ processExports tbl m =
       liftM (first Just) $ resolveExportSpecList tbl exp
 
 resolveExportSpecList
-  :: (MonadModule m, ModuleInfo m ~ Symbols)
+  :: (MonadModule m, ModuleInfo m ~ [Symbol])
   => Global.Table
   -> ExportSpecList l
-  -> m (ExportSpecList (Scoped l), Symbols)
+  -> m (ExportSpecList (Scoped l), [Symbol])
 resolveExportSpecList tbl (ExportSpecList l specs) =
   liftM (first $ ExportSpecList $ none l) $
   runWriterT $
   mapM (WriterT . resolveExportSpec tbl) specs
 
 resolveExportSpec
-  :: (MonadModule m, ModuleInfo m ~ Symbols)
+  :: (MonadModule m, ModuleInfo m ~ [Symbol])
   => Global.Table
   -> ExportSpec l
-  -> m (ExportSpec (Scoped l), Symbols)
+  -> m (ExportSpec (Scoped l), [Symbol])
 resolveExportSpec tbl exp =
   case exp of
     EVar l ns@(NoNamespace {}) qn -> return $
       case Global.lookupValue qn tbl of
         Global.Error err ->
           (scopeError err exp, mempty)
-        Global.Result i ->
-          let s = mkVal i
-          in
-            (EVar (Scoped (Export s) l)
+        Global.SymbolFound i ->
+            (EVar (Scoped (Export [i]) l)
               (noScope ns)
-              (Scoped (GlobalValue i) <$> qn), s)
+              (Scoped (GlobalSymbol i (sQName qn)) <$> qn), [i])
         Global.Special {} -> error "Global.Special in export list?"
     EVar _ (TypeNamespace {}) _ -> error "'type' namespace is not supported yet" -- FIXME
     EAbs l qn -> return $
       case Global.lookupType qn tbl of
         Global.Error err ->
           (scopeError err exp, mempty)
-        Global.Result i ->
-          let s = mkTy i
-          in
-            (EAbs (Scoped (Export s) l)
-              (Scoped (GlobalType i) <$> qn), s)
+        Global.SymbolFound i ->
+            (EAbs (Scoped (Export [i]) l)
+              (Scoped (GlobalSymbol i (sQName qn)) <$> qn), [i])
         Global.Special {} -> error "Global.Special in export list?"
     EThingAll l qn -> return $
       case Global.lookupType qn tbl of
         Global.Error err ->
           (scopeError err exp, mempty)
-        Global.Result i ->
+        Global.SymbolFound i ->
           let
-            subs = mconcat
-              [ mkVal info
-              | info <- allValueInfos
-              , Just n' <- return $ sv_parent info
-              , n' == st_origName i ]
-            s = mkTy i <> subs
+            subs = nub (do
+                symbol <- concat (Map.elems tbl)
+                Just n' <- return $ symbolParent symbol
+                guard (n' == symbolName i)
+                return symbol)
+            s = [i] <> subs
           in
-            ( EThingAll (Scoped (Export s) l) (Scoped (GlobalType i) <$> qn)
+            ( EThingAll (Scoped (Export s) l) (Scoped (GlobalSymbol i (sQName qn)) <$> qn)
             , s
             )
         Global.Special {} -> error "Global.Special in export list?"
@@ -88,47 +87,30 @@ resolveExportSpec tbl exp =
       case Global.lookupType qn tbl of
         Global.Error err ->
           (scopeError err exp, mempty)
-        Global.Result i ->
+        Global.SymbolFound i ->
           let
             (cns', subs) =
               resolveCNames
-                (Global.toSymbols tbl)
-                (st_origName i)
+                (concat (Map.elems tbl))
+                (symbolName i)
                 (\cn -> ENotInScope (UnQual (ann cn) (unCName cn))) -- FIXME better error
                 cns
-            s = mkTy i <> subs
+            s = [i] <> subs
           in
-            ( EThingWith (Scoped (Export s) l) (Scoped (GlobalType i) <$> qn) cns'
+            ( EThingWith (Scoped (Export s) l) (Scoped (GlobalSymbol i (sQName qn)) <$> qn) cns'
             , s
             )
         Global.Special {} -> error "Global.Special in export list?"
-    EModuleContents _ (ModuleName _ mod) ->
-      -- FIXME ambiguity check
-      let
-        filterByPrefix
-          :: Ord i
-          => ModuleNameS
-          -> Map.Map GName (Set.Set i)
-          -> Set.Set i
-        filterByPrefix prefix m =
-          Set.unions
-            [ i | (GName { gModule = prefix' }, i) <- Map.toList m, prefix' == prefix ]
+    -- FIXME ambiguity check
+    EModuleContents _ modulename -> return (Scoped (Export exportedSymbols) <$> exp,exportedSymbols) where
 
-        filterEntities
-          :: Ord i
-          => Map.Map GName (Set.Set i)
-          -> Set.Set i
-        filterEntities ents =
-          Set.intersection
-            (filterByPrefix mod ents)
-            (filterByPrefix ""  ents)
+        exportedSymbols = Set.toList (Set.intersection inScopeQualified inScopeUnqualified)
 
-        eVals = filterEntities $ Global.values tbl
-        eTyps = filterEntities $ Global.types tbl
+        inScopeQualified = Set.fromList (do
+            (UnAnn.Qual prefix _, symbols) <- Map.toList tbl
+            guard (prefix == (sModuleName modulename))
+            symbols)
 
-        s = Symbols eVals eTyps
-      in
-        return (Scoped (Export s) <$> exp, s)
-  where
-    allValueInfos =
-      Set.toList $ Map.foldl' Set.union Set.empty $ Global.values tbl
+        inScopeUnqualified = Set.fromList (do
+            (UnAnn.UnQual _, symbols) <- Map.toList tbl
+            symbols)

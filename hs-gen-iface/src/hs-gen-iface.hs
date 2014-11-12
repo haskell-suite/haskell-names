@@ -101,4 +101,4 @@ compile buildDir mbLang exts cppOpts pkgName pkgdbs deps files = do
 
     createDirectoryIfMissingVerbose silent True (dropFileName ifaceFile)
 
-    writeInterface ifaceFile $ qualifySymbols pkgName syms
+    writeInterface ifaceFile syms

@@ -2,14 +2,15 @@ module Language.Haskell.Names.ScopeUtils where
 
 import Control.Applicative
 import Control.Arrow
-import qualified Data.Set as Set
 import Data.Monoid
-import Data.Lens.Light
 import Language.Haskell.Names.Types
 import Language.Haskell.Names.SyntaxUtils
-import Language.Haskell.Exts.Annotated
+import Language.Haskell.Exts
+import Language.Haskell.Exts.Annotated.Simplify (sName)
+import qualified Language.Haskell.Exts.Annotated as Ann
 import qualified Language.Haskell.Names.GlobalSymbolTable as Global
-import Distribution.Package (PackageId)
+import Control.Monad (guard)
+import Data.List (nub)
 
 scopeError :: Functor f => Error l -> f l -> f (Scoped l)
 scopeError e f = Scoped (ScopeError e) <$> f
@@ -17,25 +18,14 @@ scopeError e f = Scoped (ScopeError e) <$> f
 none :: l -> Scoped l
 none = Scoped None
 
-noScope :: (Annotated a) => a l -> a (Scoped l)
+noScope :: (Ann.Annotated a) => a l -> a (Scoped l)
 noScope = fmap none
 
-sv_parent :: SymValueInfo n -> Maybe n
-sv_parent (SymSelector { sv_typeName = n }) = Just n
-sv_parent (SymConstructor { sv_typeName = n }) = Just n
-sv_parent (SymMethod { sv_className = n }) = Just n
-sv_parent _ = Nothing
-
--- | Annotate all local symbols with the package name and version
-qualifySymbols :: PackageId -> Symbols -> Symbols
-qualifySymbols pkg (Symbols vals tys) =
-  Symbols
-    (Set.map (fmap qualify) vals)
-    (Set.map (fmap qualify) tys)
-  where
-    qualify (OrigName Nothing gname) =
-      OrigName (Just pkg) gname
-    qualify orig = orig
+symbolParent :: Symbol -> Maybe Name
+symbolParent (Selector { typeName = n }) = Just n
+symbolParent (Constructor { typeName = n }) = Just n
+symbolParent (Method { className = n }) = Just n
+symbolParent _ = Nothing
 
 computeSymbolTable
   :: Bool
@@ -43,50 +33,47 @@ computeSymbolTable
     -- inserted.
     --
     -- If 'False', then both qualified and unqualified names are insterted.
-  -> ModuleName l
-  -> Symbols
+  -> ModuleName
+  -> [Symbol]
   -> Global.Table
-computeSymbolTable qual (ModuleName _ mod) syms =
-  Global.fromLists $
-    if qual
-      then renamed
-      else renamed <> unqualified
-  where
-    vs = Set.toList $ syms^.valSyms
-    ts = Set.toList $ syms^.tySyms
-    renamed = renameSyms mod
-    unqualified = renameSyms ""
-    renameSyms mod = (map (rename mod) vs, map (rename mod) ts)
-    rename :: HasOrigName i => ModuleNameS -> i OrigName -> (GName, i OrigName)
-    rename m v = ((origGName . origName $ v) { gModule = m }, v)
+computeSymbolTable qual modulename symbols =
+  Global.fromList (qualified <> if qual then [] else unqualified) where
+    qualified = do
+        symbol <- symbols
+        return (Qual modulename (symbolName symbol),symbol)
+    unqualified = do
+        symbol <- symbols
+        return (UnQual (symbolName symbol),symbol)
 
+-- | Find a single constructor or method name in a list of symbols
 resolveCName
-  :: Symbols
-  -> OrigName
-  -> (CName l -> Error l) -- ^ error for "not found" condition
-  -> CName l
-  -> (CName (Scoped l), Symbols)
-resolveCName syms parent notFound cn =
+  :: [Symbol]
+  -> Name
+  -> (Ann.CName l -> Error l) -- ^ error for "not found" condition
+  -> Ann.CName l
+  -> (Ann.CName (Scoped l), [Symbol])
+resolveCName symbols parent notFound cn =
   let
-    vs =
-      [ info
-      | info <- Set.toList $ syms^.valSyms
-      , let name = gName . origGName $ sv_origName info
-      , nameToString (unCName cn) == name
-      , Just p <- return $ sv_parent info
-      , p == parent
-      ]
+    vs = nub (do
+        symbol <- symbols
+        guard (Global.isValue symbol)
+        let name = symbolName symbol
+        guard (sName (unCName cn) == name)
+        Just p <- return $ symbolParent symbol
+        guard (p == parent)
+        return symbol)
   in
     case vs of
-      [] -> (scopeError (notFound cn) cn, mempty)
-      [i] -> (Scoped (GlobalValue i) <$> cn, mkVal i)
-      _ -> (scopeError (EInternal "resolveCName") cn, mempty)
+      [] -> (scopeError (notFound cn) cn, [])
+      [symbol] -> (Scoped (GlobalSymbol symbol (UnQual (sName (unCName cn)))) <$> cn, [symbol])
+      _ -> (scopeError (EInternal "resolveCName") cn, [])
 
+-- | Find a list of constructor or method names in a list of symbols.
 resolveCNames
-  :: Symbols
-  -> OrigName
-  -> (CName l -> Error l) -- ^ error for "not found" condition
-  -> [CName l]
-  -> ([CName (Scoped l)], Symbols)
+  :: [Symbol]
+  -> Name
+  -> (Ann.CName l -> Error l) -- ^ error for "not found" condition
+  -> [Ann.CName l]
+  -> ([Ann.CName (Scoped l)], [Symbol])
 resolveCNames syms orig notFound =
   second mconcat . unzip . map (resolveCName syms orig notFound)

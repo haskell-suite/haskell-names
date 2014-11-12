@@ -16,7 +16,8 @@ import Language.Haskell.Names.Open.Base
 import Language.Haskell.Names.Open.Instances ()
 import qualified Language.Haskell.Names.GlobalSymbolTable as Global
 import qualified Language.Haskell.Names.LocalSymbolTable as Local
-import Language.Haskell.Names.SyntaxUtils (nameToQName)
+import Language.Haskell.Names.SyntaxUtils (annName,setAnn)
+import Language.Haskell.Exts.Annotated.Simplify (sQName)
 import Language.Haskell.Exts.Annotated
 import Data.Proxy
 import Data.Lens.Light
@@ -58,28 +59,29 @@ annotateRec _ sc a = go sc a where
     | Just (Eq :: FieldUpdate (Scoped l) :~: a) <- dynamicEq
       = case a of
           FieldPun l n -> FieldPun l (lookupValue (sLoc <$> n) sc <$ n)
-          FieldWildcard l ->
-            let
-              namesUnres = sc ^. wcNames
-              resolve n =
-                let Scoped info _ = lookupValue (sLoc l <$ UnQual () n) sc
-                in info
-              namesRes =
-                map
-                  (\f -> (wcFieldOrigName f, resolve $ wcFieldName f))
-                  namesUnres
-            in FieldWildcard $ Scoped (RecExpWildcard namesRes) (sLoc l)
+          FieldWildcard l -> FieldWildcard (Scoped (RecExpWildcard namesRes) (sLoc l)) where
+            namesRes = do
+                f <- sc ^. wcNames
+                let qn = setAnn (sLoc l) (UnQual () (annName (wcFieldName f)))
+                case lookupValue qn sc of
+                    Scoped info@(GlobalSymbol _ _) _ -> return (wcFieldName f,info)
+                    Scoped info@(LocalValue _) _ -> return (wcFieldName f,info)
+                    _ -> []
           _ -> rmap go sc a
     | Just (Eq :: PatField (Scoped l) :~: a) <- dynamicEq
     , PFieldWildcard l <- a
-      = PFieldWildcard $
-          Scoped
-            (RecPatWildcard $ map wcFieldOrigName $ sc ^. wcNames)
-            (sLoc l)
+      = let
+            namesRes = do
+                f <- sc ^. wcNames
+                let qn = UnQual () (annName (wcFieldName f))
+                Scoped (GlobalSymbol symbol _) _ <- return (lookupValue qn sc)
+                return (symbol {symbolModule = wcFieldModuleName f})
+        in PFieldWildcard (Scoped (RecPatWildcard namesRes) (sLoc l))            
     | otherwise
       = rmap go sc a
 
 lookupValue :: QName l -> Scope -> Scoped l
+lookupValue (Special l _) _ = Scoped None l
 lookupValue qn sc = Scoped nameInfo (ann qn)
   where
     nameInfo =
@@ -87,28 +89,24 @@ lookupValue qn sc = Scoped nameInfo (ann qn)
         Right r -> LocalValue r
         _ ->
           case Global.lookupValue qn $ getL gTable sc of
-            Global.Result r -> GlobalValue r
+            Global.SymbolFound r -> GlobalSymbol r (sQName qn)
             Global.Error e -> ScopeError e
             Global.Special -> None
 
 lookupType :: QName l -> Scope -> Scoped l
+lookupType (Special l _) _ = Scoped None l
 lookupType qn sc = Scoped nameInfo (ann qn)
   where
     nameInfo =
       case Global.lookupType qn $ getL gTable sc of
-        Global.Result r -> GlobalType r
+        Global.SymbolFound r -> GlobalSymbol r (sQName qn)
         Global.Error e -> ScopeError e
         Global.Special -> None
 
 lookupMethod :: Name l -> Scope -> Scoped l
-lookupMethod name sc = Scoped nameInfo (ann name)
+lookupMethod n sc = Scoped nameInfo (ann n)
   where
-    qn = nameToQName name
-    nameInfo =
-      case Local.lookupValue qn $ getL lTable sc of
-        Right r -> LocalValue r
-        _ ->
-          case Global.lookupMethod qn $ getL gTable sc of
-            Global.Result r -> GlobalValue r
-            Global.Error e -> ScopeError e
-            Global.Special -> None
+    nameInfo = case Global.lookupMethod n $ getL gTable sc of
+        (Global.SymbolFound r,Just gn) -> GlobalSymbol r gn
+        (Global.Error e,_) -> ScopeError e
+        _ -> None
