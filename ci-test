@@ -6,4 +6,4 @@ set -e
 
 #cabal install --enable-tests
 
-cabal install
+cabal install -v
