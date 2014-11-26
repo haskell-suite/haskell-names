@@ -4,25 +4,15 @@ module Language.Haskell.Names
     computeInterfaces
   , getInterfaces
   , annotateModule
-  , qualifySymbols
   -- * Types
-  , SymValueInfo(..)
-  , SymTypeInfo(..)
-  , Symbols(..)
+  , Symbol(..)
   , Scoped(..)
   , NameInfo(..)
-  , NameS
-  , ModuleNameS
-  , GName(..)
-  , ppGName
-  , OrigName(..)
-  , ppOrigName
   , Error(..)
+  -- * Pretty printing
   , ppError
-  , SymFixity
-  , HasOrigName(..)
+  , ppSymbol
   ) where
 
 import Language.Haskell.Names.Types
 import Language.Haskell.Names.Recursive
-import Language.Haskell.Names.ScopeUtils

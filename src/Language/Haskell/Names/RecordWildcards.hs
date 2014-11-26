@@ -3,15 +3,18 @@
 module Language.Haskell.Names.RecordWildcards where
 
 import qualified Data.Map as Map
-import qualified Data.Set as Set
 import Data.Maybe
 import Control.Monad
 
-import Language.Haskell.Exts.Annotated
+import Language.Haskell.Exts
+import Language.Haskell.Exts.Annotated.Simplify (sName)
+import qualified Language.Haskell.Exts.Annotated as Ann
 import Language.Haskell.Names.Types
 import Language.Haskell.Names.SyntaxUtils
 import qualified Language.Haskell.Names.GlobalSymbolTable as Global
 import qualified Language.Haskell.Names.LocalSymbolTable as Local
+
+import Data.List (nub)
 
 -- | Information about the names being introduced by a record wildcard
 --
@@ -23,9 +26,9 @@ type WcNames = [WcField]
 
 -- | Information about a field in the wildcard
 data WcField = WcField
-  { wcFieldName :: Name ()
+  { wcFieldName :: Name
     -- ^ the field's simple name
-  , wcFieldOrigName :: OrigName
+  , wcFieldModuleName :: ModuleName
     -- ^ the field's original name
   , wcExistsGlobalValue :: Bool
     -- ^ whether there is a global value in scope with the same name as
@@ -34,85 +37,72 @@ data WcField = WcField
 
 getElidedFields
   :: Global.Table
-  -> QName l
-  -> [Name l] -- mentioned field names
+  -> Ann.QName l
+  -> [Ann.Name l] -- mentioned field names
   -> WcNames
-getElidedFields gt con fields =
+getElidedFields globalTable con fields =
   let
-    givenFieldNames :: Map.Map (Name ()) ()
+    givenFieldNames :: Map.Map Name ()
     givenFieldNames =
-      Map.fromList . map ((, ()) . void) $ fields
+      Map.fromList . map ((, ()) . sName) $ fields
 
     -- FIXME must report error when the constructor cannot be
     -- resolved
     (mbConOrigName, mbTypeOrigName) =
-      case Global.lookupValue con gt of
-        Global.Result info@SymConstructor{} ->
-          (Just $ sv_origName info, Just $ sv_typeName info)
+      case Global.lookupValue con globalTable of
+        Global.SymbolFound symbol@Constructor{} ->
+          (Just $ symbolName symbol, Just $ typeName symbol)
         _ -> (Nothing, Nothing)
 
-    allValueInfos :: Set.Set (SymValueInfo OrigName)
-    allValueInfos = Set.unions $ Map.elems $ Global.values gt
+    ourFieldInfos :: [Symbol]
+    ourFieldInfos = nub (do
+        conOrigName <- maybeToList mbConOrigName
+        symbol@(Selector {constructors}) <- concat (Map.elems globalTable)
+        guard (conOrigName `elem` constructors)
+        return symbol)
 
-    ourFieldInfos :: Set.Set (SymValueInfo OrigName)
-    ourFieldInfos =
-      case mbConOrigName of
-        Nothing -> Set.empty
-        Just conOrigName ->
-          flip Set.filter allValueInfos $ \v ->
-            case v of
-              SymSelector { sv_constructors }
-                | conOrigName `elem` sv_constructors -> True
-              _ -> False
-
-    existsGlobalValue :: Name () -> Bool
+    existsGlobalValue :: Name -> Bool
     existsGlobalValue name =
-      case Global.lookupValue (UnQual () name) gt of
-        Global.Result info
+      case Map.lookup (UnQual name) globalTable of
+        Just [symbol]
           | Just typeOrigName <- mbTypeOrigName
-          , SymSelector {} <- info
-          , sv_typeName info == typeOrigName
+          , Selector {} <- symbol
+          , typeName symbol == typeOrigName
             -> False -- this is the field selector
           | otherwise -> True -- exists, but not this field's selector
         _ -> False -- doesn't exist or ambiguous
 
-    ourFieldNames :: Map.Map (Name ()) WcField
-    ourFieldNames =
-      Map.fromList $
-      map
-        (
-          (\orig ->
-            let name = stringToName . gName . origGName $ orig in
-            (name, ) $
-              WcField
-              { wcFieldName = name
-              , wcFieldOrigName = orig
-              , wcExistsGlobalValue = existsGlobalValue name
-              }
-          ) . sv_origName
-        )
-        $ Set.toList ourFieldInfos
+    ourFieldNames :: Map.Map Name WcField
+    ourFieldNames = Map.fromList (do
+        symbol <- ourFieldInfos
+        let name = symbolName symbol
+            wcfield = WcField
+                { wcFieldName = name
+                , wcFieldModuleName = symbolModule symbol
+                , wcExistsGlobalValue = existsGlobalValue name
+            }
+        return (name,wcfield))
 
   in Map.elems $ ourFieldNames `Map.difference` givenFieldNames
 
-nameOfPatField :: PatField l -> Maybe (Name l)
+nameOfPatField :: Ann.PatField l -> Maybe (Ann.Name l)
 nameOfPatField pf =
   case pf of
-    PFieldPat _ qn _ -> Just $ qNameToName qn
-    PFieldPun _ qn -> Just $ qNameToName qn
-    PFieldWildcard {} -> Nothing
+    Ann.PFieldPat _ qn _ -> Just $ qNameToName qn
+    Ann.PFieldPun _ qn -> Just $ qNameToName qn
+    Ann.PFieldWildcard {} -> Nothing
 
-nameOfUpdField :: FieldUpdate l -> Maybe (Name l)
+nameOfUpdField :: Ann.FieldUpdate l -> Maybe (Ann.Name l)
 nameOfUpdField pf =
   case pf of
-    FieldUpdate _ qn _ -> Just $ qNameToName qn
-    FieldPun _ qn -> Just $ qNameToName qn
-    FieldWildcard {} -> Nothing
+    Ann.FieldUpdate _ qn _ -> Just $ qNameToName qn
+    Ann.FieldPun _ qn -> Just $ qNameToName qn
+    Ann.FieldWildcard {} -> Nothing
 
 patWcNames
   :: Global.Table
-  -> QName l
-  -> [PatField l]
+  -> Ann.QName l
+  -> [Ann.PatField l]
   -> WcNames
 patWcNames gt con patfs =
   getElidedFields gt con $
@@ -121,8 +111,8 @@ patWcNames gt con patfs =
 expWcNames
   :: Global.Table
   -> Local.Table
-  -> QName l
-  -> [FieldUpdate l]
+  -> Ann.QName l
+  -> [Ann.FieldUpdate l]
   -> WcNames
 expWcNames gt lt con patfs =
   filter isInScope $
@@ -133,4 +123,4 @@ expWcNames gt lt con patfs =
       | Right {} <- Local.lookupValue qn lt = True
       | otherwise = wcExistsGlobalValue field
       where
-        qn = UnQual () $ wcFieldName field
+        qn = Ann.UnQual () (annName (wcFieldName field))

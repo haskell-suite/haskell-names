@@ -28,6 +28,8 @@ data NameContext
   | BindingV
   | ReferenceT
   | ReferenceV
+  | ReferenceM -- ^ Reference a method in an instance declaration
+               -- https://www.haskell.org/pipermail/haskell-prime/2008-April/002569.html
   | Other
 
 -- | Contains information about the node's enclosing scope. Can be
@@ -131,3 +133,6 @@ exprV = setNameCtx ReferenceV
 
 exprT :: Scope -> Scope
 exprT = setNameCtx ReferenceT
+
+exprM :: Scope -> Scope
+exprM = setNameCtx ReferenceM

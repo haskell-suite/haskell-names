@@ -2,7 +2,7 @@ module ExportListWildcards (Foo(..), Bar(..), N(..)) where
 
 data Foo = Foo1 | Foo2 Int | Foo3 { c :: Bool }
 
-class Bar where x :: Foo
+class Bar a where x :: a -> Foo
 
 newtype N = N { unN :: Foo }
 

@@ -467,7 +467,7 @@
 #define HTYPE_CHAR Int8
 
 /* Define to Haskell type for clock_t */
-#define HTYPE_CLOCK_T Int32
+#define HTYPE_CLOCK_T Int64
 
 /* Define to Haskell type for dev_t */
 #define HTYPE_DEV_T Word64
@@ -491,10 +491,10 @@
 #define HTYPE_INTMAX_T Int64
 
 /* Define to Haskell type for intptr_t */
-#define HTYPE_INTPTR_T Int32
+#define HTYPE_INTPTR_T Int64
 
 /* Define to Haskell type for long */
-#define HTYPE_LONG Int32
+#define HTYPE_LONG Int64
 
 /* Define to Haskell type for long long */
 #define HTYPE_LONG_LONG Int64
@@ -503,7 +503,7 @@
 #define HTYPE_MODE_T Word32
 
 /* Define to Haskell type for nlink_t */
-#define HTYPE_NLINK_T Word32
+#define HTYPE_NLINK_T Word64
 
 /* Define to Haskell type for off_t */
 #define HTYPE_OFF_T Int64
@@ -512,7 +512,7 @@
 #define HTYPE_PID_T Int32
 
 /* Define to Haskell type for ptrdiff_t */
-#define HTYPE_PTRDIFF_T Int32
+#define HTYPE_PTRDIFF_T Int64
 
 /* Define to Haskell type for rlim_t */
 #define HTYPE_RLIM_T Word64
@@ -527,22 +527,22 @@
 #define HTYPE_SIG_ATOMIC_T Int32
 
 /* Define to Haskell type for size_t */
-#define HTYPE_SIZE_T Word32
+#define HTYPE_SIZE_T Word64
 
 /* Define to Haskell type for speed_t */
 #define HTYPE_SPEED_T Word32
 
 /* Define to Haskell type for ssize_t */
-#define HTYPE_SSIZE_T Int32
+#define HTYPE_SSIZE_T Int64
 
 /* Define to Haskell type for suseconds_t */
-#define HTYPE_SUSECONDS_T Int32
+#define HTYPE_SUSECONDS_T Int64
 
 /* Define to Haskell type for tcflag_t */
 #define HTYPE_TCFLAG_T Word32
 
 /* Define to Haskell type for time_t */
-#define HTYPE_TIME_T Int32
+#define HTYPE_TIME_T Int64
 
 /* Define to Haskell type for uid_t */
 #define HTYPE_UID_T Word32
@@ -551,7 +551,7 @@
 #define HTYPE_UINTMAX_T Word64
 
 /* Define to Haskell type for uintptr_t */
-#define HTYPE_UINTPTR_T Word32
+#define HTYPE_UINTPTR_T Word64
 
 /* Define to Haskell type for unsigned char */
 #define HTYPE_UNSIGNED_CHAR Word8
@@ -560,7 +560,7 @@
 #define HTYPE_UNSIGNED_INT Word32
 
 /* Define to Haskell type for unsigned long */
-#define HTYPE_UNSIGNED_LONG Word32
+#define HTYPE_UNSIGNED_LONG Word64
 
 /* Define to Haskell type for unsigned long long */
 #define HTYPE_UNSIGNED_LONG_LONG Word64
@@ -599,7 +599,7 @@
 /* #undef SIZEOF_KEV_FLAGS */
 
 /* The size of `struct MD5Context', as computed by sizeof. */
-#define SIZEOF_STRUCT_MD5CONTEXT 0
+#define SIZEOF_STRUCT_MD5CONTEXT 88
 
 /* Define to 1 if you have the ANSI C header files. */
 #define STDC_HEADERS 1
@@ -610,7 +610,7 @@
 #endif
 
 /* Number of bits in a file offset, on hosts where this is settable. */
-#define _FILE_OFFSET_BITS 64
+/* #undef _FILE_OFFSET_BITS */
 
 /* Define for large files, on AIX-style hosts. */
 /* #undef _LARGE_FILES */

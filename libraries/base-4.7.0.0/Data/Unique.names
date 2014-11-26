@@ -1,1 +1,1 @@
-[{"origin":{"name":"hashUnique","module":"Data.Unique","package":"base-4.7.0.0"},"fixity":null,"entity":"value"},{"origin":{"name":"newUnique","module":"Data.Unique","package":"base-4.7.0.0"},"fixity":null,"entity":"value"},{"origin":{"name":"Unique","module":"Data.Unique","package":"base-4.7.0.0"},"fixity":null,"entity":"newtype"}]
+[{"name":"Unique","entity":"newtype","module":"Data.Unique"},{"name":"newUnique","entity":"value","module":"Data.Unique"},{"name":"hashUnique","entity":"value","module":"Data.Unique"}]

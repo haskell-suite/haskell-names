@@ -1,0 +1,8 @@
+$$$      at 3:10 is a global value, Infix.($$$)
+$$$      at  5:2 is a value bound here
+x        at  5:7 is a value bound here
+y        at  5:9 is a value bound here
+x        at 5:13 is a local value defined at 5:7
+x        at 5:13 is a local value defined at 5:7
+y        at 5:15 is a local value defined at 5:9
+y        at 5:15 is a local value defined at 5:9

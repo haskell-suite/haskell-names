@@ -15,6 +15,7 @@ import Language.Haskell.Names.Open.Derived ()
 import Language.Haskell.Names.GetBound
 import Language.Haskell.Names.RecordWildcards
 import Language.Haskell.Exts.Annotated
+import Language.Haskell.Names.SyntaxUtils
 import qualified Data.Data as D
 import Control.Applicative
 import Data.Typeable
@@ -58,9 +59,15 @@ instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (Decl l) where
       -- FunBind consists of Matches, which we handle below anyway.
       TypeSig l names ty ->
         c TypeSig
+          <|  sc       -: l
+          <*> fmap (map qNameToName) (rtraverse (map nameToQName names) (exprV sc))
+          <|  sc       -: ty
+      InfixDecl l assoc mp ops ->
+        c InfixDecl
           <| sc       -: l
-          <| exprV sc -: names
-          <| sc       -: ty
+          <| sc       -: assoc
+          <| sc       -: mp
+          <| exprV sc -: ops
       _ -> defaultRtraverse e sc
 
 instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (Type l) where
@@ -326,6 +333,95 @@ instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (QualStmt l) where
     case e of
       QualStmt {} -> defaultRtraverse e sc
       _ -> error "haskell-names: TransformListComp is not supported yet"
+
+instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (InstRule l) where
+  rtraverse e sc =
+    case e of
+      IRule l mtv mc ih ->
+        c IRule
+          <| sc -: l
+          <| sc -: mtv
+          <| exprT sc -: mc
+          <| exprT sc -: ih
+      _ -> defaultRtraverse e sc
+
+instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (InstDecl l) where
+  rtraverse e sc =
+    case e of
+      InsDecl dl (PatBind l (PVar pl name) rhs mbWhere) ->
+        let
+          scWithWhere = intro mbWhere sc
+        in
+        c InsDecl
+          <| sc -: dl
+          <*> (c PatBind
+            <|  sc                -: l
+            <*> (c PVar
+                  <| sc       -: pl
+                  <| exprM sc -: name)
+            <|  exprV scWithWhere -: rhs
+            <|  sc                -: mbWhere)
+      InsDecl dl (FunBind bl ms) ->
+        c InsDecl
+          <|  sc -: dl
+          <*> (c FunBind
+            <|  sc -: bl
+            <*> T.for ms (\m -> case m of
+                Match l name pats rhs mbWhere ->
+                    -- f x y z = ...
+                    --   where ...
+                  let
+                    (pats', scWithPats) = chain pats sc
+                    scWithWhere = intro mbWhere scWithPats
+                  in
+                    c Match
+                      <| sc                -: l
+                      <| exprM sc          -: name
+                      <*> pats' -- has been already traversed
+                      <| exprV scWithWhere -: rhs
+                      <| scWithPats        -: mbWhere
+                InfixMatch l pat1 name patsRest rhs mbWhere ->
+                    -- x <*> y = ...
+                    --   where ...
+                  let
+                    (pats', scWithPats) = chain (pat1:patsRest) sc
+                    pat1' = fmap head pats'
+                    patsRest' = fmap tail pats'
+                    scWithWhere = intro mbWhere scWithPats
+                  in
+                    c InfixMatch
+                      <| sc                -: l
+                      <*> pat1'     -- has been already traversed
+                      <| exprM sc          -: name
+                      <*> patsRest' -- has been already traversed
+                      <| exprV scWithWhere -: rhs
+                      <| scWithPats        -: mbWhere))
+      _ -> defaultRtraverse e sc
+
+instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (ClassDecl l) where
+  rtraverse e sc =
+    case e of
+      ClsDecl l (TypeSig sl [n] t) ->
+        c ClsDecl
+          <| sc -: l
+          <*> (c TypeSig
+            <| sc         -: sl
+            <| binderV sc -: [n]
+            <| sc         -: t)
+      _ -> defaultRtraverse e sc
+
+instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (Op l) where
+  rtraverse e sc =
+    case e of
+      VarOp l name ->
+        c VarOp
+          <| sc -: l
+          <*> fmap qNameToName (alg (nameToQName name) (exprV sc))
+      ConOp l name ->
+        c ConOp
+          <| sc -: l
+          <*> fmap qNameToName (alg (nameToQName name) (exprV sc))
+
 
 {-
 Note [Nested pattern scopes]

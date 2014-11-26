@@ -1,8 +1,8 @@
 Name:                   haskell-names
-Version:                0.4.1
+Version:                0.5.0
 License:                BSD3
-Author:                 Roman Cheplyaka, Lennart Augustsson
-Maintainer:             Roman Cheplyaka <roma@ro-che.info>
+Author:                 Philipp Schuster, Roman Cheplyaka, Lennart Augustsson
+Maintainer:             Philipp Schuster
 Category:               Language
 Synopsis:               Name resolution library for Haskell
 Description:

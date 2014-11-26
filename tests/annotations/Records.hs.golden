@@ -124,14 +124,14 @@ r1       at 51:1 is a value bound here
 b        at 51:10 is a value bound here
 A        at 51:19 is a global constructor, Records.A
 A        at 51:19 is a global constructor, Records.A
-..       at 51:23 is a record construction wildcard which assigns the following fields: Records.b = (a local value defined at 51:10)
+..       at 51:23 is a record construction wildcard which assigns the following fields: b = (a local value defined at 51:10)
 r2       at 55:1 is a value bound here
 selector2 at 55:10 is a value bound here
 undefined at 55:22 is a global value, Records.undefined
 undefined at 55:22 is a global value, Records.undefined
 DataTypeWithSelectors at 55:35 is a global constructor, Prelude.DataTypeWithSelectors
 DataTypeWithSelectors at 55:35 is a global constructor, Prelude.DataTypeWithSelectors
-..       at 55:67 is a record construction wildcard which assigns the following fields: Prelude.selector1 = (a global value, Records.selector1), Prelude.selector2 = (a local value defined at 55:10)
+..       at 55:67 is a record construction wildcard which assigns the following fields: selector1 = (a global value, Records.selector1), selector2 = (a local value defined at 55:10)
 r3       at 58:1 is a value bound here
 b        at 58:10 is a value bound here
 undefined at 58:14 is a global value, Records.undefined
@@ -142,7 +142,7 @@ c        at 58:31 is a global selector, Records.c
 c        at 58:31 is a global selector, Records.c
 undefined at 58:35 is a global value, Records.undefined
 undefined at 58:35 is a global value, Records.undefined
-..       at 58:46 is a record construction wildcard which assigns the following fields: Records.b = (a local value defined at 58:10)
+..       at 58:46 is a record construction wildcard which assigns the following fields: b = (a local value defined at 58:10)
 r4       at 61:1 is a value bound here
 b        at 61:11 is a value bound here
 c        at 61:13 is a value bound here
@@ -152,7 +152,7 @@ A        at 61:31 is a global constructor, Records.A
 A        at 61:31 is a global constructor, Records.A
 c        at 61:35 is a local value defined at 61:13
 c        at 61:35 is a local value defined at 61:13
-..       at 61:38 is a record construction wildcard which assigns the following fields: Records.b = (a local value defined at 61:11)
+..       at 61:38 is a record construction wildcard which assigns the following fields: b = (a local value defined at 61:11)
 r5       at 64:1 is a value bound here
 b        at 64:11 is a value bound here
 xxx      at 64:14 is a value bound here
@@ -160,4 +160,4 @@ undefined at 64:21 is a global value, Records.undefined
 undefined at 64:21 is a global value, Records.undefined
 A        at 64:34 is a global constructor, Records.A
 A        at 64:34 is a global constructor, Records.A
-..       at 64:38 is a record construction wildcard which assigns the following fields: Records.b = (a local value defined at 64:11)
+..       at 64:38 is a record construction wildcard which assigns the following fields: b = (a local value defined at 64:11)

@@ -7,15 +7,13 @@ module Language.Haskell.Names.ModuleSymbols
   where
 
 import Data.Maybe
-import Data.Either
-import Data.Lens.Light
-import Data.Monoid
 import Data.Data
-import qualified Data.Set as Set
 import qualified Data.Map as Map
-import Control.Monad
 
-import Language.Haskell.Exts.Annotated
+import qualified Language.Haskell.Exts as UnAnn (ModuleName,Name)
+import Language.Haskell.Exts.Annotated hiding (NewType)
+import Language.Haskell.Exts.Annotated.Simplify (sModuleName,sName)
+import qualified Language.Haskell.Exts.Annotated as Syntax (DataOrNew(NewType))
 import Language.Haskell.Names.Types
 import qualified Language.Haskell.Names.GlobalSymbolTable as Global
 import Language.Haskell.Names.SyntaxUtils
@@ -29,9 +27,8 @@ moduleTable
   => Global.Table -- ^ the import table for this module
   -> Module l
   -> Global.Table
-moduleTable impTbl m =
-  impTbl <>
-  computeSymbolTable False (getModuleName m) (moduleSymbols impTbl m)
+moduleTable impTbl m = Global.mergeTables impTbl (computeSymbolTable
+  False (sModuleName (getModuleName m)) (moduleSymbols impTbl m))
 
 -- | Compute the symbols that are defined in the given module.
 --
@@ -43,120 +40,87 @@ moduleSymbols
   :: (Eq l, Data l)
   => Global.Table -- ^ the import table for this module
   -> Module l
-  -> Symbols
+  -> [Symbol]
 moduleSymbols impTbl m =
-  let (vs,ts) =
-        partitionEithers $
-          concatMap
-            (getTopDeclSymbols impTbl $ getModuleName m)
-            (getModuleDecls m)
-  in
-    setL valSyms (Set.fromList vs) $
-    setL tySyms  (Set.fromList ts) mempty
+  concatMap (getTopDeclSymbols impTbl $ getModuleName m) (getModuleDecls m)
 
-type TypeName = GName
-type ConName = Name ()
-type SelectorName = Name ()
-type Constructors = [(ConName, [SelectorName])]
-
--- Extract names that get bound by a top level declaration.
 getTopDeclSymbols
   :: forall l . (Eq l, Data l)
   => Global.Table -- ^ the import table for this module
   -> ModuleName l
   -> Decl l
-  -> [Either (SymValueInfo OrigName) (SymTypeInfo OrigName)]
-getTopDeclSymbols impTbl mdl d =
-  map (either (Left . fmap toOrig) (Right . fmap toOrig)) $
-  case d of
-    TypeDecl _ dh _ ->
-      let tn = hname dh
-      in  [ Right (SymType        { st_origName = tn, st_fixity = Nothing })]
+  -> [Symbol]
+getTopDeclSymbols impTbl modulename d = (case d of
+    TypeDecl _ dh _ -> [declHeadSymbol Type dh]
 
-    TypeFamDecl _ dh _ ->
-      let tn = hname dh
-      in  [ Right (SymTypeFam     { st_origName = tn, st_fixity = Nothing })]
+    TypeFamDecl _ dh _ -> [declHeadSymbol TypeFam dh]
 
-    DataDecl _ dataOrNew _ dh qualConDecls _ ->
-      let
-        cons :: Constructors
+    DataDecl _ dataOrNew _ dh qualConDecls _ -> declHeadSymbol (dataOrNewCon dataOrNew) dh : infos where
+        cons :: [(Name l,[Name l])]
         cons = do -- list monad
           QualConDecl _ _ _ conDecl <- qualConDecls
           case conDecl of
-            ConDecl _ n _ -> return (void n, [])
-            InfixConDecl _ _ n _ -> return (void n, [])
+            ConDecl _ n _ -> return (n, [])
+            InfixConDecl _ _ n _ -> return (n, [])
             RecDecl _ n fields ->
-              return (void n , [void f | FieldDecl _ fNames _ <- fields, f <- fNames])
+              return (n , [f | FieldDecl _ fNames _ <- fields, f <- fNames])
 
-        dq = hname dh
+        dq = getDeclHeadName dh
 
-        infos = constructorsToInfos dq cons
+        infos = constructorsToInfos modulename dq cons
 
-      in
-        Right (dataOrNewCon dataOrNew dq Nothing) : map Left infos
-
-    GDataDecl _ dataOrNew _ dh _ gadtDecls _ ->
+    GDataDecl _ dataOrNew _ dh _ gadtDecls _ -> declHeadSymbol (dataOrNewCon dataOrNew) dh : infos where
       -- FIXME: We shouldn't create selectors for fields with existential type variables!
-      let
-        dq = hname dh
+        dq = getDeclHeadName dh
 
-        cons :: Constructors
+        cons :: [(Name l,[Name l])]
         cons = do -- list monad
           GadtDecl _ cn (fromMaybe [] -> fields) _ty <- gadtDecls
-          return (void cn , [void f | FieldDecl _ fNames _ <- fields, f <- fNames])
+          return (cn , [f | FieldDecl _ fNames _ <- fields, f <- fNames])
 
-        infos = constructorsToInfos dq cons
-      in
-          Right (dataOrNewCon dataOrNew dq Nothing) : map Left infos
+        infos = constructorsToInfos modulename dq cons          
 
-    DataFamDecl _ _ dh _ ->
-      let tn = hname dh
-      in [Right (SymDataFam { st_origName = tn, st_fixity = Nothing })]
+    DataFamDecl _ _ dh _ -> [declHeadSymbol DataFam dh]
 
     ClassDecl _ _ dh _ mds ->
       let
         ms = getBound impTbl d
-        cq = hname dh
         cdecls = fromMaybe [] mds
       in
-          Right (SymClass   { st_origName = cq,       st_fixity = Nothing }) :
-        [ Right (SymTypeFam { st_origName = hname dh, st_fixity = Nothing }) | ClsTyFam   _   dh _ <- cdecls ] ++
-        [ Right (SymDataFam { st_origName = hname dh, st_fixity = Nothing }) | ClsDataFam _ _ dh _ <- cdecls ] ++
-        [ Left  (SymMethod  { sv_origName = qname mn, sv_fixity = Nothing, sv_className = cq }) | mn <- ms ]
+          (declHeadSymbol Class dh) :
+        [ declHeadSymbol TypeFam dh | ClsTyFam   _   dh _ <- cdecls ] ++
+        [ declHeadSymbol DataFam dh | ClsDataFam _ _ dh _ <- cdecls ] ++
+        [ Method (sModuleName modulename) (sName mn) (sName (getDeclHeadName dh)) | mn <- ms ]
 
-    FunBind _ ms ->
-      let vn : _ = getBound impTbl ms
-      in  [ Left  (SymValue { sv_origName = qname vn, sv_fixity = Nothing }) ]
+    FunBind _ ms -> [ Value (sModuleName modulename) (sName vn) ] where
+      vn : _ = getBound impTbl ms
 
-    PatBind _ p _ _ ->
-      [ Left  (SymValue { sv_origName = qname vn, sv_fixity = Nothing }) | vn <- getBound impTbl p ]
+    PatBind _ p _ _ -> [ Value (sModuleName modulename) (sName vn) | vn <- getBound impTbl p ]
 
-    ForImp _ _ _ _ fn _ ->
-      [ Left  (SymValue { sv_origName = qname fn, sv_fixity = Nothing }) ]
+    ForImp _ _ _ _ fn _ -> [ Value (sModuleName modulename) (sName fn)]
 
-    _ -> []
-  where
-    ModuleName _ smdl = mdl
-    qname = GName smdl . nameToString
-    hname = qname . getDeclHeadName
-    toOrig = OrigName Nothing
-    dataOrNewCon dataOrNew = case dataOrNew of DataType {} -> SymData; NewType {} -> SymNewType
+    _ -> [])
+        where
+            declHeadSymbol c dh = c (sModuleName modulename) (sName (getDeclHeadName dh))
 
-    constructorsToInfos :: TypeName -> Constructors -> [SymValueInfo GName]
-    constructorsToInfos ty cons = conInfos ++ selInfos
-      where
-        conInfos =
-          [ SymConstructor { sv_origName = qname con, sv_fixity = Nothing, sv_typeName = ty }
-          | (con, _) <- cons
-          ]
+-- | Takes a type name and a list of constructor names paired with selector names. Returns
+--   all symbols i.e. constructors and selectors.
+constructorsToInfos :: ModuleName l -> Name l -> [(Name l,[Name l])] -> [Symbol]
+constructorsToInfos modulename typename constructors = conInfos ++ selInfos where
+        conInfos = do
+            (constructorname,_) <- constructors
+            return (Constructor (sModuleName modulename) (sName constructorname) (sName typename))
 
-        selectorsMap :: Map.Map SelectorName [ConName]
-        selectorsMap =
-          Map.unionsWith (++) . flip map cons $ \(c, fs) ->
-            Map.unionsWith (++) . flip map fs $ \f ->
-              Map.singleton f [c]
+        selectorsMap = Map.fromListWith (++) (do
+            (constructorname,selectornames) <- constructors
+            selectorname <- selectornames
+            return (nameToString selectorname,[constructorname]))
 
-        selInfos =
-          [ (SymSelector { sv_origName = qname f, sv_fixity = Nothing, sv_typeName = ty, sv_constructors = map qname fCons })
-          | (f, fCons) <- Map.toList selectorsMap
-          ]
+        selInfos = do
+            (_,selectornames) <- constructors
+            selectorname <- selectornames
+            constructornames <- maybeToList (Map.lookup (nameToString selectorname) selectorsMap)
+            return (Selector (sModuleName modulename) (sName selectorname) (sName typename) (map sName constructornames))
+
+dataOrNewCon :: Syntax.DataOrNew l -> UnAnn.ModuleName -> UnAnn.Name -> Symbol
+dataOrNewCon dataOrNew = case dataOrNew of DataType {} -> Data; Syntax.NewType {} -> NewType

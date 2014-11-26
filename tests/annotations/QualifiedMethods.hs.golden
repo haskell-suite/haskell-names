@@ -1,0 +1,14 @@
+Rodor    at  5:6 is a type or class defined here
+Rodor    at 5:14 is a value bound here
+x        at  7:1 is a value bound here
+Foo1     at  7:5 is a global constructor, ExportListWildcards.Foo1
+Foo1     at  7:5 is a global constructor, ExportListWildcards.Foo1
+Bar      at 9:10 is a global type class, ExportListWildcards.Bar
+Bar      at 9:10 is a global type class, ExportListWildcards.Bar
+Rodor    at 9:34 is a global data type, QualifiedMethods.Rodor
+Rodor    at 9:34 is a global data type, QualifiedMethods.Rodor
+x        at 10:5 is a global method, ExportListWildcards.x
+Rodor    at 10:7 is a global constructor, QualifiedMethods.Rodor
+Rodor    at 10:7 is a global constructor, QualifiedMethods.Rodor
+x        at 10:15 is a global value, QualifiedMethods.x
+x        at 10:15 is a global value, QualifiedMethods.x

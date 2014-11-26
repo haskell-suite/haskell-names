@@ -7,8 +7,8 @@ module Language.Haskell.Names.GetBound
 
 import Data.Generics.Uniplate.Data
 import Data.Data
-import Control.Applicative
 
+import qualified Language.Haskell.Exts as UnAnn
 import Language.Haskell.Exts.Annotated
 import Language.Haskell.Names.RecordWildcards
 import Language.Haskell.Names.SyntaxUtils
@@ -139,10 +139,10 @@ instance (Data l) => GetBound (Pat l) l where
       dropExp (PViewPat _ _ x) = x
       dropExp x = x
 
-      getRecVars :: [Name ()] -> PatField l -> [Name l]
+      getRecVars :: [UnAnn.Name] -> PatField l -> [Name l]
       getRecVars _ PFieldPat {} = [] -- this is already found by the generic algorithm
       getRecVars _ (PFieldPun _ qn) = [qNameToName qn]
-      getRecVars elidedFields (PFieldWildcard l) = map (l <$) elidedFields
+      getRecVars elidedFields (PFieldWildcard l) = map (setAnn l . annName) elidedFields
 
 getBoundSign :: Decl l -> [Name l]
 getBoundSign (TypeSig _ ns _) = ns

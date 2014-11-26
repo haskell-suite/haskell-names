@@ -1,1 +1,1 @@
-[{"origin":{"name":"unsafeIOToST","module":"GHC.IO","package":"base-4.7.0.0"},"fixity":null,"entity":"value"},{"origin":{"name":"unsafeSTToIO","module":"GHC.IO","package":"base-4.7.0.0"},"fixity":null,"entity":"value"},{"origin":{"name":"unsafeInterleaveST","module":"GHC.ST","package":"base-4.7.0.0"},"fixity":null,"entity":"value"}]
+[{"name":"unsafeInterleaveST","entity":"value","module":"GHC.ST"},{"name":"unsafeIOToST","entity":"value","module":"GHC.IO"},{"name":"unsafeSTToIO","entity":"value","module":"GHC.IO"}]

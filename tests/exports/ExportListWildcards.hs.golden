@@ -1,151 +1,50 @@
-Symbols
-  (fromList
-     [ SymMethod
-         { sv_origName =
-             OrigName
-               { origPackage = Nothing
-               , origGName =
-                   GName { gModule = "ExportListWildcards" , gName = "x" }
-               }
-         , sv_fixity = Nothing
-         , sv_className =
-             OrigName
-               { origPackage = Nothing
-               , origGName =
-                   GName { gModule = "ExportListWildcards" , gName = "Bar" }
-               }
-         }
-     , SymSelector
-         { sv_origName =
-             OrigName
-               { origPackage = Nothing
-               , origGName =
-                   GName { gModule = "ExportListWildcards" , gName = "c" }
-               }
-         , sv_fixity = Nothing
-         , sv_typeName =
-             OrigName
-               { origPackage = Nothing
-               , origGName =
-                   GName { gModule = "ExportListWildcards" , gName = "Foo" }
-               }
-         , sv_constructors =
-             [ OrigName
-                 { origPackage = Nothing
-                 , origGName =
-                     GName { gModule = "ExportListWildcards" , gName = "Foo3" }
-                 }
-             ]
-         }
-     , SymSelector
-         { sv_origName =
-             OrigName
-               { origPackage = Nothing
-               , origGName =
-                   GName { gModule = "ExportListWildcards" , gName = "unN" }
-               }
-         , sv_fixity = Nothing
-         , sv_typeName =
-             OrigName
-               { origPackage = Nothing
-               , origGName =
-                   GName { gModule = "ExportListWildcards" , gName = "N" }
-               }
-         , sv_constructors =
-             [ OrigName
-                 { origPackage = Nothing
-                 , origGName =
-                     GName { gModule = "ExportListWildcards" , gName = "N" }
-                 }
-             ]
-         }
-     , SymConstructor
-         { sv_origName =
-             OrigName
-               { origPackage = Nothing
-               , origGName =
-                   GName { gModule = "ExportListWildcards" , gName = "Foo1" }
-               }
-         , sv_fixity = Nothing
-         , sv_typeName =
-             OrigName
-               { origPackage = Nothing
-               , origGName =
-                   GName { gModule = "ExportListWildcards" , gName = "Foo" }
-               }
-         }
-     , SymConstructor
-         { sv_origName =
-             OrigName
-               { origPackage = Nothing
-               , origGName =
-                   GName { gModule = "ExportListWildcards" , gName = "Foo2" }
-               }
-         , sv_fixity = Nothing
-         , sv_typeName =
-             OrigName
-               { origPackage = Nothing
-               , origGName =
-                   GName { gModule = "ExportListWildcards" , gName = "Foo" }
-               }
-         }
-     , SymConstructor
-         { sv_origName =
-             OrigName
-               { origPackage = Nothing
-               , origGName =
-                   GName { gModule = "ExportListWildcards" , gName = "Foo3" }
-               }
-         , sv_fixity = Nothing
-         , sv_typeName =
-             OrigName
-               { origPackage = Nothing
-               , origGName =
-                   GName { gModule = "ExportListWildcards" , gName = "Foo" }
-               }
-         }
-     , SymConstructor
-         { sv_origName =
-             OrigName
-               { origPackage = Nothing
-               , origGName =
-                   GName { gModule = "ExportListWildcards" , gName = "N" }
-               }
-         , sv_fixity = Nothing
-         , sv_typeName =
-             OrigName
-               { origPackage = Nothing
-               , origGName =
-                   GName { gModule = "ExportListWildcards" , gName = "N" }
-               }
-         }
-     ])
-  (fromList
-     [ SymData
-         { st_origName =
-             OrigName
-               { origPackage = Nothing
-               , origGName =
-                   GName { gModule = "ExportListWildcards" , gName = "Foo" }
-               }
-         , st_fixity = Nothing
-         }
-     , SymNewType
-         { st_origName =
-             OrigName
-               { origPackage = Nothing
-               , origGName =
-                   GName { gModule = "ExportListWildcards" , gName = "N" }
-               }
-         , st_fixity = Nothing
-         }
-     , SymClass
-         { st_origName =
-             OrigName
-               { origPackage = Nothing
-               , origGName =
-                   GName { gModule = "ExportListWildcards" , gName = "Bar" }
-               }
-         , st_fixity = Nothing
-         }
-     ])
+[ Data
+    { symbolModule = ModuleName "ExportListWildcards"
+    , symbolName = Ident "Foo"
+    }
+, Constructor
+    { symbolModule = ModuleName "ExportListWildcards"
+    , symbolName = Ident "Foo1"
+    , typeName = Ident "Foo"
+    }
+, Constructor
+    { symbolModule = ModuleName "ExportListWildcards"
+    , symbolName = Ident "Foo2"
+    , typeName = Ident "Foo"
+    }
+, Constructor
+    { symbolModule = ModuleName "ExportListWildcards"
+    , symbolName = Ident "Foo3"
+    , typeName = Ident "Foo"
+    }
+, Selector
+    { symbolModule = ModuleName "ExportListWildcards"
+    , symbolName = Ident "c"
+    , typeName = Ident "Foo"
+    , constructors = [ Ident "Foo3" ]
+    }
+, Class
+    { symbolModule = ModuleName "ExportListWildcards"
+    , symbolName = Ident "Bar"
+    }
+, Method
+    { symbolModule = ModuleName "ExportListWildcards"
+    , symbolName = Ident "x"
+    , className = Ident "Bar"
+    }
+, NewType
+    { symbolModule = ModuleName "ExportListWildcards"
+    , symbolName = Ident "N"
+    }
+, Constructor
+    { symbolModule = ModuleName "ExportListWildcards"
+    , symbolName = Ident "N"
+    , typeName = Ident "N"
+    }
+, Selector
+    { symbolModule = ModuleName "ExportListWildcards"
+    , symbolName = Ident "unN"
+    , typeName = Ident "N"
+    , constructors = [ Ident "N" ]
+    }
+]

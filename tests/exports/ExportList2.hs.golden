@@ -1,35 +1,11 @@
-Symbols
-  (fromList
-     [ SymValue
-         { sv_origName =
-             OrigName
-               { origPackage = Nothing
-               , origGName = GName { gModule = "ExportList2" , gName = "c" }
-               }
-         , sv_fixity = Nothing
-         }
-     , SymSelector
-         { sv_origName =
-             OrigName
-               { origPackage = Nothing
-               , origGName = GName { gModule = "ExportList2" , gName = "b" }
-               }
-         , sv_fixity = Nothing
-         , sv_typeName =
-             OrigName
-               { origPackage = Nothing
-               , origGName = GName { gModule = "ExportList2" , gName = "A" }
-               }
-         , sv_constructors =
-             [ OrigName
-                 { origPackage = Nothing
-                 , origGName = GName { gModule = "ExportList2" , gName = "A" }
-                 }
-             , OrigName
-                 { origPackage = Nothing
-                 , origGName = GName { gModule = "ExportList2" , gName = "B" }
-                 }
-             ]
-         }
-     ])
-  (fromList [])
+[ Selector
+    { symbolModule = ModuleName "ExportList2"
+    , symbolName = Ident "b"
+    , typeName = Ident "A"
+    , constructors = [ Ident "B" , Ident "A" ]
+    }
+, Value
+    { symbolModule = ModuleName "ExportList2"
+    , symbolName = Ident "c"
+    }
+]

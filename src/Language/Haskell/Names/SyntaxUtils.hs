@@ -1,6 +1,7 @@
 module Language.Haskell.Names.SyntaxUtils
   ( dropAnn
   , setAnn
+  , annName
   , getModuleName
   , getImports
   , getExportSpecList
@@ -14,19 +15,21 @@ module Language.Haskell.Names.SyntaxUtils
   , stringToName
   , specialConToString
   , qNameToName
+  , nameToQName
   , unCName
   , getErrors
     -- export ExtensionSet here for the outside users
   , ExtensionSet
   , moduleExtensions
+  , getModuleExtensions
   ) where
 import Prelude hiding (concatMap)
 import Data.Char
 import Data.Maybe
 import Data.Either
-import Data.Foldable
+import Data.Foldable hiding (elem)
 import qualified Data.Set as Set
-import Data.Generics.Uniplate.Data
+import qualified Language.Haskell.Exts as UnAnn
 import Language.Haskell.Exts.Annotated
 import Language.Haskell.Names.Types
 
@@ -35,6 +38,10 @@ dropAnn = fmap (const ())
 
 setAnn :: (Functor a) => l' -> a l -> a l'
 setAnn l = fmap (const l)
+
+annName :: UnAnn.Name -> Name ()
+annName (UnAnn.Ident n) = Ident () n
+annName (UnAnn.Symbol n) = Symbol () n
 
 getModuleName :: Module l -> ModuleName l
 getModuleName (Module _ (Just (ModuleHead _ mn _ _)) _ _ _) = mn
@@ -65,6 +72,9 @@ qNameToName :: QName l -> Name l
 qNameToName (UnQual _ n) = n
 qNameToName (Qual _ _ n) = n
 qNameToName (Special l s) = Ident l (specialConToString s)
+
+nameToQName :: Name l -> QName l
+nameToQName n = UnQual (ann n) n
 
 {-
 getImportDecls :: Module l -> [ImportDecl l]
@@ -114,8 +124,13 @@ nameToString (Ident _ s) = s
 nameToString (Symbol _ s) = s
 
 stringToName :: String -> Name ()
-stringToName s@(c:_) | isSymbol c = Symbol () s
+stringToName s@(c:_) | isHSymbol c = Symbol () s
 stringToName s = Ident () s
+
+isHSymbol :: Char -> Bool
+isHSymbol c =
+  c `elem` ":!#%&*./?@\\-" ||
+  ((isSymbol c || isPunctuation c) && not (c `elem` "(),;[]`{}_\"'"))
 
 specialConToString :: SpecialCon l -> String
 specialConToString (UnitCon _)            = "()"

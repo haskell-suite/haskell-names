@@ -1,1 +1,1 @@
-[{"origin":{"name":"unsafeIOToST","module":"Control.Monad.ST.Lazy.Imp","package":"base-4.7.0.0"},"fixity":null,"entity":"value"},{"origin":{"name":"unsafeInterleaveST","module":"Control.Monad.ST.Lazy.Imp","package":"base-4.7.0.0"},"fixity":null,"entity":"value"}]
+[{"name":"unsafeInterleaveST","entity":"value","module":"Control.Monad.ST.Lazy.Imp"},{"name":"unsafeIOToST","entity":"value","module":"Control.Monad.ST.Lazy.Imp"}]
