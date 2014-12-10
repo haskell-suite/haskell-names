@@ -1,0 +1,26 @@
+fromList
+  [ ( Qual (ModuleName "Prelude") (Ident "Newtype")
+    , [ NewType
+          { symbolModule = ModuleName "Prelude"
+          , symbolName = Ident "Newtype"
+          }
+      , Constructor
+          { symbolModule = ModuleName "Prelude"
+          , symbolName = Ident "Newtype"
+          , typeName = Ident "Newtype"
+          }
+      ]
+    )
+  , ( UnQual (Ident "Newtype")
+    , [ NewType
+          { symbolModule = ModuleName "Prelude"
+          , symbolName = Ident "Newtype"
+          }
+      , Constructor
+          { symbolModule = ModuleName "Prelude"
+          , symbolName = Ident "Newtype"
+          , typeName = Ident "Newtype"
+          }
+      ]
+    )
+  ]
