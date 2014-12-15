@@ -1,1 +1,1 @@
-[{"name":"unsafeForeignPtrToPtr","entity":"value","module":"GHC.ForeignPtr"}]
+[{"name":"unsafeForeignPtrToPtr","module":"GHC.ForeignPtr","entity":"value"}]

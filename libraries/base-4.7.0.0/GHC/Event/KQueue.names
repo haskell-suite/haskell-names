@@ -1,1 +1,1 @@
-[{"name":"new","entity":"value","module":"GHC.Event.KQueue"},{"name":"available","entity":"value","module":"GHC.Event.KQueue"}]
+[{"name":"new","module":"GHC.Event.KQueue","entity":"value"},{"name":"available","module":"GHC.Event.KQueue","entity":"value"}]

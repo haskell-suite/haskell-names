@@ -1,1 +1,1 @@
-[{"name":"fst","entity":"value","module":"Data.Tuple"},{"name":"snd","entity":"value","module":"Data.Tuple"},{"name":"curry","entity":"value","module":"Data.Tuple"},{"name":"uncurry","entity":"value","module":"Data.Tuple"},{"name":"swap","entity":"value","module":"Data.Tuple"}]
+[{"name":"fst","module":"Data.Tuple","entity":"value"},{"name":"snd","module":"Data.Tuple","entity":"value"},{"name":"curry","module":"Data.Tuple","entity":"value"},{"name":"uncurry","module":"Data.Tuple","entity":"value"},{"name":"swap","module":"Data.Tuple","entity":"value"}]

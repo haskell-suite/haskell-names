@@ -1,1 +1,1 @@
-[{"name":"unsafeLocalState","entity":"value","module":"Foreign.Marshal.Unsafe"}]
+[{"name":"unsafeLocalState","module":"Foreign.Marshal.Unsafe","entity":"value"}]

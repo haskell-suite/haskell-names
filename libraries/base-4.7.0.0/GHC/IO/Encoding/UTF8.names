@@ -1,1 +1,1 @@
-[{"name":"utf8","entity":"value","module":"GHC.IO.Encoding.UTF8"},{"name":"mkUTF8","entity":"value","module":"GHC.IO.Encoding.UTF8"},{"name":"utf8_bom","entity":"value","module":"GHC.IO.Encoding.UTF8"},{"name":"mkUTF8_bom","entity":"value","module":"GHC.IO.Encoding.UTF8"}]
+[{"name":"utf8","module":"GHC.IO.Encoding.UTF8","entity":"value"},{"name":"mkUTF8","module":"GHC.IO.Encoding.UTF8","entity":"value"},{"name":"utf8_bom","module":"GHC.IO.Encoding.UTF8","entity":"value"},{"name":"mkUTF8_bom","module":"GHC.IO.Encoding.UTF8","entity":"value"}]

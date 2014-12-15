@@ -1,1 +1,1 @@
-[{"name":"IP","entity":"class","module":"GHC.IP"},{"name":"ip","class":"IP","entity":"method","module":"GHC.IP"}]
+[{"name":"IP","module":"GHC.IP","entity":"class"},{"name":"ip","module":"GHC.IP","entity":"method","class":"IP"}]

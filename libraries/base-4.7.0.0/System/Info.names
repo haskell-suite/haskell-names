@@ -1,1 +1,1 @@
-[{"name":"os","entity":"value","module":"System.Info"},{"name":"arch","entity":"value","module":"System.Info"},{"name":"compilerName","entity":"value","module":"System.Info"},{"name":"compilerVersion","entity":"value","module":"System.Info"}]
+[{"name":"os","module":"System.Info","entity":"value"},{"name":"arch","module":"System.Info","entity":"value"},{"name":"compilerName","module":"System.Info","entity":"value"},{"name":"compilerVersion","module":"System.Info","entity":"value"}]
