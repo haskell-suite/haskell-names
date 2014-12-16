@@ -1,14 +1,28 @@
-Rodor    at  5:6 is a type or class defined here
-Rodor    at 5:14 is a value bound here
-x        at  7:1 is a value bound here
-Foo1     at  7:5 is a global constructor, ExportListWildcards.Foo1
-Foo1     at  7:5 is a global constructor, ExportListWildcards.Foo1
-Bar      at 9:10 is a global type class, ExportListWildcards.Bar
-Bar      at 9:10 is a global type class, ExportListWildcards.Bar
-Rodor    at 9:34 is a global data type, QualifiedMethods.Rodor
-Rodor    at 9:34 is a global data type, QualifiedMethods.Rodor
-x        at 10:5 is a global method, ExportListWildcards.x
-Rodor    at 10:7 is a global constructor, QualifiedMethods.Rodor
-Rodor    at 10:7 is a global constructor, QualifiedMethods.Rodor
-x        at 10:15 is a global value, QualifiedMethods.x
-x        at 10:15 is a global value, QualifiedMethods.x
+TypeFamilies at 1:14 is none
+Rodor    at  8:6 is a type or class defined here
+Rodor    at 8:14 is a value bound here
+x        at 10:1 is a value bound here
+Foo1     at 10:5 is a global constructor, ExportListWildcards.Foo1
+Foo1     at 10:5 is a global constructor, ExportListWildcards.Foo1
+Bar      at 12:10 is a global type class, ExportListWildcards.Bar
+Bar      at 12:10 is a global type class, ExportListWildcards.Bar
+Rodor    at 12:34 is a global data type, QualifiedMethods.Rodor
+Rodor    at 12:34 is a global data type, QualifiedMethods.Rodor
+x        at 13:5 is a global method, ExportListWildcards.x
+Rodor    at 13:7 is a global constructor, QualifiedMethods.Rodor
+Rodor    at 13:7 is a global constructor, QualifiedMethods.Rodor
+x        at 13:15 is a global value, QualifiedMethods.x
+x        at 13:15 is a global value, QualifiedMethods.x
+ListLike at 15:10 is a global type class, DataFamilies.ListLike
+ListLike at 15:10 is a global type class, DataFamilies.ListLike
+Rodor    at 15:32 is a global data type, QualifiedMethods.Rodor
+Rodor    at 15:32 is a global data type, QualifiedMethods.Rodor
+I        at 16:10 is a global type family, DataFamilies.I
+I        at 16:10 is a global type family, DataFamilies.I
+Rodor    at 16:12 is a global data type, QualifiedMethods.Rodor
+Rodor    at 16:12 is a global data type, QualifiedMethods.Rodor
+Rodor    at 16:20 is a global data type, QualifiedMethods.Rodor
+Rodor    at 16:20 is a global data type, QualifiedMethods.Rodor
+h        at 17:5 is a global method, DataFamilies.h
+Rodor    at 17:11 is a global constructor, QualifiedMethods.Rodor
+Rodor    at 17:11 is a global constructor, QualifiedMethods.Rodor

@@ -44,18 +44,18 @@ lookupValue qn = lookupName qn . filterTable isValue
 lookupType :: Ann.QName l -> Table -> Result l
 lookupType qn = lookupName qn . filterTable isType
 
--- | Methods can sometimes be referenced unqualified and still be resolved to
---   a symbols that is only in scope qualified.
+-- | Methods and associated types in instance declarations are referenced
+--   unqualified and still resolved to a symbol that is only in scope qualified.
 --   https://www.haskell.org/pipermail/haskell-prime/2008-April/002569.html
 --   The test for this is tests/annotations/QualifiedMethods.hs
-lookupMethod :: Ann.Name l -> Table -> (Result l,Maybe QName)
-lookupMethod name tbl = (case Map.lookup unqualifiedName qualificationTable of
+lookupUnqualifiedAsQualified :: Ann.Name l -> Table -> (Result l,Maybe QName)
+lookupUnqualifiedAsQualified name tbl = (case Map.lookup unqualifiedName qualificationTable of
         Nothing -> (Error (ENotInScope (Ann.UnQual (Ann.ann name) name)),Nothing)
-        Just qn -> (lookupName qn (filterTable isMethod tbl),Just (sQName qn))) where
+        Just qn -> (lookupName qn (filterTable isMethodOrAssociated tbl),Just (sQName qn))) where
     unqualifiedName = UnQual (sName name)
     qualificationTable = Map.fromList (do
         (qn,symbols) <- Map.toList tbl
-        guard (any isMethod symbols)
+        guard (any isMethodOrAssociated symbols)
         case qn of
             Qual (ModuleName m) n -> return (UnQual n,Ann.Qual (Ann.ann name) (Ann.ModuleName (Ann.ann name) m) (setAnn (Ann.ann name) (annName n)))
             UnQual n -> return (UnQual n,Ann.UnQual (Ann.ann name) (setAnn (Ann.ann name) (annName n)))
@@ -89,9 +89,11 @@ isType symbol = case symbol of
     Class   {} -> True
     _ -> False
 
-isMethod :: Symbol -> Bool
-isMethod symbol = case symbol of
+isMethodOrAssociated :: Symbol -> Bool
+isMethodOrAssociated symbol = case symbol of
     Method {} -> True
+    TypeFam {} -> True
+    DataFam {} -> True
     _ -> False
 
 fromList :: [(QName,Symbol)] -> Table
