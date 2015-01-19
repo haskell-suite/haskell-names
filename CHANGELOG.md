@@ -1,6 +1,14 @@
 Changes
 =======
 
+Version 0.5.1
+-------------
+
+* Resolve associated types
+* Resolve fixity declarations
+* Resolve classes and instances
+* Various bugfixes
+
 Version 0.5.0
 -------------
 
