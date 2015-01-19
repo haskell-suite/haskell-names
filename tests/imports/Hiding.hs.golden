@@ -26,18 +26,6 @@ fromList
           }
       ]
     )
-  , ( Qual (ModuleName "Prelude") (Ident "NewtypeWithSelectors")
-    , [ Constructor
-          { symbolModule = ModuleName "Prelude"
-          , symbolName = Ident "NewtypeWithSelectors"
-          , typeName = Ident "NewtypeWithSelectors"
-          }
-      , NewType
-          { symbolModule = ModuleName "Prelude"
-          , symbolName = Ident "NewtypeWithSelectors"
-          }
-      ]
-    )
   , ( Qual (ModuleName "Prelude") (Ident "TypeSynonym")
     , [ Type
           { symbolModule = ModuleName "Prelude"
@@ -69,15 +57,6 @@ fromList
           }
       ]
     )
-  , ( Qual (ModuleName "Prelude") (Ident "unNewtype")
-    , [ Selector
-          { symbolModule = ModuleName "Prelude"
-          , symbolName = Ident "unNewtype"
-          , typeName = Ident "NewtypeWithSelectors"
-          , constructors = [ Ident "NewtypeWithSelectors" ]
-          }
-      ]
-    )
   , ( UnQual (Ident "Constructor2")
     , [ Constructor
           { symbolModule = ModuleName "Prelude"
@@ -102,18 +81,6 @@ fromList
       , Data
           { symbolModule = ModuleName "Prelude"
           , symbolName = Ident "DataTypeWithSelectors"
-          }
-      ]
-    )
-  , ( UnQual (Ident "NewtypeWithSelectors")
-    , [ Constructor
-          { symbolModule = ModuleName "Prelude"
-          , symbolName = Ident "NewtypeWithSelectors"
-          , typeName = Ident "NewtypeWithSelectors"
-          }
-      , NewType
-          { symbolModule = ModuleName "Prelude"
-          , symbolName = Ident "NewtypeWithSelectors"
           }
       ]
     )
@@ -145,15 +112,6 @@ fromList
           , symbolName = Ident "selector1"
           , typeName = Ident "DataTypeWithSelectors"
           , constructors = [ Ident "DataTypeWithSelectors" ]
-          }
-      ]
-    )
-  , ( UnQual (Ident "unNewtype")
-    , [ Selector
-          { symbolModule = ModuleName "Prelude"
-          , symbolName = Ident "unNewtype"
-          , typeName = Ident "NewtypeWithSelectors"
-          , constructors = [ Ident "NewtypeWithSelectors" ]
           }
       ]
     )

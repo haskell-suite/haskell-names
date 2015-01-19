@@ -1,1 +1,1 @@
-[{"name":"performGC","entity":"value","module":"System.Mem"}]
+[{"name":"performGC","module":"System.Mem","entity":"value"}]

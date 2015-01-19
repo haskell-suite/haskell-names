@@ -339,11 +339,14 @@ instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (InstRule l) where
     case e of
       IRule l mtv mc ih ->
         c IRule
-          <| sc -: l
-          <| sc -: mtv
-          <| exprT sc -: mc
+          <| sc       -: l
+          <| sc       -: mtv
+          <| sc       -: mc
           <| exprT sc -: ih
       _ -> defaultRtraverse e sc
+
+instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (Context l) where
+  rtraverse e sc = defaultRtraverse e (exprT sc)
 
 instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (InstDecl l) where
   rtraverse e sc =
@@ -357,8 +360,8 @@ instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (InstDecl l) where
           <*> (c PatBind
             <|  sc                -: l
             <*> (c PVar
-                  <| sc       -: pl
-                  <| exprM sc -: name)
+                  <| sc        -: pl
+                  <| exprUV sc -: name)
             <|  exprV scWithWhere -: rhs
             <|  sc                -: mbWhere)
       InsDecl dl (FunBind bl ms) ->
@@ -376,7 +379,7 @@ instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (InstDecl l) where
                   in
                     c Match
                       <| sc                -: l
-                      <| exprM sc          -: name
+                      <| exprUV sc         -: name
                       <*> pats' -- has been already traversed
                       <| exprV scWithWhere -: rhs
                       <| scWithPats        -: mbWhere
@@ -392,10 +395,45 @@ instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (InstDecl l) where
                     c InfixMatch
                       <| sc                -: l
                       <*> pat1'     -- has been already traversed
-                      <| exprM sc          -: name
+                      <| exprUV sc         -: name
                       <*> patsRest' -- has been already traversed
                       <| exprV scWithWhere -: rhs
                       <| scWithPats        -: mbWhere))
+      InsType dl (TyApp al (TyCon cl qn) aa) rhs ->
+        c InsType
+          <| sc -: dl
+          <*> (c TyApp
+            <| sc -: al
+            <*> (c TyCon
+              <| sc        -: cl
+              <| exprUT sc -: qn)
+            <| sc -: aa)
+          <| sc -: rhs
+      InsData dl don (TyApp al (TyCon cl qn) aa) cs md ->
+        c InsData
+          <| sc -: dl
+          <| sc -: don
+          <*> (c TyApp
+            <| sc -: al
+            <*> (c TyCon
+              <| sc        -: cl
+              <| exprUT sc -: qn)
+            <| sc -: aa)
+          <| sc -: cs
+          <| sc -: md
+      InsGData dl don (TyApp al (TyCon cl qn) aa) mk cs md ->
+        c InsGData
+          <| sc -: dl
+          <| sc -: don
+          <*> (c TyApp
+            <| sc -: al
+            <*> (c TyCon
+              <| sc        -: cl
+              <| exprUT sc -: qn)
+            <| sc -: aa)
+          <| sc -: mk
+          <| sc -: cs
+          <| sc -: md
       _ -> defaultRtraverse e sc
 
 instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (ClassDecl l) where

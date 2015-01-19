@@ -1,1 +1,1 @@
-[{"name":"Unique","entity":"newtype","module":"Data.Unique"},{"name":"newUnique","entity":"value","module":"Data.Unique"},{"name":"hashUnique","entity":"value","module":"Data.Unique"}]
+[{"name":"Unique","module":"Data.Unique","entity":"newtype"},{"name":"newUnique","module":"Data.Unique","entity":"value"},{"name":"hashUnique","module":"Data.Unique","entity":"value"}]

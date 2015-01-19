@@ -1,1 +1,1 @@
-[{"name":"Word","entity":"data","module":"GHC.Types"},{"name":"Word8","entity":"data","module":"GHC.Word"},{"name":"Word16","entity":"data","module":"GHC.Word"},{"name":"Word32","entity":"data","module":"GHC.Word"},{"name":"Word64","entity":"data","module":"GHC.Word"}]
+[{"name":"Word","module":"GHC.Types","entity":"data"},{"name":"Word8","module":"GHC.Word","entity":"data"},{"name":"Word16","module":"GHC.Word","entity":"data"},{"name":"Word32","module":"GHC.Word","entity":"data"},{"name":"Word64","module":"GHC.Word","entity":"data"}]

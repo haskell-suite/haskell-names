@@ -1,1 +1,1 @@
-[{"name":"getExecutablePath","entity":"value","module":"System.Environment.ExecutablePath"}]
+[{"name":"getExecutablePath","module":"System.Environment.ExecutablePath","entity":"value"}]

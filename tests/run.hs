@@ -228,6 +228,9 @@ formatInfo (RecExpWildcard symbols) =
       , let valueDesc = formatInfo vinfo
       ]
 formatInfo (ScopeError (ENotInScope {})) = "not in scope"
+formatInfo (ImportPart symbols) = printf "import part for %s" (intercalate "," (do
+        symbol <- symbols
+        return (printf "a global %s, %s" (formatSymbol symbol) (ppSymbol symbol))))
 formatInfo None = "none"
 formatInfo i = error $ "tests/run.hs: formatInfo: " ++ show i
 

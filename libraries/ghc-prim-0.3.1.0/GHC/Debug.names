@@ -1,1 +1,1 @@
-[{"name":"debugLn","entity":"value","module":"GHC.Debug"},{"name":"debugErrLn","entity":"value","module":"GHC.Debug"}]
+[{"name":"debugLn","module":"GHC.Debug","entity":"value"},{"name":"debugErrLn","module":"GHC.Debug","entity":"value"}]

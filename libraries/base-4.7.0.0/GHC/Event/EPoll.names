@@ -1,1 +1,1 @@
-[{"name":"new","entity":"value","module":"GHC.Event.EPoll"},{"name":"available","entity":"value","module":"GHC.Event.EPoll"}]
+[{"name":"new","module":"GHC.Event.EPoll","entity":"value"},{"name":"available","module":"GHC.Event.EPoll","entity":"value"}]

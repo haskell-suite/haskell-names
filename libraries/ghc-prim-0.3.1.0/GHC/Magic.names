@@ -1,1 +1,1 @@
-[{"name":"inline","entity":"value","module":"GHC.Magic"},{"name":"lazy","entity":"value","module":"GHC.Magic"}]
+[{"name":"inline","module":"GHC.Magic","entity":"value"},{"name":"lazy","module":"GHC.Magic","entity":"value"}]

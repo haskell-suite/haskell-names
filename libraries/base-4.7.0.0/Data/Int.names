@@ -1,1 +1,1 @@
-[{"name":"Int","entity":"data","module":"GHC.Types"},{"name":"Int8","entity":"data","module":"GHC.Int"},{"name":"Int16","entity":"data","module":"GHC.Int"},{"name":"Int32","entity":"data","module":"GHC.Int"},{"name":"Int64","entity":"data","module":"GHC.Int"}]
+[{"name":"Int","module":"GHC.Types","entity":"data"},{"name":"Int8","module":"GHC.Int","entity":"data"},{"name":"Int16","module":"GHC.Int","entity":"data"},{"name":"Int32","module":"GHC.Int","entity":"data"},{"name":"Int64","module":"GHC.Int","entity":"data"}]

@@ -17,7 +17,10 @@ import Control.Monad.Writer
 import Distribution.HaskellSuite.Modules
 import qualified Language.Haskell.Exts as UnAnn (ModuleName(ModuleName))
 import Language.Haskell.Exts.Annotated.Simplify (sName,sModuleName)
-import Language.Haskell.Exts.Annotated
+import Language.Haskell.Exts.Annotated (
+    ModuleName(ModuleName),ImportDecl(..),KnownExtension(ImplicitPrelude),
+    ann,ImportSpecList(..),ImportSpec(..),Name(..),
+    Annotated,Namespace(NoNamespace,TypeNamespace))
 import Language.Haskell.Names.Types
 import Language.Haskell.Names.ScopeUtils
 import qualified Language.Haskell.Names.GlobalSymbolTable as Global
@@ -174,14 +177,9 @@ resolveImportSpec mod isHiding symbols spec =
               matches
               spec
 
-    -- FIXME
-    -- What about things like:
-    -- head(..)
-    -- String(..)
-    -- ?
     IThingAll l n ->
       let
-        matches = [ symbol | symbol <- symbols, symbol ~~ n]
+        matches = [ symbol | symbol <- symbols, symbol ~~ n, hasSubImports symbol]
         subs = [ symbol
           | n <- matches
           , symbol <- symbols
@@ -205,7 +203,7 @@ resolveImportSpec mod isHiding symbols spec =
 
     IThingWith l n cns ->
       let
-        matches = [symbol | symbol <- symbols, symbol ~~ n]
+        matches = [symbol | symbol <- symbols, symbol ~~ n, hasSubImports symbol]
         n' =
           checkUnique
             (ENotExported Nothing n mod)
@@ -234,6 +232,14 @@ resolveImportSpec mod isHiding symbols spec =
     isConstructor Constructor {} = True
     isConstructor _ = False
 
+    hasSubImports :: Symbol -> Bool
+    hasSubImports symbol = case symbol of
+        Data {} -> True
+        NewType {} -> True
+        DataFam {} -> True
+        Class   {} -> True
+        _ -> False
+
 ann2syms :: Annotated a => a (Scoped l) -> Either (Error l) ([Symbol])
 ann2syms a =
   case ann a of
@@ -252,4 +258,4 @@ checkUnique notFound symbols f =
     0 -> scopeError notFound f
     1 -> Scoped (ImportPart symbols) <$> f
     -- there should be no clashes, and it should be checked elsewhere
-    _ -> scopeError (EInternal "ambiguous import") f
+    _ -> scopeError (EInternal ("ambiguous import: " ++ show symbols)) f

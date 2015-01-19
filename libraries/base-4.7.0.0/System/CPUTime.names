@@ -1,1 +1,1 @@
-[{"name":"getCPUTime","entity":"value","module":"System.CPUTime"},{"name":"cpuTimePrecision","entity":"value","module":"System.CPUTime"}]
+[{"name":"getCPUTime","module":"System.CPUTime","entity":"value"},{"name":"cpuTimePrecision","module":"System.CPUTime","entity":"value"}]

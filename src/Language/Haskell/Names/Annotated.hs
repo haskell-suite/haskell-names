@@ -16,7 +16,7 @@ import Language.Haskell.Names.Open.Base
 import Language.Haskell.Names.Open.Instances ()
 import qualified Language.Haskell.Names.GlobalSymbolTable as Global
 import qualified Language.Haskell.Names.LocalSymbolTable as Local
-import Language.Haskell.Names.SyntaxUtils (annName,setAnn)
+import Language.Haskell.Names.SyntaxUtils (annName,setAnn,qNameToName)
 import Language.Haskell.Exts.Annotated.Simplify (sQName)
 import Language.Haskell.Exts.Annotated
 import Data.Proxy
@@ -47,9 +47,12 @@ annotateRec _ sc a = go sc a where
     | ReferenceT <- getL nameCtx sc
     , Just (Eq :: QName (Scoped l) :~: a) <- dynamicEq
       = lookupType (fmap sLoc a) sc <$ a
-    | ReferenceM <- getL nameCtx sc
+    | ReferenceUV <- getL nameCtx sc
     , Just (Eq :: Name (Scoped l) :~: a) <- dynamicEq
-      = lookupMethod (fmap sLoc a) sc <$ a
+      = lookupValueUnqualifiedAsQualified (fmap sLoc a) sc <$ a
+    | ReferenceUT <- getL nameCtx sc
+    , Just (Eq :: QName (Scoped l) :~: a) <- dynamicEq
+      = lookupTypeUnqualifiedAsQualified (fmap sLoc a) sc <$ a
     | BindingV <- getL nameCtx sc
     , Just (Eq :: Name (Scoped l) :~: a) <- dynamicEq
       = Scoped ValueBinder (sLoc . ann $ a) <$ a
@@ -103,10 +106,18 @@ lookupType qn sc = Scoped nameInfo (ann qn)
         Global.Error e -> ScopeError e
         Global.Special -> None
 
-lookupMethod :: Name l -> Scope -> Scoped l
-lookupMethod n sc = Scoped nameInfo (ann n)
+lookupValueUnqualifiedAsQualified :: Name l -> Scope -> Scoped l
+lookupValueUnqualifiedAsQualified n sc = Scoped nameInfo (ann n)
   where
-    nameInfo = case Global.lookupMethod n $ getL gTable sc of
+    nameInfo = case Global.lookupUnqualifiedAsQualified n $ getL gTable sc of
+        (Global.SymbolFound r,Just gn) -> GlobalSymbol r gn
+        (Global.Error e,_) -> ScopeError e
+        _ -> None
+
+lookupTypeUnqualifiedAsQualified :: QName l -> Scope -> Scoped l
+lookupTypeUnqualifiedAsQualified qn sc = Scoped nameInfo (ann qn)
+  where
+    nameInfo = case Global.lookupUnqualifiedAsQualified (qNameToName qn) $ getL gTable sc of
         (Global.SymbolFound r,Just gn) -> GlobalSymbol r gn
         (Global.Error e,_) -> ScopeError e
         _ -> None

@@ -1,0 +1,11 @@
+C        at  3:7 is a type or class defined here
+a        at  3:9 is none
+cee      at  4:5 is a value bound here
+a        at 4:12 is none
+C        at  6:8 is a global type class, ClassConstraints.C
+C        at  6:8 is a global type class, ClassConstraints.C
+a        at 6:10 is none
+D        at 6:16 is a type or class defined here
+a        at 6:18 is none
+dee      at  7:5 is a value bound here
+a        at 7:12 is none

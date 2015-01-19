@@ -28,8 +28,14 @@ data NameContext
   | BindingV
   | ReferenceT
   | ReferenceV
-  | ReferenceM -- ^ Reference a method in an instance declaration
-               -- https://www.haskell.org/pipermail/haskell-prime/2008-April/002569.html
+  | ReferenceUV
+      -- ^ Reference a method in an instance declaration
+      -- Unqualified names also match qualified names in scope
+      -- https://www.haskell.org/pipermail/haskell-prime/2008-April/002569.html
+  | ReferenceUT
+     -- ^ Reference an associated type in an instance declaration
+      -- Unqualified names also match qualified names in scope
+      -- https://www.haskell.org/pipermail/haskell-prime/2008-April/002569.html
   | Other
 
 -- | Contains information about the node's enclosing scope. Can be
@@ -134,5 +140,8 @@ exprV = setNameCtx ReferenceV
 exprT :: Scope -> Scope
 exprT = setNameCtx ReferenceT
 
-exprM :: Scope -> Scope
-exprM = setNameCtx ReferenceM
+exprUV :: Scope -> Scope
+exprUV = setNameCtx ReferenceUV
+
+exprUT :: Scope -> Scope
+exprUT = setNameCtx ReferenceUT
