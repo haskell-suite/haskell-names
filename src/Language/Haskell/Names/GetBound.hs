@@ -39,6 +39,7 @@ instance (Data l) => GetBound (Decl l) l where
     getBound ctx e = case e of
       TypeDecl{} -> []
       TypeFamDecl{} -> []
+      ClosedTypeFamDecl{} -> []
       DataDecl _ _ _ _ ds _ -> getBound ctx ds
       GDataDecl _ _ _ _ _ ds _ -> getBound ctx ds
       DataFamDecl{} -> []
@@ -67,6 +68,7 @@ instance (Data l) => GetBound (Decl l) l where
       InstSig{} -> []
       AnnPragma{} -> []
       InlineConlikeSig{} -> []
+      MinimalPragma{} -> []
 
 instance (Data l) => GetBound (QualConDecl l) l where
     getBound ctx (QualConDecl _ _ _ d) = getBound ctx d
@@ -97,6 +99,7 @@ instance (Data l) => GetBound (ClassDecl l) l where
       ClsDataFam{} -> []
       ClsTyFam{} -> []
       ClsTyDef{} -> []
+      ClsDefSig{} -> []
 
 instance (Data l) => GetBound (Match l) l where
     getBound _ctx e = case e of
