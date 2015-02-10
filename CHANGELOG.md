@@ -1,6 +1,11 @@
 Changes
 =======
 
+Version 0.5.2
+-------------
+
+* Handle more syntactic constructs
+
 Version 0.5.1
 -------------
 
