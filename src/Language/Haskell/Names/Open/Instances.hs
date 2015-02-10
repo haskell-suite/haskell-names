@@ -15,6 +15,7 @@ import Language.Haskell.Names.Open.Derived ()
 import Language.Haskell.Names.GetBound
 import Language.Haskell.Names.RecordWildcards
 import Language.Haskell.Exts.Annotated
+import qualified Language.Haskell.Exts.Syntax as UnAnn
 import Language.Haskell.Names.SyntaxUtils
 import qualified Data.Data as D
 import Control.Applicative
@@ -68,7 +69,24 @@ instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (Decl l) where
           <| sc       -: assoc
           <| sc       -: mp
           <| exprV sc -: ops
+      InstDecl l mOverlap rule mInstDecls ->
+        let sc' = instQ (nameQualification (instanceRuleClass rule)) sc
+        in c InstDecl
+          <| sc'       -: l
+          <| sc'       -: mOverlap
+          <| sc'       -: rule
+          <| sc'       -: mInstDecls
       _ -> defaultRtraverse e sc
+
+instanceRuleClass :: InstRule l -> QName l
+instanceRuleClass (IParen l instRule) = instanceRuleClass instRule
+instanceRuleClass (IRule _ _ _ instHead) = instanceHeadClass instHead
+
+instanceHeadClass :: InstHead l -> QName l
+instanceHeadClass (IHCon _ qn) = qn
+instanceHeadClass (IHInfix _ _ qn) = qn
+instanceHeadClass (IHParen _ instHead) = instanceHeadClass instHead
+instanceHeadClass (IHApp _ instHead _) = instanceHeadClass instHead
 
 instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (Type l) where
   rtraverse e sc = defaultRtraverse e (exprT sc)

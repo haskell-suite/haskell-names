@@ -3,22 +3,19 @@
 module Language.Haskell.Names.GlobalSymbolTable where
 
 import Language.Haskell.Exts (
-    QName(Qual,UnQual,Special),ModuleName(ModuleName))
+    QName)
 import qualified Language.Haskell.Exts.Annotated as Ann (
-    QName(Qual,UnQual),Name,ann,ModuleName(ModuleName))
+    QName)
 import Language.Haskell.Exts.Annotated.Simplify (
-    sQName,sName)
-
-import Language.Haskell.Names.SyntaxUtils (setAnn,annName)
+    sQName)
 
 import Data.Map (
     Map)
 import qualified Data.Map as Map (
-    empty,unionWith,fromListWith,lookup,map,fromList,toList)
+    empty,unionWith,fromListWith,lookup,map)
 
 import Control.Arrow
 import Data.List as List (union)
-import Control.Monad (guard)
 
 import Language.Haskell.Names.Types
 
@@ -44,22 +41,8 @@ lookupValue qn = lookupName qn . filterTable isValue
 lookupType :: Ann.QName l -> Table -> Result l
 lookupType qn = lookupName qn . filterTable isType
 
--- | Methods and associated types in instance declarations are referenced
---   unqualified and still resolved to a symbol that is only in scope qualified.
---   https://www.haskell.org/pipermail/haskell-prime/2008-April/002569.html
---   The test for this is tests/annotations/QualifiedMethods.hs
-lookupUnqualifiedAsQualified :: Ann.Name l -> Table -> (Result l,Maybe QName)
-lookupUnqualifiedAsQualified name tbl = (case Map.lookup unqualifiedName qualificationTable of
-        Nothing -> (Error (ENotInScope (Ann.UnQual (Ann.ann name) name)),Nothing)
-        Just qn -> (lookupName qn (filterTable isMethodOrAssociated tbl),Just (sQName qn))) where
-    unqualifiedName = UnQual (sName name)
-    qualificationTable = Map.fromList (do
-        (qn,symbols) <- Map.toList tbl
-        guard (any isMethodOrAssociated symbols)
-        case qn of
-            Qual (ModuleName m) n -> return (UnQual n,Ann.Qual (Ann.ann name) (Ann.ModuleName (Ann.ann name) m) (setAnn (Ann.ann name) (annName n)))
-            UnQual n -> return (UnQual n,Ann.UnQual (Ann.ann name) (setAnn (Ann.ann name) (annName n)))
-            Language.Haskell.Exts.Special _ -> [])
+lookupMethodOrAssociate :: Ann.QName l -> Table -> Result l
+lookupMethodOrAssociate qn = lookupName qn . filterTable isMethodOrAssociated
 
 lookupName :: Ann.QName l -> Table -> Result l
 lookupName qn table = case Map.lookup (sQName qn) table of

@@ -2,6 +2,7 @@ module Language.Haskell.Names.SyntaxUtils
   ( dropAnn
   , setAnn
   , annName
+  , nameQualification
   , getModuleName
   , getImports
   , getExportSpecList
@@ -42,6 +43,14 @@ setAnn l = fmap (const l)
 annName :: UnAnn.Name -> Name ()
 annName (UnAnn.Ident n) = Ident () n
 annName (UnAnn.Symbol n) = Symbol () n
+
+nameQualification :: QName l -> Maybe UnAnn.ModuleName
+nameQualification (UnQual _ _) =
+  Nothing
+nameQualification (Special _ _) =
+  Nothing
+nameQualification (Qual _ (ModuleName l moduleName) _) =
+  Just (UnAnn.ModuleName moduleName)
 
 getModuleName :: Module l -> ModuleName l
 getModuleName (Module _ (Just (ModuleHead _ mn _ _)) _ _ _) = mn

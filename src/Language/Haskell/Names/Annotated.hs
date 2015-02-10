@@ -19,6 +19,7 @@ import qualified Language.Haskell.Names.LocalSymbolTable as Local
 import Language.Haskell.Names.SyntaxUtils (annName,setAnn,qNameToName)
 import Language.Haskell.Exts.Annotated.Simplify (sQName)
 import Language.Haskell.Exts.Annotated
+import qualified Language.Haskell.Exts.Syntax as UnAnn
 import Data.Proxy
 import Data.Lens.Light
 import Data.Typeable (Typeable)
@@ -49,10 +50,10 @@ annotateRec _ sc a = go sc a where
       = lookupType (fmap sLoc a) sc <$ a
     | ReferenceUV <- getL nameCtx sc
     , Just (Eq :: Name (Scoped l) :~: a) <- dynamicEq
-      = lookupValueUnqualifiedAsQualified (fmap sLoc a) sc <$ a
+      = lookupMethod (fmap sLoc a) sc <$ a
     | ReferenceUT <- getL nameCtx sc
     , Just (Eq :: QName (Scoped l) :~: a) <- dynamicEq
-      = lookupTypeUnqualifiedAsQualified (fmap sLoc a) sc <$ a
+      = lookupAssociatedType (fmap sLoc a) sc <$ a
     | BindingV <- getL nameCtx sc
     , Just (Eq :: Name (Scoped l) :~: a) <- dynamicEq
       = Scoped ValueBinder (sLoc . ann $ a) <$ a
@@ -106,18 +107,30 @@ lookupType qn sc = Scoped nameInfo (ann qn)
         Global.Error e -> ScopeError e
         Global.Special -> None
 
-lookupValueUnqualifiedAsQualified :: Name l -> Scope -> Scoped l
-lookupValueUnqualifiedAsQualified n sc = Scoped nameInfo (ann n)
+lookupMethod :: Name l -> Scope -> Scoped l
+lookupMethod n sc = Scoped nameInfo (ann qn)
   where
-    nameInfo = case Global.lookupUnqualifiedAsQualified n $ getL gTable sc of
-        (Global.SymbolFound r,Just gn) -> GlobalSymbol r gn
-        (Global.Error e,_) -> ScopeError e
-        _ -> None
+    nameInfo =
+      case Global.lookupMethodOrAssociate qn $ getL gTable sc of
+        Global.SymbolFound r -> GlobalSymbol r (sQName qn)
+        Global.Error e -> ScopeError e
+        Global.Special -> None
+    qn = qualifyName (getL instQual sc) n
 
-lookupTypeUnqualifiedAsQualified :: QName l -> Scope -> Scoped l
-lookupTypeUnqualifiedAsQualified qn sc = Scoped nameInfo (ann qn)
+lookupAssociatedType :: QName l -> Scope -> Scoped l
+lookupAssociatedType qn sc = Scoped nameInfo (ann qn)
   where
-    nameInfo = case Global.lookupUnqualifiedAsQualified (qNameToName qn) $ getL gTable sc of
-        (Global.SymbolFound r,Just gn) -> GlobalSymbol r gn
-        (Global.Error e,_) -> ScopeError e
-        _ -> None
+    nameInfo =
+      case Global.lookupMethodOrAssociate qn' $ getL gTable sc of
+        Global.SymbolFound r -> GlobalSymbol r (sQName qn)
+        Global.Error e -> ScopeError e
+        Global.Special -> None
+    qn' = case qn of
+        UnQual l n -> qualifyName (getL instQual sc) n
+        _ -> qn
+
+qualifyName :: Maybe UnAnn.ModuleName -> Name l -> QName l
+qualifyName Nothing n = UnQual (ann n) n
+qualifyName (Just (UnAnn.ModuleName moduleName)) n = Qual (ann n) annotatedModuleName n
+  where
+    annotatedModuleName = ModuleName (ann n) moduleName
