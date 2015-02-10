@@ -69,7 +69,11 @@ instance ToJSON Symbol where
           ["type" .= prettyName ty
           ,"constructors".= map prettyName cons]
         Constructor { typeName = ty } ->
-          ["type".= prettyName ty]
+          ["type" .= prettyName ty]
+        TypeFam { associate = as } ->
+          ["associate" .= fmap prettyName as]
+        DataFam { associate = as } ->
+          ["associate" .= fmap prettyName as]
         _ -> []
 
 symbolEntity :: Symbol -> String
@@ -109,8 +113,12 @@ instance FromJSON Symbol where
       "type" -> return $ Type symbolmodule symbolname
       "data" -> return $ Data symbolmodule symbolname
       "newtype" -> return $ NewType symbolmodule symbolname
-      "typeFamily" -> return $ TypeFam symbolmodule symbolname
-      "dataFamily" -> return $ DataFam symbolmodule symbolname
+      "typeFamily" -> do
+        associate <- fmap parseName <$> v .: "associate"
+        return $ TypeFam symbolmodule symbolname associate
+      "dataFamily" -> do
+        associate <- fmap parseName <$> v .: "associate"
+        return $ DataFam symbolmodule symbolname associate
       "class" -> return $ Class symbolmodule symbolname
       _ -> mzero
 

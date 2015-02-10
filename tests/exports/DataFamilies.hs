@@ -1,5 +1,7 @@
 {-# LANGUAGE TypeFamilies #-}
-module DataFamilies where
+module DataFamilies (
+    Vector,
+    ListLike(..)) where
 
 data family Vector a
 

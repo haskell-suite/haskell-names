@@ -53,7 +53,7 @@ getTopDeclSymbols
 getTopDeclSymbols impTbl modulename d = (case d of
     TypeDecl _ dh _ -> [declHeadSymbol Type dh]
 
-    TypeFamDecl _ dh _ -> [declHeadSymbol TypeFam dh]
+    TypeFamDecl _ dh _ -> [TypeFam (sModuleName modulename) (sName (getDeclHeadName dh)) Nothing]
 
     DataDecl _ dataOrNew _ dh qualConDecls _ -> declHeadSymbol (dataOrNewCon dataOrNew) dh : infos where
 
@@ -72,17 +72,20 @@ getTopDeclSymbols impTbl modulename d = (case d of
 
         infos = constructorsToInfos modulename dq cons          
 
-    DataFamDecl _ _ dh _ -> [declHeadSymbol DataFam dh]
+    DataFamDecl _ _ dh _ -> [DataFam (sModuleName modulename) (sName (getDeclHeadName dh)) Nothing]
 
-    ClassDecl _ _ dh _ mds ->
-      let
-        ms = getBound impTbl d
+    ClassDecl _ _ declHead _ mds -> classSymbol : typeFamilySymbols ++ dataFamilySymbols ++ methodSymbols where
         cdecls = fromMaybe [] mds
-      in
-          (declHeadSymbol Class dh) :
-        [ declHeadSymbol TypeFam dh | ClsTyFam   _   dh _ <- cdecls ] ++
-        [ declHeadSymbol DataFam dh | ClsDataFam _ _ dh _ <- cdecls ] ++
-        [ Method (sModuleName modulename) (sName mn) (sName (getDeclHeadName dh)) | mn <- ms ]
+        classSymbol = declHeadSymbol Class declHead
+        typeFamilySymbols = do
+            ClsTyFam   _   familyHead _ <- cdecls
+            return (TypeFam (sModuleName modulename) (sName (getDeclHeadName familyHead)) (Just (sName (getDeclHeadName declHead))))
+        dataFamilySymbols = do
+            ClsDataFam _ _ familyHead _ <- cdecls
+            return (DataFam (sModuleName modulename) (sName (getDeclHeadName familyHead)) (Just (sName (getDeclHeadName declHead))))
+        methodSymbols = do
+            methodName <- getBound impTbl d
+            return (Method (sModuleName modulename) (sName methodName) (sName (getDeclHeadName declHead)))
 
     FunBind _ ms -> [ Value (sModuleName modulename) (sName vn) ] where
       vn : _ = getBound impTbl ms

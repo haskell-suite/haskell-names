@@ -59,11 +59,13 @@ data Symbol
     | TypeFam
       { symbolModule :: ModuleName
       , symbolName :: Name
+      , associate :: Maybe Name
       }
       -- ^ type family
     | DataFam
       { symbolModule :: ModuleName
       , symbolName :: Name
+      , associate :: Maybe Name
       }
       -- ^ data family
     | Class
