@@ -1,4 +1,4 @@
-haskell-names
+haskell-names [![Build Status](https://travis-ci.org/phischu/haskell-names.svg?branch=master)](https://travis-ci.org/phischu/haskell-names)
 =============
 
 haskell-names does name and module resolution for haskell-src-exts AST.
