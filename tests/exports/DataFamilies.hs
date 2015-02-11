@@ -1,7 +1,8 @@
 {-# LANGUAGE TypeFamilies #-}
 module DataFamilies (
     Vector,
-    ListLike(..)) where
+    ListLike(..),
+    Vector(..)) where
 
 data family Vector a
 

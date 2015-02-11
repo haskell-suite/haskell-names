@@ -17,6 +17,11 @@
     , symbolName = Ident "h"
     , className = Ident "ListLike"
     }
+, DataFam
+    { symbolModule = ModuleName "DataFamilies"
+    , symbolName = Ident "Vector"
+    , associate = Nothing
+    }
 , Constructor
     { symbolModule = ModuleName "DataFamilies"
     , symbolName = Ident "U_Vector"
