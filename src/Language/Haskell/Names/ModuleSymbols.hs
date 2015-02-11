@@ -56,18 +56,10 @@ getTopDeclSymbols impTbl modulename d = (case d of
     TypeFamDecl _ dh _ -> [declHeadSymbol TypeFam dh]
 
     DataDecl _ dataOrNew _ dh qualConDecls _ -> declHeadSymbol (dataOrNewCon dataOrNew) dh : infos where
-        cons :: [(Name l,[Name l])]
-        cons = do -- list monad
-          QualConDecl _ _ _ conDecl <- qualConDecls
-          case conDecl of
-            ConDecl _ n _ -> return (n, [])
-            InfixConDecl _ _ n _ -> return (n, [])
-            RecDecl _ n fields ->
-              return (n , [f | FieldDecl _ fNames _ <- fields, f <- fNames])
 
         dq = getDeclHeadName dh
 
-        infos = constructorsToInfos modulename dq cons
+        infos = constructorsToInfos modulename dq (qualConDeclNames qualConDecls)
 
     GDataDecl _ dataOrNew _ dh _ gadtDecls _ -> declHeadSymbol (dataOrNewCon dataOrNew) dh : infos where
       -- FIXME: We shouldn't create selectors for fields with existential type variables!
@@ -99,6 +91,15 @@ getTopDeclSymbols impTbl modulename d = (case d of
 
     ForImp _ _ _ _ fn _ -> [ Value (sModuleName modulename) (sName fn)]
 
+    DataInsDecl _ _ typ qualConDecls _ -> constructorsToInfos modulename (typeOuterName typ) (qualConDeclNames qualConDecls)
+
+    GDataInsDecl _ _ typ _ gadtDecls _ -> constructorsToInfos modulename (typeOuterName typ) cons where
+      -- FIXME: We shouldn't create selectors for fields with existential type variables!
+        cons :: [(Name l,[Name l])]
+        cons = do -- list monad
+          GadtDecl _ cn (fromMaybe [] -> fields) _ty <- gadtDecls
+          return (cn , [f | FieldDecl _ fNames _ <- fields, f <- fNames])
+
     _ -> [])
         where
             declHeadSymbol c dh = c (sModuleName modulename) (sName (getDeclHeadName dh))
@@ -121,6 +122,27 @@ constructorsToInfos modulename typename constructors = conInfos ++ selInfos wher
             selectorname <- selectornames
             constructornames <- maybeToList (Map.lookup (nameToString selectorname) selectorsMap)
             return (Selector (sModuleName modulename) (sName selectorname) (sName typename) (map sName constructornames))
+
+typeOuterName :: Type l -> Name l
+typeOuterName t = case t of
+    TyForall _ _ _ typ -> typeOuterName typ
+    TyApp _ typ _ -> typeOuterName typ
+    TyCon _ qname -> qNameToName qname
+    TyParen _ typ -> typeOuterName typ
+    TyInfix _ _ qname _ -> qNameToName qname
+    TyKind _ typ _ -> typeOuterName typ
+    TyBang _ _ typ -> typeOuterName typ
+    _ -> error "illegal data family in data instance"
+
+qualConDeclNames :: [QualConDecl l] -> [(Name l,[Name l])]
+qualConDeclNames qualConDecls = do
+    QualConDecl _ _ _ conDecl <- qualConDecls
+    case conDecl of
+        ConDecl _ n _ -> return (n, [])
+        InfixConDecl _ _ n _ -> return (n, [])
+        RecDecl _ n fields ->
+            return (n , [f | FieldDecl _ fNames _ <- fields, f <- fNames])
+
 
 dataOrNewCon :: Syntax.DataOrNew l -> UnAnn.ModuleName -> UnAnn.Name -> Symbol
 dataOrNewCon dataOrNew = case dataOrNew of DataType {} -> Data; Syntax.NewType {} -> NewType
