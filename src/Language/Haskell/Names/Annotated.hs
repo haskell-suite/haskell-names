@@ -2,7 +2,7 @@
 -- ("Language.Haskell.Names.Open") to annotate the AST with binding
 -- information.
 {-# LANGUAGE FlexibleContexts, MultiParamTypeClasses, ImplicitParams,
-    UndecidableInstances, OverlappingInstances, ScopedTypeVariables,
+    UndecidableInstances, ScopedTypeVariables,
     TypeOperators, GADTs #-}
 module Language.Haskell.Names.Annotated
   ( Scoped(..)

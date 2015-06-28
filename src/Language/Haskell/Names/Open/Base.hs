@@ -3,7 +3,7 @@
 --
 -- You can look at "Language.Haskell.Exts.Annotated" source as an example
 -- of how to use this module.
-{-# LANGUAGE RankNTypes, FlexibleInstances, FlexibleContexts, UndecidableInstances, DefaultSignatures, OverlappingInstances, TemplateHaskell, ScopedTypeVariables #-}
+{-# LANGUAGE RankNTypes, FlexibleInstances, FlexibleContexts, UndecidableInstances, DefaultSignatures, TemplateHaskell, ScopedTypeVariables #-}
 {-# LANGUAGE ImplicitParams, KindSignatures #-}
 module Language.Haskell.Names.Open.Base where
 
@@ -12,7 +12,6 @@ import qualified Language.Haskell.Names.LocalSymbolTable as Local
 import Language.Haskell.Names.GetBound
 import Language.Haskell.Names.RecordWildcards
 import Language.Haskell.Exts.Annotated
-import Control.Applicative
 import Control.Monad.Identity
 import Data.List
 import Data.Lens.Light
@@ -91,7 +90,7 @@ class Typeable a => Resolvable a where
     :: (Applicative f, ?alg :: Alg f)
     => a -> Scope -> f a
 
-instance (Typeable a, GTraversable Resolvable a) => Resolvable a where
+instance {-# OVERLAPPABLE #-} (Typeable a, GTraversable Resolvable a) => Resolvable a where
   rtraverse = defaultRtraverse
 
 -- | Analogous to 'gmap', but for 'Resolvable'
