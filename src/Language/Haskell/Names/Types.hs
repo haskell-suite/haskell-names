@@ -8,7 +8,6 @@ import Data.Typeable
 import Data.Data
 import qualified Data.Set as Set
 import Data.Foldable as F
-import Data.Traversable
 import Data.Map (Map)
 import Text.Printf
 
