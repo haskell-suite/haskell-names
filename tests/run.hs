@@ -1,6 +1,6 @@
 -- vim:fdm=marker:foldtext=foldtext()
-{-# LANGUAGE FlexibleInstances, OverlappingInstances, ImplicitParams,
-             MultiParamTypeClasses, FlexibleContexts #-}
+{-# LANGUAGE FlexibleInstances, ImplicitParams,
+             MultiParamTypeClasses, FlexibleContexts, GADTs #-}
 -- GHC 7.8 fails with the default context stack size of 20
 {-# OPTIONS_GHC -fcontext-stack=50 #-}
 -- Imports {{{
@@ -130,7 +130,7 @@ importTests = do
 class TestAnn a where
   getAnn :: a -> Maybe (String, Scoped SrcSpan)
 
-instance TestAnn a where
+instance {-# OVERLAPPABLE #-} TestAnn a where
   getAnn = const Nothing
 
 instance TestAnn (QName (Scoped SrcSpan)) where
