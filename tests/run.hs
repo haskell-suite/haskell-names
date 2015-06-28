@@ -1,6 +1,6 @@
 -- vim:fdm=marker:foldtext=foldtext()
 {-# LANGUAGE FlexibleInstances, OverlappingInstances, ImplicitParams,
-             MultiParamTypeClasses, FlexibleContexts #-}
+             MultiParamTypeClasses, FlexibleContexts, GADTs #-}
 -- GHC 7.8 fails with the default context stack size of 20
 {-# OPTIONS_GHC -fcontext-stack=50 #-}
 -- Imports {{{
