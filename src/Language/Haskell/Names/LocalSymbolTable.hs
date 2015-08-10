@@ -8,6 +8,7 @@ module Language.Haskell.Names.LocalSymbolTable
   ) where
 
 import qualified Data.Map as Map
+import Data.Monoid
 import Language.Haskell.Exts (Name)
 import Language.Haskell.Exts.Annotated.Simplify (sName)
 import qualified Language.Haskell.Exts.Annotated as Ann
