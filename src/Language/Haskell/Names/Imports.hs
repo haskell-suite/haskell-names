@@ -20,7 +20,7 @@ import Language.Haskell.Exts.Annotated.Simplify (sName,sModuleName)
 import Language.Haskell.Exts.Annotated (
     ModuleName(ModuleName),ImportDecl(..),KnownExtension(ImplicitPrelude),
     ann,ImportSpecList(..),ImportSpec(..),Name(..),
-    Annotated,Namespace(NoNamespace,TypeNamespace))
+    Annotated)
 import Language.Haskell.Names.Types
 import Language.Haskell.Names.ScopeUtils
 import qualified Language.Haskell.Names.GlobalSymbolTable as Global
@@ -138,7 +138,7 @@ resolveImportSpec
 -- NB: this can be made more efficient
 resolveImportSpec mod isHiding symbols spec =
   case spec of
-    IVar _ (NoNamespace {}) n ->
+    IVar _ n ->
       let
         matches =
           -- Strictly speaking, the isConstructor check is unnecessary
@@ -154,8 +154,7 @@ resolveImportSpec mod isHiding symbols spec =
           matches
           spec
     -- FIXME think about data families etc.
-    IVar _ (TypeNamespace {}) _ -> error "'type' namespace is not supported yet" -- FIXME
-    IAbs _ n
+    IAbs _ _ n
       | isHiding ->
           -- This is a bit special. 'C' may match both types/classes and
           -- data constructors.

@@ -16,7 +16,7 @@ import Language.Haskell.Names.Open.Base
 import Language.Haskell.Names.Open.Instances ()
 import qualified Language.Haskell.Names.GlobalSymbolTable as Global
 import qualified Language.Haskell.Names.LocalSymbolTable as Local
-import Language.Haskell.Names.SyntaxUtils (annName,setAnn,qNameToName)
+import Language.Haskell.Names.SyntaxUtils (annName,setAnn)
 import Language.Haskell.Exts.Annotated.Simplify (sQName)
 import Language.Haskell.Exts.Annotated
 import qualified Language.Haskell.Exts.Syntax as UnAnn
@@ -126,7 +126,7 @@ lookupAssociatedType qn sc = Scoped nameInfo (ann qn)
         Global.Error e -> ScopeError e
         Global.Special -> None
     qn' = case qn of
-        UnQual l n -> qualifyName (getL instQual sc) n
+        UnQual _ n -> qualifyName (getL instQual sc) n
         _ -> qn
 
 qualifyName :: Maybe UnAnn.ModuleName -> Name l -> QName l

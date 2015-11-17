@@ -15,7 +15,6 @@ import Language.Haskell.Names.Open.Derived ()
 import Language.Haskell.Names.GetBound
 import Language.Haskell.Names.RecordWildcards
 import Language.Haskell.Exts.Annotated
-import qualified Language.Haskell.Exts.Syntax as UnAnn
 import Language.Haskell.Names.SyntaxUtils
 import qualified Data.Data as D
 import Control.Applicative
@@ -79,7 +78,7 @@ instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (Decl l) where
       _ -> defaultRtraverse e sc
 
 instanceRuleClass :: InstRule l -> QName l
-instanceRuleClass (IParen l instRule) = instanceRuleClass instRule
+instanceRuleClass (IParen _ instRule) = instanceRuleClass instRule
 instanceRuleClass (IRule _ _ _ instHead) = instanceHeadClass instHead
 
 instanceHeadClass :: InstHead l -> QName l

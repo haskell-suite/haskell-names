@@ -146,3 +146,7 @@ deriveGTraversable ''Overlap
 deriveGTraversable ''Sign
 
 deriveGTraversable ''Namespace
+
+deriveGTraversable ''PatternSynDirection
+
+deriveGTraversable ''Role

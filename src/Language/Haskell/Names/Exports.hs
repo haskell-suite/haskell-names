@@ -48,22 +48,21 @@ resolveExportSpec
   -> m (ExportSpec (Scoped l), [Symbol])
 resolveExportSpec tbl exp =
   case exp of
-    EVar l ns@(NoNamespace {}) qn -> return $
+    EVar l qn -> return $
       case Global.lookupValue qn tbl of
         Global.Error err ->
           (scopeError err exp, mempty)
         Global.SymbolFound i ->
             (EVar (Scoped (Export [i]) l)
-              (noScope ns)
               (Scoped (GlobalSymbol i (sQName qn)) <$> qn), [i])
         Global.Special {} -> error "Global.Special in export list?"
-    EVar _ (TypeNamespace {}) _ -> error "'type' namespace is not supported yet" -- FIXME
-    EAbs l qn -> return $
+    EAbs l ns qn -> return $
       case Global.lookupType qn tbl of
         Global.Error err ->
           (scopeError err exp, mempty)
         Global.SymbolFound i ->
             (EAbs (Scoped (Export [i]) l)
+              (noScope ns)
               (Scoped (GlobalSymbol i (sQName qn)) <$> qn), [i])
         Global.Special {} -> error "Global.Special in export list?"
     EThingAll l qn -> return $
