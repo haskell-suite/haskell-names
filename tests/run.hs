@@ -1,9 +1,7 @@
--- vim:fdm=marker:foldtext=foldtext()
 {-# LANGUAGE FlexibleInstances, OverlappingInstances, ImplicitParams,
              MultiParamTypeClasses, FlexibleContexts, GADTs #-}
 -- GHC 7.8 fails with the default context stack size of 20
 {-# OPTIONS_GHC -fcontext-stack=50 #-}
--- Imports {{{
 import Test.Tasty hiding (defaultMain)
 import Test.Tasty.Golden
 import Test.Tasty.Golden.Manage
@@ -14,6 +12,7 @@ import System.IO
 import System.Exit
 import Data.Monoid
 import Data.List hiding (find)
+import Data.Map (Map)
 import qualified Data.Map as Map
 import qualified Data.Set as Set
 import Control.Monad.Identity
@@ -25,8 +24,8 @@ import qualified Data.Foldable as F
 
 import Language.Haskell.Exts.Annotated hiding (NewType)
 import qualified Language.Haskell.Exts.Annotated as Syntax (DataOrNew(NewType))
+import qualified Language.Haskell.Exts as U (ModuleName(ModuleName))
 import Language.Haskell.Names
-import Language.Haskell.Names.Interfaces
 import Language.Haskell.Names.Exports
 import Language.Haskell.Names.Imports
 import Language.Haskell.Names.Annotated
@@ -34,99 +33,81 @@ import Language.Haskell.Names.Open
 import Language.Haskell.Names.ModuleSymbols
 import Language.Haskell.Names.SyntaxUtils
 import qualified Language.Haskell.Names.GlobalSymbolTable as Global
-import Distribution.HaskellSuite
-import qualified Distribution.ModuleName as Cabal
 
 import Data.Generics.Traversable
 import Data.Proxy
--- }}}
 
--- Common definitions {{{
-type MT = ModuleT [Symbol] IO
 
-main = defaultMain . testGroup "Tests" =<< tests
+main :: IO ()
+main = do
+  exportTestModules <- getTestModules "tests/exports"
+  importTestModules <- getTestModules "tests/imports"
+  annotationTestModules <- getTestModules "tests/annotations"
+  let environment = resolve (map snd exportTestModules) Map.empty
+  defaultMain (testGroup "Tests" [
+    exportTests environment exportTestModules,
+    importTests environment importTestModules,
+    annotationTests environment annotationTestModules,
+    environmentTests])
 
-goldenTest name = goldenVsFileDiff name (\ref new -> ["diff", "-u", ref, new])
+getTestModules :: FilePath -> IO [(FilePath, Module SrcSpan)]
+getTestModules directory = do
+  paths <- find (return True) (extension ==? ".hs") directory
+  forM paths (\path -> do
+    result <- parseFile path
+    return (path, fmap srcInfoSpan (fromParseResult result)))
 
--- All tests are created in the same ModuleT session. This means that
--- export tests are available for import in subsequent tests (because of
--- the getIfaces call). However, import tests are not registered in the
--- monad, so they are not available for import.
+exportTests :: Environment -> [(FilePath, Module SrcSpan)] -> TestTree
+exportTests environment exportTestModules =
+  testGroup "exports" (map (exportTest environment) exportTestModules)
 
-tests =
-  liftM concat . sequence $
-    [ evalNamesModuleT (sequence [exportTests, importTests, annotationTests]) []
-    ]
+-- | Dump exported symbols.
+-- TODO: check for errors during resolution.
+exportTest :: Environment -> (FilePath, Module SrcSpan) -> TestTree
+exportTest environment (path, modul) = goldenTest path run where
+  out = path <.> "out"
+  run = writeBinaryFile out (ppShow exports)
+  exports = exportedSymbols globalTable modul
+  globalTable = moduleTable (importTable environment modul) modul
 
-parseAndPrepare file =
-  return . fmap srcInfoSpan . fromParseResult =<< parseFile file
+importTests :: Environment -> [(FilePath, Module SrcSpan)] -> TestTree
+importTests environment importTestModules =
+  testGroup "imports" (map (importTest environment) importTestModules)
 
-lang = Haskell2010
-exts = [DisableExtension ImplicitPrelude]
-getIfaces = getInterfaces lang exts
+-- | Dump global table.
+importTest :: Environment -> (FilePath, Module SrcSpan) -> TestTree
+importTest environment (path, modul) = goldenTest path run where
+  out = path <.> "out"
+  run = writeBinaryFile out (ppShow table)
+  table = importTable environment modul
 
-getTestFiles :: MonadIO m => FilePath -> m [FilePath]
-getTestFiles dir = liftIO $ find (return True) (extension ==? ".hs") dir
--- }}}
+annotationTests :: Environment -> [(FilePath, Module SrcSpan)] -> TestTree
+annotationTests environment annotationTestModules =
+  testGroup "annotations" (map (annotationTest environment) annotationTestModules)
 
------------------------------------------------------
--- Export test: parse a source file, dump its symbols
------------------------------------------------------
--- {{{
-exportTest file iface =
-  goldenTest file golden out run
-  where
-    golden = file <.> "golden"
-    out = file <.> "out"
-    run = writeBinaryFile out $ ppShow iface
+-- | Annotate and pretty print the annotations.
+annotationTest :: Environment -> (FilePath, Module SrcSpan) -> TestTree
+annotationTest environment (path, modul) = goldenTest path run where
+  out = path <.> "out"
+  run = writeBinaryFile out (printAnns annotatedModule)
+  annotatedModule = annotate environment modul
 
-exportTests :: MT TestTree
-exportTests = do
-  testFiles <- getTestFiles "tests/exports"
-  parsed <- liftIO $ mapM parseAndPrepare testFiles
-  (ifaces, errors) <- getIfaces parsed
+environmentTests :: TestTree
+environmentTests = goldenTest path run where
+  run = do
+    baseEnvironment <- loadBase
+    writeSymbols out (baseEnvironment Map.! (U.ModuleName "Prelude"))
+  path = "tests/environment/Prelude.symbols"
+  out = path <.> "out"
 
-  -- report possible problems
-  when (not $ Set.null errors) $ liftIO $ do
-    printf "The following unexpected problems were found:\n"
-    F.for_ errors $ \e -> do
-      putStr $ ppError e
-    exitFailure
+goldenTest :: FilePath -> IO () -> TestTree
+goldenTest path = goldenVsFileDiff
+  path
+  (\ref new -> ["diff", "-u", ref, new])
+  (path <.> "golden")
+  (path <.> "out")
 
-  return $ testGroup "exports" $ zipWith exportTest testFiles ifaces
--- }}}
 
-----------------------------------------------------------
--- Import test: parse a source file, dump its global table
-----------------------------------------------------------
--- {{{
-importTest :: FilePath -> Global.Table -> TestTree
-importTest file tbl =
-  goldenTest file golden out run
-  where
-    golden = file <.> "golden"
-    out = file <.> "out"
-    run = do
-      writeBinaryFile out $ ppShow tbl
-
-getGlobalTable :: FilePath -> MT Global.Table
-getGlobalTable file = do
-  mod <- liftIO $ parseAndPrepare file
-  let extSet = moduleExtensions lang exts mod
-  snd <$> processImports extSet (getImports mod)
-
-importTests :: MT TestTree
-importTests = do
-  testFiles <- getTestFiles "tests/imports"
-  filesAndTables <- forM testFiles $ \file -> (,) file <$> getGlobalTable file
-  return $ testGroup "imports" $ map (uncurry importTest) filesAndTables
--- }}}
-
-------------------------------------------------------------------
--- Annotation test: parse the source, annotate it and pretty-print
-------------------------------------------------------------------
--- {{{
--- Code to retrieve annotations from the AST using GTraversable
 class TestAnn a where
   getAnn :: a -> Maybe (String, Scoped SrcSpan)
 
@@ -164,25 +145,6 @@ printAnns =
     go :: Rec TestAnn a => a -> String
     go a = one a ++ gfoldMap go a
   in go
-
--- Actual tests
-annotationTest file annotatedMod = goldenTest file golden out run
-  where
-    golden = file <.> "golden"
-    out = file <.> "out"
-    run = do
-      liftIO $ writeBinaryFile out $ printAnns annotatedMod
-
-getAnnotated file = do
-  mod <- liftIO $ parseAndPrepare file
-  annotateModule lang exts mod
-
-annotationTests = do
-  testFiles <- getTestFiles "tests/annotations"
-  filesAndMods <- forM testFiles $ \file -> (,) file <$> getAnnotated file
-  return $ testGroup "annotations" $
-    map (uncurry annotationTest) filesAndMods
--- }}}
 
 -----------------------
 -- Formatting utilities

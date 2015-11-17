@@ -6,8 +6,7 @@ Maintainer:             Philipp Schuster
 Category:               Language
 Synopsis:               Name resolution library for Haskell
 Description:
-  For a high-level overview of this package,
-  see <http://documentup.com/haskell-suite/haskell-names>
+  This package takes modules parsed with `haskell-src-exts`, resolves used names and annotates the parsed module with scoping information. 
 Homepage:               http://documentup.com/haskell-suite/haskell-names
 Stability:              Experimental
 Build-Type:             Simple
@@ -23,231 +22,209 @@ extra-source-files:
   tests/exports/*.hs.golden
   tests/exports/*.hs
 data-files:
-  libraries/ghc-prim-0.3.1.0/GHC/Debug.names
-  libraries/ghc-prim-0.3.1.0/GHC/Types.names
-  libraries/ghc-prim-0.3.1.0/GHC/Classes.names
-  libraries/ghc-prim-0.3.1.0/GHC/IntWord64.names
-  libraries/ghc-prim-0.3.1.0/GHC/PrimopWrappers.names
-  libraries/ghc-prim-0.3.1.0/GHC/Prim.names
-  libraries/ghc-prim-0.3.1.0/GHC/Magic.names
-  libraries/ghc-prim-0.3.1.0/GHC/CString.names
-  libraries/ghc-prim-0.3.1.0/GHC/Tuple.names
-  libraries/integer-simple-0.1.1.0/GHC/Integer.names
-  libraries/integer-simple-0.1.1.0/GHC/Integer/Logarithms.names
-  libraries/integer-simple-0.1.1.0/GHC/Integer/Logarithms/Internals.names
-  libraries/integer-simple-0.1.1.0/GHC/Integer/Simple/Internals.names
-  libraries/integer-simple-0.1.1.0/GHC/Integer/Type.names
-  libraries/array-0.4.0.2/Data/Array/IO.names
-  libraries/array-0.4.0.2/Data/Array/Unboxed.names
-  libraries/array-0.4.0.2/Data/Array/Unsafe.names
-  libraries/array-0.4.0.2/Data/Array/ST.names
-  libraries/array-0.4.0.2/Data/Array/IO/Safe.names
-  libraries/array-0.4.0.2/Data/Array/IO/Internals.names
-  libraries/array-0.4.0.2/Data/Array/Base.names
-  libraries/array-0.4.0.2/Data/Array/MArray/Safe.names
-  libraries/array-0.4.0.2/Data/Array/ST/Safe.names
-  libraries/array-0.4.0.2/Data/Array/IArray.names
-  libraries/array-0.4.0.2/Data/Array/Storable/Safe.names
-  libraries/array-0.4.0.2/Data/Array/Storable/Internals.names
-  libraries/array-0.4.0.2/Data/Array/Storable.names
-  libraries/array-0.4.0.2/Data/Array/MArray.names
-  libraries/array-0.4.0.2/Data/Array.names
-  libraries/packages.db
-  libraries/base-4.7.0.0/Numeric.names
-  libraries/base-4.7.0.0/Prelude.names
-  libraries/base-4.7.0.0/System/Exit.names
-  libraries/base-4.7.0.0/System/Timeout.names
-  libraries/base-4.7.0.0/System/Mem.names
-  libraries/base-4.7.0.0/System/IO.names
-  libraries/base-4.7.0.0/System/Environment/ExecutablePath.names
-  libraries/base-4.7.0.0/System/Environment.names
-  libraries/base-4.7.0.0/System/Info.names
-  libraries/base-4.7.0.0/System/Mem/StableName.names
-  libraries/base-4.7.0.0/System/Mem/Weak.names
-  libraries/base-4.7.0.0/System/Console/GetOpt.names
-  libraries/base-4.7.0.0/System/CPUTime.names
-  libraries/base-4.7.0.0/System/IO/Unsafe.names
-  libraries/base-4.7.0.0/System/IO/Error.names
-  libraries/base-4.7.0.0/System/Posix/Internals.names
-  libraries/base-4.7.0.0/System/Posix/Types.names
-  libraries/base-4.7.0.0/include/consUtils.h
-  libraries/base-4.7.0.0/include/EventConfig.h
-  libraries/base-4.7.0.0/include/WCsubst.h
-  libraries/base-4.7.0.0/include/Typeable.h
-  libraries/base-4.7.0.0/include/HsBaseConfig.h
-  libraries/base-4.7.0.0/include/HsBase.h
-  libraries/base-4.7.0.0/include/OldTypeable.h
-  libraries/base-4.7.0.0/Foreign.names
-  libraries/base-4.7.0.0/Text/Read.names
-  libraries/base-4.7.0.0/Text/Printf.names
-  libraries/base-4.7.0.0/Text/Show.names
-  libraries/base-4.7.0.0/Text/ParserCombinators/ReadPrec.names
-  libraries/base-4.7.0.0/Text/ParserCombinators/ReadP.names
-  libraries/base-4.7.0.0/Text/Show/Functions.names
-  libraries/base-4.7.0.0/Text/Read/Lex.names
-  libraries/base-4.7.0.0/Control/Concurrent/MVar.names
-  libraries/base-4.7.0.0/Control/Concurrent/QSemN.names
-  libraries/base-4.7.0.0/Control/Concurrent/Chan.names
-  libraries/base-4.7.0.0/Control/Concurrent/QSem.names
-  libraries/base-4.7.0.0/Control/Exception/Base.names
-  libraries/base-4.7.0.0/Control/Exception.names
-  libraries/base-4.7.0.0/Control/Applicative.names
-  libraries/base-4.7.0.0/Control/Concurrent.names
-  libraries/base-4.7.0.0/Control/Category.names
-  libraries/base-4.7.0.0/Control/Monad.names
-  libraries/base-4.7.0.0/Control/Monad/Instances.names
-  libraries/base-4.7.0.0/Control/Monad/ST.names
-  libraries/base-4.7.0.0/Control/Monad/ST/Safe.names
-  libraries/base-4.7.0.0/Control/Monad/ST/Lazy/Safe.names
-  libraries/base-4.7.0.0/Control/Monad/ST/Lazy/Imp.names
-  libraries/base-4.7.0.0/Control/Monad/ST/Lazy/Unsafe.names
-  libraries/base-4.7.0.0/Control/Monad/ST/Lazy.names
-  libraries/base-4.7.0.0/Control/Monad/ST/Imp.names
-  libraries/base-4.7.0.0/Control/Monad/ST/Unsafe.names
-  libraries/base-4.7.0.0/Control/Monad/ST/Strict.names
-  libraries/base-4.7.0.0/Control/Monad/Zip.names
-  libraries/base-4.7.0.0/Control/Monad/Fix.names
-  libraries/base-4.7.0.0/Control/Arrow.names
-  libraries/base-4.7.0.0/Data/String.names
-  libraries/base-4.7.0.0/Data/Data.names
-  libraries/base-4.7.0.0/Data/Maybe.names
-  libraries/base-4.7.0.0/Data/OldTypeable/Internal.names
-  libraries/base-4.7.0.0/Data/Bits.names
-  libraries/base-4.7.0.0/Data/STRef/Lazy.names
-  libraries/base-4.7.0.0/Data/STRef/Strict.names
-  libraries/base-4.7.0.0/Data/Fixed.names
-  libraries/base-4.7.0.0/Data/Word.names
-  libraries/base-4.7.0.0/Data/Bool.names
-  libraries/base-4.7.0.0/Data/Int.names
-  libraries/base-4.7.0.0/Data/List.names
-  libraries/base-4.7.0.0/Data/Eq.names
-  libraries/base-4.7.0.0/Data/Traversable.names
-  libraries/base-4.7.0.0/Data/Char.names
-  libraries/base-4.7.0.0/Data/Either.names
-  libraries/base-4.7.0.0/Data/Dynamic.names
-  libraries/base-4.7.0.0/Data/Unique.names
-  libraries/base-4.7.0.0/Data/Function.names
-  libraries/base-4.7.0.0/Data/STRef.names
-  libraries/base-4.7.0.0/Data/Ratio.names
-  libraries/base-4.7.0.0/Data/Ord.names
-  libraries/base-4.7.0.0/Data/Foldable.names
-  libraries/base-4.7.0.0/Data/Functor.names
-  libraries/base-4.7.0.0/Data/Typeable/Internal.names
-  libraries/base-4.7.0.0/Data/Ix.names
-  libraries/base-4.7.0.0/Data/OldTypeable.names
-  libraries/base-4.7.0.0/Data/Version.names
-  libraries/base-4.7.0.0/Data/Complex.names
-  libraries/base-4.7.0.0/Data/IORef.names
-  libraries/base-4.7.0.0/Data/Tuple.names
-  libraries/base-4.7.0.0/Data/Monoid.names
-  libraries/base-4.7.0.0/Data/Typeable.names
-  libraries/base-4.7.0.0/GHC/Float/RealFracMethods.names
-  libraries/base-4.7.0.0/GHC/Float/ConversionUtils.names
-  libraries/base-4.7.0.0/GHC/Generics.names
-  libraries/base-4.7.0.0/GHC/Conc/IO.names
-  libraries/base-4.7.0.0/GHC/Conc/Sync.names
-  libraries/base-4.7.0.0/GHC/Conc/Signal.names
-  libraries/base-4.7.0.0/GHC/IO.names
-  libraries/base-4.7.0.0/GHC/Read.names
-  libraries/base-4.7.0.0/GHC/Event/PSQ.names
-  libraries/base-4.7.0.0/GHC/Event/Manager.names
-  libraries/base-4.7.0.0/GHC/Event/KQueue.names
-  libraries/base-4.7.0.0/GHC/Event/IntMap.names
-  libraries/base-4.7.0.0/GHC/Event/Unique.names
-  libraries/base-4.7.0.0/GHC/Event/Poll.names
-  libraries/base-4.7.0.0/GHC/Event/Control.names
-  libraries/base-4.7.0.0/GHC/Event/Array.names
-  libraries/base-4.7.0.0/GHC/Event/Clock.names
-  libraries/base-4.7.0.0/GHC/Event/EPoll.names
-  libraries/base-4.7.0.0/GHC/Event/Thread.names
-  libraries/base-4.7.0.0/GHC/Event/Internal.names
-  libraries/base-4.7.0.0/GHC/Event/TimerManager.names
-  libraries/base-4.7.0.0/GHC/Stable.names
-  libraries/base-4.7.0.0/GHC/Weak.names
-  libraries/base-4.7.0.0/GHC/Desugar.names
-  libraries/base-4.7.0.0/GHC/Arr.names
-  libraries/base-4.7.0.0/GHC/IP.names
-  libraries/base-4.7.0.0/GHC/MVar.names
-  libraries/base-4.7.0.0/GHC/Environment.names
-  libraries/base-4.7.0.0/GHC/ConsoleHandler.names
-  libraries/base-4.7.0.0/GHC/Enum.names
-  libraries/base-4.7.0.0/GHC/Word.names
-  libraries/base-4.7.0.0/GHC/Unicode.names
-  libraries/base-4.7.0.0/GHC/Real.names
-  libraries/base-4.7.0.0/GHC/Profiling.names
-  libraries/base-4.7.0.0/GHC/IOArray.names
-  libraries/base-4.7.0.0/GHC/Stats.names
-  libraries/base-4.7.0.0/GHC/Int.names
-  libraries/base-4.7.0.0/GHC/List.names
-  libraries/base-4.7.0.0/GHC/Show.names
-  libraries/base-4.7.0.0/GHC/Num.names
-  libraries/base-4.7.0.0/GHC/ST.names
-  libraries/base-4.7.0.0/GHC/TypeLits.names
-  libraries/base-4.7.0.0/GHC/Char.names
-  libraries/base-4.7.0.0/GHC/Pack.names
-  libraries/base-4.7.0.0/GHC/Exception.names
-  libraries/base-4.7.0.0/GHC/TopHandler.names
-  libraries/base-4.7.0.0/GHC/Foreign.names
-  libraries/base-4.7.0.0/GHC/STRef.names
-  libraries/base-4.7.0.0/GHC/IO/FD.names
-  libraries/base-4.7.0.0/GHC/IO/Exception.names
-  libraries/base-4.7.0.0/GHC/IO/Handle/Text.names
-  libraries/base-4.7.0.0/GHC/IO/Handle/Internals.names
-  libraries/base-4.7.0.0/GHC/IO/Handle/Types.names
-  libraries/base-4.7.0.0/GHC/IO/Handle/FD.names
-  libraries/base-4.7.0.0/GHC/IO/Encoding/CodePage.names
-  libraries/base-4.7.0.0/GHC/IO/Encoding/Failure.names
-  libraries/base-4.7.0.0/GHC/IO/Encoding/UTF32.names
-  libraries/base-4.7.0.0/GHC/IO/Encoding/Types.names
-  libraries/base-4.7.0.0/GHC/IO/Encoding/UTF8.names
-  libraries/base-4.7.0.0/GHC/IO/Encoding/UTF16.names
-  libraries/base-4.7.0.0/GHC/IO/Encoding/Iconv.names
-  libraries/base-4.7.0.0/GHC/IO/Encoding/Latin1.names
-  libraries/base-4.7.0.0/GHC/IO/Device.names
-  libraries/base-4.7.0.0/GHC/IO/Encoding.names
-  libraries/base-4.7.0.0/GHC/IO/Handle.names
-  libraries/base-4.7.0.0/GHC/IO/IOMode.names
-  libraries/base-4.7.0.0/GHC/IO/Buffer.names
-  libraries/base-4.7.0.0/GHC/IO/BufferedIO.names
-  libraries/base-4.7.0.0/GHC/Err.names
-  libraries/base-4.7.0.0/GHC/Base.names
-  libraries/base-4.7.0.0/GHC/Stack.names
-  libraries/base-4.7.0.0/GHC/Conc.names
-  libraries/base-4.7.0.0/GHC/Fingerprint/Type.names
-  libraries/base-4.7.0.0/GHC/Fingerprint.names
-  libraries/base-4.7.0.0/GHC/ForeignPtr.names
-  libraries/base-4.7.0.0/GHC/Exts.names
-  libraries/base-4.7.0.0/GHC/Event.names
-  libraries/base-4.7.0.0/GHC/GHCi.names
-  libraries/base-4.7.0.0/GHC/Float.names
-  libraries/base-4.7.0.0/GHC/IORef.names
-  libraries/base-4.7.0.0/GHC/Storable.names
-  libraries/base-4.7.0.0/GHC/Constants.names
-  libraries/base-4.7.0.0/GHC/Ptr.names
-  libraries/base-4.7.0.0/GHC/PArr.names
-  libraries/base-4.7.0.0/Foreign/C.names
-  libraries/base-4.7.0.0/Foreign/Safe.names
-  libraries/base-4.7.0.0/Foreign/ForeignPtr/Safe.names
-  libraries/base-4.7.0.0/Foreign/ForeignPtr/Imp.names
-  libraries/base-4.7.0.0/Foreign/ForeignPtr/Unsafe.names
-  libraries/base-4.7.0.0/Foreign/Marshal/Safe.names
-  libraries/base-4.7.0.0/Foreign/Marshal/Alloc.names
-  libraries/base-4.7.0.0/Foreign/Marshal/Utils.names
-  libraries/base-4.7.0.0/Foreign/Marshal/Unsafe.names
-  libraries/base-4.7.0.0/Foreign/Marshal/Array.names
-  libraries/base-4.7.0.0/Foreign/Marshal/Error.names
-  libraries/base-4.7.0.0/Foreign/Marshal/Pool.names
-  libraries/base-4.7.0.0/Foreign/C/String.names
-  libraries/base-4.7.0.0/Foreign/C/Types.names
-  libraries/base-4.7.0.0/Foreign/C/Error.names
-  libraries/base-4.7.0.0/Foreign/StablePtr.names
-  libraries/base-4.7.0.0/Foreign/Concurrent.names
-  libraries/base-4.7.0.0/Foreign/ForeignPtr.names
-  libraries/base-4.7.0.0/Foreign/Marshal.names
-  libraries/base-4.7.0.0/Foreign/Storable.names
-  libraries/base-4.7.0.0/Foreign/Ptr.names
-  libraries/base-4.7.0.0/Debug/Trace.names
-  libraries/base-4.7.0.0/Unsafe/Coerce.names
+  data/baseEnvironment/Control.Applicative.symbols
+  data/baseEnvironment/Control.Arrow.symbols
+  data/baseEnvironment/Control.Category.symbols
+  data/baseEnvironment/Control.Concurrent.Chan.symbols
+  data/baseEnvironment/Control.Concurrent.MVar.symbols
+  data/baseEnvironment/Control.Concurrent.QSem.symbols
+  data/baseEnvironment/Control.Concurrent.QSemN.symbols
+  data/baseEnvironment/Control.Concurrent.symbols
+  data/baseEnvironment/Control.Exception.Base.symbols
+  data/baseEnvironment/Control.Exception.symbols
+  data/baseEnvironment/Control.Monad.Fix.symbols
+  data/baseEnvironment/Control.Monad.Instances.symbols
+  data/baseEnvironment/Control.Monad.ST.Imp.symbols
+  data/baseEnvironment/Control.Monad.ST.Lazy.Imp.symbols
+  data/baseEnvironment/Control.Monad.ST.Lazy.Safe.symbols
+  data/baseEnvironment/Control.Monad.ST.Lazy.Unsafe.symbols
+  data/baseEnvironment/Control.Monad.ST.Lazy.symbols
+  data/baseEnvironment/Control.Monad.ST.Safe.symbols
+  data/baseEnvironment/Control.Monad.ST.Strict.symbols
+  data/baseEnvironment/Control.Monad.ST.Unsafe.symbols
+  data/baseEnvironment/Control.Monad.ST.symbols
+  data/baseEnvironment/Control.Monad.Zip.symbols
+  data/baseEnvironment/Control.Monad.symbols
+  data/baseEnvironment/Data.Bits.symbols
+  data/baseEnvironment/Data.Bool.symbols
+  data/baseEnvironment/Data.Char.symbols
+  data/baseEnvironment/Data.Complex.symbols
+  data/baseEnvironment/Data.Data.symbols
+  data/baseEnvironment/Data.Dynamic.symbols
+  data/baseEnvironment/Data.Either.symbols
+  data/baseEnvironment/Data.Eq.symbols
+  data/baseEnvironment/Data.Fixed.symbols
+  data/baseEnvironment/Data.Foldable.symbols
+  data/baseEnvironment/Data.Function.symbols
+  data/baseEnvironment/Data.Functor.symbols
+  data/baseEnvironment/Data.IORef.symbols
+  data/baseEnvironment/Data.Int.symbols
+  data/baseEnvironment/Data.Ix.symbols
+  data/baseEnvironment/Data.List.symbols
+  data/baseEnvironment/Data.Maybe.symbols
+  data/baseEnvironment/Data.Monoid.symbols
+  data/baseEnvironment/Data.OldTypeable.Internal.symbols
+  data/baseEnvironment/Data.OldTypeable.symbols
+  data/baseEnvironment/Data.Ord.symbols
+  data/baseEnvironment/Data.Ratio.symbols
+  data/baseEnvironment/Data.STRef.Lazy.symbols
+  data/baseEnvironment/Data.STRef.Strict.symbols
+  data/baseEnvironment/Data.STRef.symbols
+  data/baseEnvironment/Data.String.symbols
+  data/baseEnvironment/Data.Traversable.symbols
+  data/baseEnvironment/Data.Tuple.symbols
+  data/baseEnvironment/Data.Typeable.Internal.symbols
+  data/baseEnvironment/Data.Typeable.symbols
+  data/baseEnvironment/Data.Unique.symbols
+  data/baseEnvironment/Data.Version.symbols
+  data/baseEnvironment/Data.Word.symbols
+  data/baseEnvironment/Debug.Trace.symbols
+  data/baseEnvironment/Foreign.C.Error.symbols
+  data/baseEnvironment/Foreign.C.String.symbols
+  data/baseEnvironment/Foreign.C.Types.symbols
+  data/baseEnvironment/Foreign.C.symbols
+  data/baseEnvironment/Foreign.Concurrent.symbols
+  data/baseEnvironment/Foreign.ForeignPtr.Imp.symbols
+  data/baseEnvironment/Foreign.ForeignPtr.Safe.symbols
+  data/baseEnvironment/Foreign.ForeignPtr.Unsafe.symbols
+  data/baseEnvironment/Foreign.ForeignPtr.symbols
+  data/baseEnvironment/Foreign.Marshal.Alloc.symbols
+  data/baseEnvironment/Foreign.Marshal.Array.symbols
+  data/baseEnvironment/Foreign.Marshal.Error.symbols
+  data/baseEnvironment/Foreign.Marshal.Pool.symbols
+  data/baseEnvironment/Foreign.Marshal.Safe.symbols
+  data/baseEnvironment/Foreign.Marshal.Unsafe.symbols
+  data/baseEnvironment/Foreign.Marshal.Utils.symbols
+  data/baseEnvironment/Foreign.Marshal.symbols
+  data/baseEnvironment/Foreign.Ptr.symbols
+  data/baseEnvironment/Foreign.Safe.symbols
+  data/baseEnvironment/Foreign.StablePtr.symbols
+  data/baseEnvironment/Foreign.Storable.symbols
+  data/baseEnvironment/Foreign.symbols
+  data/baseEnvironment/GHC.Arr.symbols
+  data/baseEnvironment/GHC.Base.symbols
+  data/baseEnvironment/GHC.CString.symbols
+  data/baseEnvironment/GHC.Char.symbols
+  data/baseEnvironment/GHC.Classes.symbols
+  data/baseEnvironment/GHC.Conc.IO.symbols
+  data/baseEnvironment/GHC.Conc.Signal.symbols
+  data/baseEnvironment/GHC.Conc.Sync.symbols
+  data/baseEnvironment/GHC.Conc.symbols
+  data/baseEnvironment/GHC.ConsoleHandler.symbols
+  data/baseEnvironment/GHC.Constants.symbols
+  data/baseEnvironment/GHC.Debug.symbols
+  data/baseEnvironment/GHC.Desugar.symbols
+  data/baseEnvironment/GHC.Enum.symbols
+  data/baseEnvironment/GHC.Environment.symbols
+  data/baseEnvironment/GHC.Err.symbols
+  data/baseEnvironment/GHC.Event.Array.symbols
+  data/baseEnvironment/GHC.Event.Clock.symbols
+  data/baseEnvironment/GHC.Event.Control.symbols
+  data/baseEnvironment/GHC.Event.EPoll.symbols
+  data/baseEnvironment/GHC.Event.IntMap.symbols
+  data/baseEnvironment/GHC.Event.Internal.symbols
+  data/baseEnvironment/GHC.Event.KQueue.symbols
+  data/baseEnvironment/GHC.Event.Manager.symbols
+  data/baseEnvironment/GHC.Event.PSQ.symbols
+  data/baseEnvironment/GHC.Event.Poll.symbols
+  data/baseEnvironment/GHC.Event.Thread.symbols
+  data/baseEnvironment/GHC.Event.TimerManager.symbols
+  data/baseEnvironment/GHC.Event.Unique.symbols
+  data/baseEnvironment/GHC.Event.symbols
+  data/baseEnvironment/GHC.Exception.symbols
+  data/baseEnvironment/GHC.Exts.symbols
+  data/baseEnvironment/GHC.Fingerprint.Type.symbols
+  data/baseEnvironment/GHC.Fingerprint.symbols
+  data/baseEnvironment/GHC.Float.ConversionUtils.symbols
+  data/baseEnvironment/GHC.Float.RealFracMethods.symbols
+  data/baseEnvironment/GHC.Float.symbols
+  data/baseEnvironment/GHC.Foreign.symbols
+  data/baseEnvironment/GHC.ForeignPtr.symbols
+  data/baseEnvironment/GHC.GHCi.symbols
+  data/baseEnvironment/GHC.Generics.symbols
+  data/baseEnvironment/GHC.IO.Buffer.symbols
+  data/baseEnvironment/GHC.IO.BufferedIO.symbols
+  data/baseEnvironment/GHC.IO.Device.symbols
+  data/baseEnvironment/GHC.IO.Encoding.CodePage.symbols
+  data/baseEnvironment/GHC.IO.Encoding.Failure.symbols
+  data/baseEnvironment/GHC.IO.Encoding.Iconv.symbols
+  data/baseEnvironment/GHC.IO.Encoding.Latin1.symbols
+  data/baseEnvironment/GHC.IO.Encoding.Types.symbols
+  data/baseEnvironment/GHC.IO.Encoding.UTF16.symbols
+  data/baseEnvironment/GHC.IO.Encoding.UTF32.symbols
+  data/baseEnvironment/GHC.IO.Encoding.UTF8.symbols
+  data/baseEnvironment/GHC.IO.Encoding.symbols
+  data/baseEnvironment/GHC.IO.Exception.symbols
+  data/baseEnvironment/GHC.IO.FD.symbols
+  data/baseEnvironment/GHC.IO.Handle.FD.symbols
+  data/baseEnvironment/GHC.IO.Handle.Internals.symbols
+  data/baseEnvironment/GHC.IO.Handle.Text.symbols
+  data/baseEnvironment/GHC.IO.Handle.Types.symbols
+  data/baseEnvironment/GHC.IO.Handle.symbols
+  data/baseEnvironment/GHC.IO.IOMode.symbols
+  data/baseEnvironment/GHC.IO.symbols
+  data/baseEnvironment/GHC.IOArray.symbols
+  data/baseEnvironment/GHC.IORef.symbols
+  data/baseEnvironment/GHC.IP.symbols
+  data/baseEnvironment/GHC.Int.symbols
+  data/baseEnvironment/GHC.IntWord64.symbols
+  data/baseEnvironment/GHC.Integer.Logarithms.Internals.symbols
+  data/baseEnvironment/GHC.Integer.Logarithms.symbols
+  data/baseEnvironment/GHC.Integer.Simple.Internals.symbols
+  data/baseEnvironment/GHC.Integer.Type.symbols
+  data/baseEnvironment/GHC.Integer.symbols
+  data/baseEnvironment/GHC.List.symbols
+  data/baseEnvironment/GHC.MVar.symbols
+  data/baseEnvironment/GHC.Magic.symbols
+  data/baseEnvironment/GHC.Num.symbols
+  data/baseEnvironment/GHC.PArr.symbols
+  data/baseEnvironment/GHC.Pack.symbols
+  data/baseEnvironment/GHC.Prim.symbols
+  data/baseEnvironment/GHC.PrimopWrappers.symbols
+  data/baseEnvironment/GHC.Profiling.symbols
+  data/baseEnvironment/GHC.Ptr.symbols
+  data/baseEnvironment/GHC.Read.symbols
+  data/baseEnvironment/GHC.Real.symbols
+  data/baseEnvironment/GHC.ST.symbols
+  data/baseEnvironment/GHC.STRef.symbols
+  data/baseEnvironment/GHC.Show.symbols
+  data/baseEnvironment/GHC.Stable.symbols
+  data/baseEnvironment/GHC.Stack.symbols
+  data/baseEnvironment/GHC.Stats.symbols
+  data/baseEnvironment/GHC.Storable.symbols
+  data/baseEnvironment/GHC.TopHandler.symbols
+  data/baseEnvironment/GHC.Tuple.symbols
+  data/baseEnvironment/GHC.TypeLits.symbols
+  data/baseEnvironment/GHC.Types.symbols
+  data/baseEnvironment/GHC.Unicode.symbols
+  data/baseEnvironment/GHC.Weak.symbols
+  data/baseEnvironment/GHC.Word.symbols
+  data/baseEnvironment/Numeric.symbols
+  data/baseEnvironment/Prelude.symbols
+  data/baseEnvironment/System.CPUTime.symbols
+  data/baseEnvironment/System.Console.GetOpt.symbols
+  data/baseEnvironment/System.Environment.ExecutablePath.symbols
+  data/baseEnvironment/System.Environment.symbols
+  data/baseEnvironment/System.Exit.symbols
+  data/baseEnvironment/System.IO.Error.symbols
+  data/baseEnvironment/System.IO.Unsafe.symbols
+  data/baseEnvironment/System.IO.symbols
+  data/baseEnvironment/System.Info.symbols
+  data/baseEnvironment/System.Mem.StableName.symbols
+  data/baseEnvironment/System.Mem.Weak.symbols
+  data/baseEnvironment/System.Mem.symbols
+  data/baseEnvironment/System.Posix.Internals.symbols
+  data/baseEnvironment/System.Posix.Types.symbols
+  data/baseEnvironment/System.Timeout.symbols
+  data/baseEnvironment/Text.ParserCombinators.ReadP.symbols
+  data/baseEnvironment/Text.ParserCombinators.ReadPrec.symbols
+  data/baseEnvironment/Text.Printf.symbols
+  data/baseEnvironment/Text.Read.Lex.symbols
+  data/baseEnvironment/Text.Read.symbols
+  data/baseEnvironment/Text.Show.Functions.symbols
+  data/baseEnvironment/Text.Show.symbols
+  data/baseEnvironment/Unsafe.Coerce.symbols
+
 
 source-repository head
   type:     git
@@ -257,28 +234,23 @@ Library
   Default-Language: Haskell2010
   Build-depends:
       base >= 4 && < 5
-    , haskell-src-exts >= 1.17
-    , mtl
-    , transformers
-    , filepath >= 1.1
-    , containers >= 0.2
-    , hse-cpp
-    , uniplate >= 1.5.1
-    , aeson
-    , bytestring
-    , haskell-packages >= 0.2
-    , data-lens-light
-    , tagged
-    , traverse-with-class
-    , type-eq >= 0.4.2
-    , Cabal >= 1.14
+    , haskell-src-exts >= 1.17 && < 1.18
+    , mtl >= 2.2.1 && < 2.3
+    , transformers >=0.4.2.0 && < 0.5
+    , filepath >= 1.1 && < 1.5
+    , containers >= 0.2 && < 0.6
+    , uniplate >= 1.5.1 && < 1.7
+    , aeson >= 0.8.0.2 && < 0.11
+    , bytestring >= 0.10.4.0 && < 0.11
+    , data-lens-light >= 0.1.2.1 && < 0.2
+    , traverse-with-class >= 0.2.0.3 && < 0.3
   Hs-source-dirs:       src
   Ghc-options:          -Wall -fno-warn-name-shadowing
 
   Exposed-modules:      Language.Haskell.Names
                         Language.Haskell.Names.Open
                         Language.Haskell.Names.Annotated
-                        Language.Haskell.Names.Interfaces
+                        Language.Haskell.Names.Environment
                         Language.Haskell.Names.GlobalSymbolTable
                         Language.Haskell.Names.LocalSymbolTable
                         Language.Haskell.Names.Imports
@@ -306,23 +278,14 @@ Test-suite test
     run.hs
   Build-depends:
       base >= 4 && < 5
-    , haskell-src-exts >= 1.17
-    , mtl
-    , filepath >= 1.1
-    , containers >= 0.2
-    , hse-cpp
-    , uniplate >= 1.5.1
-    , aeson
-    , bytestring
-    , haskell-packages
-    , tasty
-    , tasty-golden >= 2.2.1
-    , filemanip
-    , utf8-string
-      -- we have to fix the pretty-show version, because the change in the
-      -- output format may affect the tests success
+    , haskell-src-exts >= 1.17 && < 1.18
+    , mtl >= 2.2.1 && < 2.3
+    , filepath >= 1.1 && <1.5
+    , containers >= 0.2 && < 0.6
+    , tasty >= 0.10.1.2 && < 0.12
+    , tasty-golden >= 2.2.1 && < 2.4
+    , filemanip >= 0.3.6.3 && < 0.4
     , pretty-show >= 1.6.1 && < 1.7
-    , Cabal
-    , haskell-names
-    , tagged
-    , traverse-with-class
+    , traverse-with-class >= 0.2.0.3 && < 0.3
+    , haskell-names >= 0.6.0 && < 0.7
+

@@ -5,6 +5,7 @@ Version 0.6.0
 -------------
 
 * Use haskell-src-exts 1.17
+* Remove dependency on haskell-packages
 
 Version 0.5.3
 ------------

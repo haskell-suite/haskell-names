@@ -69,6 +69,8 @@ instance (Data l) => GetBound (Decl l) l where
       AnnPragma{} -> []
       InlineConlikeSig{} -> []
       MinimalPragma{} -> []
+      -- TODO view patterns, pattern synonyms, role annotations
+      _ -> []
 
 instance (Data l) => GetBound (QualConDecl l) l where
     getBound ctx (QualConDecl _ _ _ d) = getBound ctx d

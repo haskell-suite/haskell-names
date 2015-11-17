@@ -1,6 +1,7 @@
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 {-# LANGUAGE FlexibleContexts, FlexibleInstances, TemplateHaskell,
-             MultiParamTypeClasses, UndecidableInstances, RankNTypes #-}
+             MultiParamTypeClasses, UndecidableInstances, RankNTypes,
+             OverlappingInstances #-}
 {-# LANGUAGE ImplicitParams #-}
 
 -- MonoLocalBinds extension prevents premature generalization, which

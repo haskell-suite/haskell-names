@@ -6,13 +6,11 @@ import Language.Haskell.Exts
 import qualified Language.Haskell.Exts.Annotated as Ann
 import Data.Typeable
 import Data.Data
-import qualified Data.Set as Set
 import Data.Foldable as F
 import Data.Traversable
 import Data.Map (Map)
 import Text.Printf
 
-type ExtensionSet = Set.Set KnownExtension
 
 -- | Information about an entity. Carries at least the module it was originally
 -- declared in and its name.
@@ -74,6 +72,9 @@ data Symbol
       }
       -- ^ type class
     deriving (Eq, Ord, Show, Data, Typeable)
+
+-- | A map from module name to list of symbols it exports.
+type Environment = Map ModuleName [Symbol]
 
 -- | A pair of the name information and original annotation. Used as an
 -- annotation type for AST.

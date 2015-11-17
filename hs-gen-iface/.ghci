@@ -1,2 +1,0 @@
-:set -isrc -idist/build/autogen
-:set -Wall -fno-warn-name-shadowing

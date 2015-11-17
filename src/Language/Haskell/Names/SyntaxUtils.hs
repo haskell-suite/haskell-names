@@ -19,14 +19,10 @@ module Language.Haskell.Names.SyntaxUtils
   , nameToQName
   , unCName
   , getErrors
-    -- export ExtensionSet here for the outside users
-  , ExtensionSet
-  , moduleExtensions
   , getModuleExtensions
   ) where
 import Prelude hiding (concatMap)
 import Data.Char
-import Data.Maybe
 import Data.Either
 import Data.Foldable hiding (elem)
 import qualified Data.Set as Set
@@ -49,7 +45,7 @@ nameQualification (UnQual _ _) =
   Nothing
 nameQualification (Special _ _) =
   Nothing
-nameQualification (Qual _ (ModuleName l moduleName) _) =
+nameQualification (Qual _ (ModuleName _ moduleName) _) =
   Just (UnAnn.ModuleName moduleName)
 
 getModuleName :: Module l -> ModuleName l
@@ -160,20 +156,6 @@ getErrors = foldl' f Set.empty
     f errors (Scoped (ScopeError e) _) = Set.insert e errors
     f errors _ = errors
 
--- | Compute the extension set for the given module, based on the global
--- preferences (e.g. specified on the command line) and module's LANGUAGE
--- pragmas.
-moduleExtensions
-  :: Language    -- ^ base language
-  -> [Extension] -- ^ global extensions
-  -> Module l
-  -> ExtensionSet
-moduleExtensions globalLang globalExts mod =
-  let
-    (mbModLang, modExts) = getModuleExtensions mod
-    lang = fromMaybe globalLang mbModLang
-    kexts = toExtensionList lang (globalExts ++ modExts)
-  in Set.fromList kexts
 
 getModuleExtensions :: Module l -> (Maybe Language, [Extension])
 getModuleExtensions mod =

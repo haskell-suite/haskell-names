@@ -7,8 +7,9 @@
 module Language.Haskell.Names.Annotated
   ( Scoped(..)
   , NameInfo(..)
-  , annotate
+  , annotateDecl
   ) where
+
 
 import Language.Haskell.Names.Types
 import Language.Haskell.Names.RecordWildcards
@@ -22,18 +23,17 @@ import Language.Haskell.Exts.Annotated
 import qualified Language.Haskell.Exts.Syntax as UnAnn
 import Data.Proxy
 import Data.Lens.Light
-import Data.Typeable (Typeable)
+import Data.Typeable (
+  Typeable, (:~:)(Refl), eqT)
   -- in GHC 7.8 Data.Typeable exports (:~:). Be careful to avoid the clash.
 import Control.Applicative
 
--- This should be incorporated into Data.Typeable soon
-import Type.Eq
 
-annotate
+annotateDecl
   :: forall a l .
      (Resolvable (a (Scoped l)), Functor a, Typeable l)
   => Scope -> a l -> a (Scoped l)
-annotate sc = annotateRec (Proxy :: Proxy l) sc . fmap (Scoped None)
+annotateDecl sc = annotateRec (Proxy :: Proxy l) sc . fmap (Scoped None)
 
 annotateRec
   :: forall a l .
@@ -43,24 +43,24 @@ annotateRec _ sc a = go sc a where
   go :: forall a . Resolvable a => Scope -> a -> a
   go sc a
     | ReferenceV <- getL nameCtx sc
-    , Just (Eq :: QName (Scoped l) :~: a) <- dynamicEq
+    , Just (Refl :: QName (Scoped l) :~: a) <- eqT
       = lookupValue (fmap sLoc a) sc <$ a
     | ReferenceT <- getL nameCtx sc
-    , Just (Eq :: QName (Scoped l) :~: a) <- dynamicEq
+    , Just (Refl :: QName (Scoped l) :~: a) <- eqT
       = lookupType (fmap sLoc a) sc <$ a
     | ReferenceUV <- getL nameCtx sc
-    , Just (Eq :: Name (Scoped l) :~: a) <- dynamicEq
+    , Just (Refl :: Name (Scoped l) :~: a) <- eqT
       = lookupMethod (fmap sLoc a) sc <$ a
     | ReferenceUT <- getL nameCtx sc
-    , Just (Eq :: QName (Scoped l) :~: a) <- dynamicEq
+    , Just (Refl :: QName (Scoped l) :~: a) <- eqT
       = lookupAssociatedType (fmap sLoc a) sc <$ a
     | BindingV <- getL nameCtx sc
-    , Just (Eq :: Name (Scoped l) :~: a) <- dynamicEq
+    , Just (Refl :: Name (Scoped l) :~: a) <- eqT
       = Scoped ValueBinder (sLoc . ann $ a) <$ a
     | BindingT <- getL nameCtx sc
-    , Just (Eq :: Name (Scoped l) :~: a) <- dynamicEq
+    , Just (Refl :: Name (Scoped l) :~: a) <- eqT
       = Scoped TypeBinder (sLoc . ann $ a) <$ a
-    | Just (Eq :: FieldUpdate (Scoped l) :~: a) <- dynamicEq
+    | Just (Refl :: FieldUpdate (Scoped l) :~: a) <- eqT
       = case a of
           FieldPun l n -> FieldPun l (lookupValue (sLoc <$> n) sc <$ n)
           FieldWildcard l -> FieldWildcard (Scoped (RecExpWildcard namesRes) (sLoc l)) where
@@ -72,7 +72,7 @@ annotateRec _ sc a = go sc a where
                     Scoped info@(LocalValue _) _ -> return (wcFieldName f,info)
                     _ -> []
           _ -> rmap go sc a
-    | Just (Eq :: PatField (Scoped l) :~: a) <- dynamicEq
+    | Just (Refl :: PatField (Scoped l) :~: a) <- eqT
     , PFieldWildcard l <- a
       = let
             namesRes = do
