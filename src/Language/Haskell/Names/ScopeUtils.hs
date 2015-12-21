@@ -25,6 +25,8 @@ symbolParent :: Symbol -> Maybe Name
 symbolParent (Selector { typeName = n }) = Just n
 symbolParent (Constructor { typeName = n }) = Just n
 symbolParent (Method { className = n }) = Just n
+symbolParent (TypeFam { associate = as }) = as
+symbolParent (DataFam { associate = as }) = as
 symbolParent _ = Nothing
 
 computeSymbolTable

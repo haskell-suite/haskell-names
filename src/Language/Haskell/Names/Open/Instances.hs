@@ -1,6 +1,7 @@
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 {-# LANGUAGE FlexibleContexts, FlexibleInstances, TemplateHaskell,
-             MultiParamTypeClasses, UndecidableInstances, RankNTypes #-}
+             MultiParamTypeClasses, UndecidableInstances, RankNTypes,
+             OverlappingInstances #-}
 {-# LANGUAGE ImplicitParams #-}
 
 -- MonoLocalBinds extension prevents premature generalization, which
@@ -68,7 +69,24 @@ instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (Decl l) where
           <| sc       -: assoc
           <| sc       -: mp
           <| exprV sc -: ops
+      InstDecl l mOverlap rule mInstDecls ->
+        let sc' = instQ (nameQualification (instanceRuleClass rule)) sc
+        in c InstDecl
+          <| sc'       -: l
+          <| sc'       -: mOverlap
+          <| sc'       -: rule
+          <| sc'       -: mInstDecls
       _ -> defaultRtraverse e sc
+
+instanceRuleClass :: InstRule l -> QName l
+instanceRuleClass (IParen _ instRule) = instanceRuleClass instRule
+instanceRuleClass (IRule _ _ _ instHead) = instanceHeadClass instHead
+
+instanceHeadClass :: InstHead l -> QName l
+instanceHeadClass (IHCon _ qn) = qn
+instanceHeadClass (IHInfix _ _ qn) = qn
+instanceHeadClass (IHParen _ instHead) = instanceHeadClass instHead
+instanceHeadClass (IHApp _ instHead _) = instanceHeadClass instHead
 
 instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (Type l) where
   rtraverse e sc = defaultRtraverse e (exprT sc)

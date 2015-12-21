@@ -1,19 +1,25 @@
 module Main where
 
-import Language.Haskell.Exts.Annotated
-import qualified Language.Haskell.Exts as UnAnn (Name(Ident))
-import Language.Haskell.Names
-import Language.Haskell.Names.Interfaces
-import Distribution.HaskellSuite
-import Distribution.Simple.Compiler
+import Language.Haskell.Exts.Annotated (
+  fromParseResult, parseModuleWithMode, defaultParseMode,
+  parseFilename, prettyPrint, srcInfoSpan)
+import Language.Haskell.Exts (
+  Name(Ident), ModuleName(ModuleName))
+import Language.Haskell.Names (
+  loadBase, annotate, symbolName,
+  Scoped(Scoped), NameInfo(GlobalSymbol))
 
-import Data.Maybe
-import Data.List
-import Data.Proxy
-import qualified Data.Foldable as Foldable
-import Text.Printf
-import Control.Applicative
-import Control.Monad
+import qualified Data.Map as Map (
+  lookup)
+
+import Data.Maybe (
+  fromMaybe, listToMaybe)
+import Data.List (
+  nub)
+import qualified Data.Foldable as Foldable (
+  toList)
+import Control.Monad (
+  forM_, guard)
 
 main :: IO ()
 main = do
@@ -21,57 +27,39 @@ main = do
   -- read the program's source from stdin
   source <- getContents
 
-  let
-    -- parse the program (using haskell-src-exts)
-    ast = fromParseResult $
-      parseModuleWithMode defaultParseMode {parseFilename="stdin"} source
+  -- parse the program (using haskell-src-exts)
+  let ast = fromParseResult (
+        parseModuleWithMode defaultParseMode {parseFilename="stdin"} source)
 
-  -- get all installed packages (user and global)
-  pkgs <-
-    (++) <$>
-      getInstalledPackages (Proxy :: Proxy NamesDB) UserPackageDB <*>
-      getInstalledPackages (Proxy :: Proxy NamesDB) GlobalPackageDB
+  -- get base environment
+  baseEnvironment <- loadBase
 
-  headUsages <- evalNamesModuleT (findHeads ast) pkgs
+  -- get symbols defined in prelude
+  let preludeSymbols = fromMaybe (error "Prelude not found") (
+        Map.lookup (ModuleName "Prelude") baseEnvironment)
 
-  forM_ headUsages $ \loc ->
-    printf "Prelude.head is used at %s\n" (prettyPrint $ srcInfoSpan loc)
+  -- find a Prelude symbol with name 'head' using the List monad
+  let headSymbol = fromMaybe (error "Prelude.head not found") (
+        listToMaybe (do
+          preludeSymbol <- preludeSymbols
+          guard (symbolName preludeSymbol == Ident "head")
+          return preludeSymbol))
 
-  when (null headUsages) $
-    printf "Congratulations! Your code doesn't use Prelude.head\n"
+  -- annotate the AST
+  let annotatedAST = annotate baseEnvironment ast
 
--- this is a computation in a ModuleT monad, because we need access to
--- modules' interfaces
-findHeads :: Module SrcSpanInfo -> ModuleT [Symbol] IO [SrcSpanInfo]
-findHeads ast = do
-  -- first of all, figure out the canonical name of "Prelude.head"
-  -- (hint: it's "GHC.List.head")
-  symbols <- fromMaybe (error "Prelude not found") <$> getModuleInfo "Prelude"
-  let
-    -- we walk through all values defined in Prelude and look for
-    -- one with name "head"
-    headSymbol =
-      fromMaybe (error "Prelude.head not found") (listToMaybe (do
-        symbol <- symbols
-        guard (symbolName symbol == UnAnn.Ident "head")
-        return symbol))
+  -- get all annotations
+  let annotations = Foldable.toList annotatedAST
 
-  -- annotate our ast with name binding information
-  annotatedAst <-
-    annotateModule
-      Haskell2010 -- base language
-      []          -- set of extensions
-      ast
+  -- filter head Usages in List monad and remove duplicates
+  let headUsages = nub (do
+        Scoped (GlobalSymbol globalSymbol _) location <- annotations
+        guard (globalSymbol == headSymbol)
+        return location)
 
+  case headUsages of
+    [] ->
+      putStrLn "Congratulations! Your code doesn't use Prelude.head"
+    _ -> forM_ headUsages (\location ->
+      putStrLn ("Prelude.head is used at " ++ (prettyPrint (srcInfoSpan location))))
 
-  let
-    -- get list of all annotations
-    annotations = Foldable.toList annotatedAst
-
-    -- look for headSymbol
-    headUsages = nub (do
-      Scoped (GlobalSymbol globalSymbol _) location <- annotations
-      guard (globalSymbol == headSymbol)
-      return location)
-
-  return headUsages

@@ -1,133 +1,145 @@
 {-# LANGUAGE TypeFamilies #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-} -- ModName (ModuleName l)
 module Language.Haskell.Names.Imports
-  ( processImport
-  , processImports
+  ( importTable
+  , annotateImportDecls
   )
   where
 
-import qualified Data.Set as Set
 import Data.Monoid
 import Data.Maybe
 import Data.Either
-import Data.Foldable (fold)
 import Control.Applicative
-import Control.Arrow
+
 import Control.Monad.Writer
-import Distribution.HaskellSuite.Modules
-import qualified Language.Haskell.Exts as UnAnn (ModuleName(ModuleName))
-import Language.Haskell.Exts.Annotated.Simplify (sName,sModuleName)
+import Data.Map as Map (lookup)
+import qualified Language.Haskell.Exts as UnAnn (
+  ModuleName(ModuleName))
+import Language.Haskell.Exts.Annotated.Simplify (
+  sName,sModuleName)
 import Language.Haskell.Exts.Annotated (
-    ModuleName(ModuleName),ImportDecl(..),KnownExtension(ImplicitPrelude),
-    ann,ImportSpecList(..),ImportSpec(..),Name(..),
-    Annotated,Namespace(NoNamespace,TypeNamespace))
+  Module(Module), ModuleName,ImportDecl(..),
+  ann,ImportSpecList(..),ImportSpec(..),Name(..),
+  Annotated)
+import Language.Haskell.Exts.Extension (
+  Extension(DisableExtension), KnownExtension(ImplicitPrelude))
 import Language.Haskell.Names.Types
 import Language.Haskell.Names.ScopeUtils
 import qualified Language.Haskell.Names.GlobalSymbolTable as Global
 import Language.Haskell.Names.SyntaxUtils
 import Data.List ((\\))
 
-instance ModName (ModuleName l) where
-  modToString (ModuleName _ s) = s
 
-preludeName :: String
-preludeName = "Prelude"
+-- | Compute a table of symbols imported by the given module from the given
+-- environment.
+importTable :: Environment -> Module l -> Global.Table
+importTable environment modul =
+  foldr Global.mergeTables perhapsPrelude tables where
 
-processImports
-  :: (MonadModule m, ModuleInfo m ~ [Symbol])
-  => ExtensionSet
-  -> [ImportDecl l]
-  -> m ([ImportDecl (Scoped l)], Global.Table)
-processImports exts importDecls = do
+    tables = map (importDeclTable environment) importDecls
+    Module _ _ _ importDecls _ = modul
 
-  (annotated,tables) <- mapM processImport importDecls >>= return . unzip
-  let tbl = foldr Global.mergeTables Global.empty tables
+    perhapsPrelude = if noImplicitPrelude
+      then Global.empty
+      else computeSymbolTable False preludeModuleName preludeSymbols
+    noImplicitPrelude =
+      DisableExtension ImplicitPrelude `elem` extensions || isPreludeImported
+    isPreludeImported = not (null (do
+      importDecl <- importDecls
+      guard (sModuleName (importModule importDecl) == preludeModuleName)))
+    preludeSymbols = fromMaybe [] (Map.lookup preludeModuleName environment)
+    (_, extensions) = getModuleExtensions modul
 
-  let
-    isPreludeImported = not . null $
-      [ () | ImportDecl { importModule = ModuleName _ modName } <- importDecls
-           , modName == preludeName ]
+preludeModuleName :: UnAnn.ModuleName
+preludeModuleName = UnAnn.ModuleName "Prelude"
 
-    importPrelude =
-      ImplicitPrelude `Set.member` exts &&
-      not isPreludeImported
+importDeclTable :: Environment -> ImportDecl l -> Global.Table
+importDeclTable environment importDecl =
+  computeSymbolTable isQualified moduleName importSymbols where
+    ImportDecl _ importModuleName isQualified _ _ _ maybeAs maybeImportSpecList =
+      importDecl
+    moduleName = sModuleName (fromMaybe importModuleName maybeAs)
+    importSymbols = case maybeImportSpecList of
+      Nothing ->
+        importModuleSymbols
+      Just importSpecList ->
+        importSpecListSymbols importModuleName importModuleSymbols importSpecList
+    importModuleSymbols = fromMaybe [] (
+      Map.lookup (sModuleName importModuleName) environment)
 
-  tbl' <-
-    if not importPrelude
-      then return tbl
-      else do
-        -- FIXME currently we don't have a way to signal an error when
-        -- Prelude cannot be found
-        syms <- fold `liftM` getModuleInfo preludeName
-        return $ Global.mergeTables tbl (computeSymbolTable
-            False -- not qualified
-            (UnAnn.ModuleName preludeName)
-            syms)
 
-  return (annotated, tbl')
+importSpecListSymbols :: ModuleName l -> [Symbol] -> ImportSpecList l -> [Symbol]
+importSpecListSymbols importModuleName allSymbols importSpecList =
+  if isHiding
+    then allSymbols \\ mentionedSymbols
+    else mentionedSymbols where
+      ImportSpecList _ isHiding importSpecs = importSpecList
+      annotatedImportSpecs =
+        map (resolveImportSpec importModuleName isHiding allSymbols) importSpecs
+      mentionedSymbols =
+        mconcat (rights (map ann2syms annotatedImportSpecs))
 
-processImport
-  :: (MonadModule m, ModuleInfo m ~ [Symbol])
-  => ImportDecl l
-  -> m (ImportDecl (Scoped l), Global.Table)
-processImport imp = do
-  mbi <- getModuleInfo (importModule imp)
-  case mbi of
-    Nothing ->
-      let e = EModNotFound (importModule imp)
-      in return (scopeError e imp, Global.empty)
-    Just syms -> return $ resolveImportDecl syms imp
+-- | Annotate the given list of import declarations with scoping information
+-- against the given environment. We need the name of the module that contains
+-- the import declarations for error annotations.
+annotateImportDecls ::
+  ModuleName l -> Environment -> [ImportDecl l] -> [ImportDecl (Scoped l)]
+annotateImportDecls moduleName environment importDecls =
+  map (annotateImportDecl moduleName environment) importDecls
 
-resolveImportDecl
-  :: [Symbol]
-  -> ImportDecl l
-  -> (ImportDecl (Scoped l), Global.Table)
-resolveImportDecl syms (ImportDecl l mod qual src impSafe pkg mbAs mbSpecList) =
-  let
-    (mbSpecList', impSyms) =
-      (fmap fst &&& maybe syms snd) $
-        resolveImportSpecList mod syms <$> mbSpecList
-    tbl = computeSymbolTable qual (sModuleName (fromMaybe mod mbAs)) impSyms
-    info =
-      case mbSpecList' of
-        Just sl | Scoped (ScopeError e) _ <- ann sl ->
-          ScopeError e
-        _ -> Import tbl
-  in
-    (ImportDecl
-      (Scoped info l)
-      (Scoped (ImportPart syms) <$> mod)
-      qual
-      src
-      impSafe
-      pkg
-      (fmap noScope mbAs)
-      mbSpecList'
-    , tbl)
 
-resolveImportSpecList
-  :: ModuleName l
-  -> [Symbol]
-  -> ImportSpecList l
-  -> (ImportSpecList (Scoped l), [Symbol])
-resolveImportSpecList mod allSyms (ImportSpecList l isHiding specs) =
-  let specs' = map (resolveImportSpec mod isHiding allSyms) specs
-      mentionedSyms = mconcat $ rights $ map ann2syms specs'
-      importedSyms = computeImportedSymbols isHiding allSyms mentionedSyms
-      newAnn = Scoped (ImportPart importedSyms) l
-  in
-    (ImportSpecList newAnn isHiding specs', importedSyms)
+annotateImportDecl ::
+  ModuleName l -> Environment -> ImportDecl l -> ImportDecl (Scoped l)
+annotateImportDecl moduleName environment importDecl = importDecl' where
+  ImportDecl
+    l
+    importModuleName
+    isQualified
+    isSource
+    isSafe
+    importPackage
+    maybeAs
+    maybeImportSpecList = importDecl
 
--- | This function takes care of the possible 'hiding' clause
-computeImportedSymbols
-  :: Bool
-  -> [Symbol] -- ^ all symbols
-  -> [Symbol] -- ^ mentioned symbols
-  -> [Symbol] -- ^ imported symbols
-computeImportedSymbols isHiding allSymbols mentionedSymbols =
-  case isHiding of
-    False -> mentionedSymbols
-    True -> allSymbols \\ mentionedSymbols
+  importDecl' = case Map.lookup (sModuleName importModuleName) environment of
+    Nothing -> scopeError (EModNotFound importModuleName) importDecl
+    Just symbols ->
+      ImportDecl
+        l'
+        importModuleName'
+        isQualified
+        isSource
+        isSafe
+        importPackage
+        maybeAs'
+        maybeImportSpecList' where
+          l' = Scoped info l
+          importModuleName' = fmap (Scoped (ImportPart symbols)) importModuleName
+          maybeAs' = fmap noScope maybeAs
+          maybeImportSpecList' =
+            fmap (annotateImportSpecList moduleName symbols) maybeImportSpecList
+          info = case maybeImportSpecList' of
+            Just sl | Scoped (ScopeError e) _ <- ann sl ->
+              ScopeError e
+            _ -> Import table
+          table = computeSymbolTable isQualified qualificationName importSymbols
+          qualificationName = sModuleName (fromMaybe importModuleName maybeAs)
+          importSymbols =
+            maybe
+              symbols
+              (importSpecListSymbols moduleName symbols)
+              maybeImportSpecList
+
+
+annotateImportSpecList ::
+  ModuleName l -> [Symbol] -> ImportSpecList l -> ImportSpecList (Scoped l)
+annotateImportSpecList moduleName allSymbols importSpecList =
+  (ImportSpecList l' isHiding importSpecs') where
+    ImportSpecList l isHiding importSpecs = importSpecList
+    l' = Scoped (ImportPart importSymbols) l
+    importSpecs' = map (resolveImportSpec moduleName isHiding allSymbols) importSpecs
+    importSymbols = importSpecListSymbols moduleName allSymbols importSpecList
+
 
 resolveImportSpec
   :: ModuleName l
@@ -138,7 +150,7 @@ resolveImportSpec
 -- NB: this can be made more efficient
 resolveImportSpec mod isHiding symbols spec =
   case spec of
-    IVar _ (NoNamespace {}) n ->
+    IVar _ n ->
       let
         matches =
           -- Strictly speaking, the isConstructor check is unnecessary
@@ -154,8 +166,7 @@ resolveImportSpec mod isHiding symbols spec =
           matches
           spec
     -- FIXME think about data families etc.
-    IVar _ (TypeNamespace {}) _ -> error "'type' namespace is not supported yet" -- FIXME
-    IAbs _ n
+    IAbs _ _ n
       | isHiding ->
           -- This is a bit special. 'C' may match both types/classes and
           -- data constructors.

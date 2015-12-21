@@ -2,6 +2,7 @@ module Language.Haskell.Names.SyntaxUtils
   ( dropAnn
   , setAnn
   , annName
+  , nameQualification
   , getModuleName
   , getImports
   , getExportSpecList
@@ -18,14 +19,10 @@ module Language.Haskell.Names.SyntaxUtils
   , nameToQName
   , unCName
   , getErrors
-    -- export ExtensionSet here for the outside users
-  , ExtensionSet
-  , moduleExtensions
   , getModuleExtensions
   ) where
 import Prelude hiding (concatMap)
 import Data.Char
-import Data.Maybe
 import Data.Either
 import Data.Foldable hiding (elem)
 import qualified Data.Set as Set
@@ -42,6 +39,14 @@ setAnn l = fmap (const l)
 annName :: UnAnn.Name -> Name ()
 annName (UnAnn.Ident n) = Ident () n
 annName (UnAnn.Symbol n) = Symbol () n
+
+nameQualification :: QName l -> Maybe UnAnn.ModuleName
+nameQualification (UnQual _ _) =
+  Nothing
+nameQualification (Special _ _) =
+  Nothing
+nameQualification (Qual _ (ModuleName _ moduleName) _) =
+  Just (UnAnn.ModuleName moduleName)
 
 getModuleName :: Module l -> ModuleName l
 getModuleName (Module _ (Just (ModuleHead _ mn _ _)) _ _ _) = mn
@@ -65,7 +70,7 @@ getExportSpecList m = me where ModuleHead _ _ _ me = getModuleHead m
 getModuleHead :: Module l -> ModuleHead l
 getModuleHead (Module _ (Just mh) _ _ _) = mh
 getModuleHead (XmlHybrid _ (Just mh) _ _ _ _ _ _ _) = mh
-getModuleHead m = ModuleHead l (main_mod l) Nothing (Just (ExportSpecList l [EVar l (NoNamespace l) (UnQual l (Ident l "main"))]))
+getModuleHead m = ModuleHead l (main_mod l) Nothing (Just (ExportSpecList l [EVar l (UnQual l (Ident l "main"))]))
   where l = ann m
 
 qNameToName :: QName l -> Name l
@@ -151,20 +156,6 @@ getErrors = foldl' f Set.empty
     f errors (Scoped (ScopeError e) _) = Set.insert e errors
     f errors _ = errors
 
--- | Compute the extension set for the given module, based on the global
--- preferences (e.g. specified on the command line) and module's LANGUAGE
--- pragmas.
-moduleExtensions
-  :: Language    -- ^ base language
-  -> [Extension] -- ^ global extensions
-  -> Module l
-  -> ExtensionSet
-moduleExtensions globalLang globalExts mod =
-  let
-    (mbModLang, modExts) = getModuleExtensions mod
-    lang = fromMaybe globalLang mbModLang
-    kexts = toExtensionList lang (globalExts ++ modExts)
-  in Set.fromList kexts
 
 getModuleExtensions :: Module l -> (Maybe Language, [Extension])
 getModuleExtensions mod =

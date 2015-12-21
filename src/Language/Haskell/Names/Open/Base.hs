@@ -3,7 +3,7 @@
 --
 -- You can look at "Language.Haskell.Exts.Annotated" source as an example
 -- of how to use this module.
-{-# LANGUAGE RankNTypes, FlexibleInstances, FlexibleContexts, UndecidableInstances, DefaultSignatures, OverlappingInstances, TemplateHaskell, ScopedTypeVariables #-}
+{-# LANGUAGE RankNTypes, FlexibleInstances, FlexibleContexts, UndecidableInstances, DefaultSignatures, TemplateHaskell, ScopedTypeVariables #-}
 {-# LANGUAGE ImplicitParams, KindSignatures #-}
 module Language.Haskell.Names.Open.Base where
 
@@ -12,6 +12,7 @@ import qualified Language.Haskell.Names.LocalSymbolTable as Local
 import Language.Haskell.Names.GetBound
 import Language.Haskell.Names.RecordWildcards
 import Language.Haskell.Exts.Annotated
+import qualified Language.Haskell.Exts.Syntax as UnAnn
 import Control.Applicative
 import Control.Monad.Identity
 import Data.List
@@ -39,11 +40,15 @@ data NameContext
   | Other
 
 -- | Contains information about the node's enclosing scope. Can be
--- accessed through the lenses: 'gTable', 'lTable', 'nameCtx', 'wcNames'.
+-- accessed through the lenses: 'gTable', 'lTable', 'nameCtx',
+-- 'instanceQualification', 'wcNames'.
+-- If we enter an instance with a qualified class name we have to
+-- remember the qualification to resolve method names.
 data Scope = Scope
   { _gTable :: Global.Table
   , _lTable :: Local.Table
   , _nameCtx :: NameContext
+  , _instQual :: Maybe UnAnn.ModuleName
   , _wcNames :: WcNames
   }
 
@@ -51,7 +56,7 @@ makeLens ''Scope
 
 -- | Create an initial scope
 initialScope :: Global.Table -> Scope
-initialScope tbl = Scope tbl Local.empty Other []
+initialScope tbl = Scope tbl Local.empty Other Nothing []
 
 -- | Merge local tables of two scopes. The other fields of the scopes are
 -- assumed to be the same.
@@ -91,7 +96,7 @@ class Typeable a => Resolvable a where
     :: (Applicative f, ?alg :: Alg f)
     => a -> Scope -> f a
 
-instance (Typeable a, GTraversable Resolvable a) => Resolvable a where
+instance {-# OVERLAPPABLE #-} (Typeable a, GTraversable Resolvable a) => Resolvable a where
   rtraverse = defaultRtraverse
 
 -- | Analogous to 'gmap', but for 'Resolvable'
@@ -145,3 +150,6 @@ exprUV = setNameCtx ReferenceUV
 
 exprUT :: Scope -> Scope
 exprUT = setNameCtx ReferenceUT
+
+instQ :: Maybe UnAnn.ModuleName -> Scope -> Scope
+instQ m = setL instQual m

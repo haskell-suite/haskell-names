@@ -5,6 +5,8 @@ import qualified ExportListWildcards as ExportListWildcards
 
 import qualified DataFamilies as DataFamilies
 
+import Prelude
+
 data Rodor = Rodor
 
 x = ExportListWildcards.Foo1
@@ -14,4 +16,4 @@ instance ExportListWildcards.Bar Rodor where
 
 instance DataFamilies.ListLike Rodor where
     type I Rodor = Rodor
-    h _ = Rodor
+    method1 _ = Rodor

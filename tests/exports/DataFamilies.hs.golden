@@ -1,6 +1,7 @@
 [ DataFam
     { symbolModule = ModuleName "DataFamilies"
     , symbolName = Ident "Vector"
+    , associate = Nothing
     }
 , Class
     { symbolModule = ModuleName "DataFamilies"
@@ -9,11 +10,17 @@
 , TypeFam
     { symbolModule = ModuleName "DataFamilies"
     , symbolName = Ident "I"
+    , associate = Just (Ident "ListLike")
     }
 , Method
     { symbolModule = ModuleName "DataFamilies"
-    , symbolName = Ident "h"
+    , symbolName = Ident "method1"
     , className = Ident "ListLike"
+    }
+, DataFam
+    { symbolModule = ModuleName "DataFamilies"
+    , symbolName = Ident "Vector"
+    , associate = Nothing
     }
 , Constructor
     { symbolModule = ModuleName "DataFamilies"
