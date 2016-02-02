@@ -54,6 +54,9 @@ annotateRec _ sc a = go sc a where
     | ReferenceUT <- getL nameCtx sc
     , Just (Refl :: QName (Scoped l) :~: a) <- eqT
       = lookupAssociatedType (fmap sLoc a) sc <$ a
+    | SignatureV <- getL nameCtx sc
+    , Just (Refl :: Name (Scoped l) :~: a) <- eqT
+      = lookupTypeSignature (fmap sLoc a) sc <$ a
     | BindingV <- getL nameCtx sc
     , Just (Refl :: Name (Scoped l) :~: a) <- eqT
       = Scoped ValueBinder (sLoc . ann $ a) <$ a
@@ -128,6 +131,16 @@ lookupAssociatedType qn sc = Scoped nameInfo (ann qn)
     qn' = case qn of
         UnQual _ n -> qualifyName (getL instQual sc) n
         _ -> qn
+
+lookupTypeSignature :: Name l -> Scope -> Scoped l
+lookupTypeSignature n sc = Scoped nameInfo (ann n)
+  where
+    nameInfo =
+      case Global.lookupTypeSignature qn $ getL gTable sc of
+        Global.SymbolFound r -> GlobalSymbol r (sQName qn)
+        Global.Error e -> ScopeError e
+        Global.Special -> None
+    qn = qualifyName (Just (getL moduName sc)) n
 
 qualifyName :: Maybe UnAnn.ModuleName -> Name l -> QName l
 qualifyName Nothing n = UnQual (ann n) n

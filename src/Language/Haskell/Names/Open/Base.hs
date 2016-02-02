@@ -34,9 +34,12 @@ data NameContext
       -- Unqualified names also match qualified names in scope
       -- https://www.haskell.org/pipermail/haskell-prime/2008-April/002569.html
   | ReferenceUT
-     -- ^ Reference an associated type in an instance declaration
+      -- ^ Reference an associated type in an instance declaration
       -- Unqualified names also match qualified names in scope
       -- https://www.haskell.org/pipermail/haskell-prime/2008-April/002569.html
+  | SignatureV
+      -- ^ A type signature contains an always unqualified 'Name' that always
+      -- refers to a value bound in the same module.
   | Other
 
 -- | Contains information about the node's enclosing scope. Can be
@@ -45,7 +48,8 @@ data NameContext
 -- If we enter an instance with a qualified class name we have to
 -- remember the qualification to resolve method names.
 data Scope = Scope
-  { _gTable :: Global.Table
+  { _moduName :: UnAnn.ModuleName
+  , _gTable :: Global.Table
   , _lTable :: Local.Table
   , _nameCtx :: NameContext
   , _instQual :: Maybe UnAnn.ModuleName
@@ -55,8 +59,8 @@ data Scope = Scope
 makeLens ''Scope
 
 -- | Create an initial scope
-initialScope :: Global.Table -> Scope
-initialScope tbl = Scope tbl Local.empty Other Nothing []
+initialScope :: UnAnn.ModuleName -> Global.Table -> Scope
+initialScope moduleName tbl = Scope moduleName tbl Local.empty Other Nothing []
 
 -- | Merge local tables of two scopes. The other fields of the scopes are
 -- assumed to be the same.
@@ -144,6 +148,9 @@ exprV = setNameCtx ReferenceV
 
 exprT :: Scope -> Scope
 exprT = setNameCtx ReferenceT
+
+signatureV :: Scope -> Scope
+signatureV = setNameCtx SignatureV
 
 exprUV :: Scope -> Scope
 exprUV = setNameCtx ReferenceUV

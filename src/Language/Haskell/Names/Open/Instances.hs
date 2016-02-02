@@ -60,9 +60,9 @@ instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (Decl l) where
       -- FunBind consists of Matches, which we handle below anyway.
       TypeSig l names ty ->
         c TypeSig
-          <|  sc       -: l
-          <*> fmap (map qNameToName) (rtraverse (map nameToQName names) (exprV sc))
-          <|  sc       -: ty
+          <| sc            -: l
+          <| signatureV sc -: names
+          <| sc            -: ty
       InfixDecl l assoc mp ops ->
         c InfixDecl
           <| sc       -: l

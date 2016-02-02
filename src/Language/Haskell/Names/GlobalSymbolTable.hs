@@ -44,6 +44,9 @@ lookupType qn = lookupName qn . filterTable isType
 lookupMethodOrAssociate :: Ann.QName l -> Table -> Result l
 lookupMethodOrAssociate qn = lookupName qn . filterTable isMethodOrAssociated
 
+lookupTypeSignature :: Ann.QName l -> Table -> Result l
+lookupTypeSignature qn = lookupName qn . filterTable isValue
+
 lookupName :: Ann.QName l -> Table -> Result l
 lookupName qn table = case Map.lookup (sQName qn) table of
     Nothing -> Error $ ENotInScope qn
