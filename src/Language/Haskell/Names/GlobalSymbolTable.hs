@@ -12,10 +12,11 @@ import Language.Haskell.Exts.Annotated.Simplify (
 import Data.Map (
     Map)
 import qualified Data.Map as Map (
-    empty,unionWith,fromListWith,lookup,map)
+    empty,unionWith,fromListWith,lookup)
 
 import Control.Arrow
 import Data.List as List (union)
+import Data.Maybe (fromMaybe)
 
 import Language.Haskell.Names.Types
 
@@ -30,32 +31,17 @@ empty = Map.empty
 mergeTables :: Table -> Table -> Table
 mergeTables = Map.unionWith List.union
 
-data Result l
-  = SymbolFound Symbol
-  | Error (Error l)
-  | Special
+lookupValue :: Ann.QName l -> Table -> [Symbol]
+lookupValue qn = filter isValue . lookupName qn
 
-lookupValue :: Ann.QName l -> Table -> Result l
-lookupValue qn = lookupName qn . filterTable isValue
+lookupType :: Ann.QName l -> Table -> [Symbol]
+lookupType qn = filter isType . lookupName qn
 
-lookupType :: Ann.QName l -> Table -> Result l
-lookupType qn = lookupName qn . filterTable isType
+lookupMethodOrAssociate :: Ann.QName l -> Table -> [Symbol]
+lookupMethodOrAssociate qn = filter isMethodOrAssociated . lookupName qn
 
-lookupMethodOrAssociate :: Ann.QName l -> Table -> Result l
-lookupMethodOrAssociate qn = lookupName qn . filterTable isMethodOrAssociated
-
-lookupTypeSignature :: Ann.QName l -> Table -> Result l
-lookupTypeSignature qn = lookupName qn . filterTable isValue
-
-lookupName :: Ann.QName l -> Table -> Result l
-lookupName qn table = case Map.lookup (sQName qn) table of
-    Nothing -> Error $ ENotInScope qn
-    Just [] -> Error $ ENotInScope qn
-    Just [i] -> SymbolFound i
-    Just is -> Error $ EAmbiguous qn is
-
-filterTable :: (Symbol -> Bool) -> Table -> Table
-filterTable relevant = Map.map (filter relevant)
+lookupName :: Ann.QName l -> Table -> [Symbol]
+lookupName qn table = fromMaybe [] (Map.lookup (sQName qn) table)
 
 isValue :: Symbol -> Bool
 isValue symbol = case symbol of

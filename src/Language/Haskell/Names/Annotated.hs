@@ -42,35 +42,18 @@ annotateRec
 annotateRec _ sc a = go sc a where
   go :: forall a . Resolvable a => Scope -> a -> a
   go sc a
-    | ReferenceV <- getL nameCtx sc
-    , Just (Refl :: QName (Scoped l) :~: a) <- eqT
-      = lookupValue (fmap sLoc a) sc <$ a
-    | ReferenceT <- getL nameCtx sc
-    , Just (Refl :: QName (Scoped l) :~: a) <- eqT
-      = lookupType (fmap sLoc a) sc <$ a
-    | ReferenceUV <- getL nameCtx sc
-    , Just (Refl :: Name (Scoped l) :~: a) <- eqT
-      = lookupMethod (fmap sLoc a) sc <$ a
-    | ReferenceUT <- getL nameCtx sc
-    , Just (Refl :: QName (Scoped l) :~: a) <- eqT
-      = lookupAssociatedType (fmap sLoc a) sc <$ a
-    | SignatureV <- getL nameCtx sc
-    , Just (Refl :: Name (Scoped l) :~: a) <- eqT
-      = lookupTypeSignature (fmap sLoc a) sc <$ a
-    | BindingV <- getL nameCtx sc
-    , Just (Refl :: Name (Scoped l) :~: a) <- eqT
-      = Scoped ValueBinder (sLoc . ann $ a) <$ a
-    | BindingT <- getL nameCtx sc
-    , Just (Refl :: Name (Scoped l) :~: a) <- eqT
-      = Scoped TypeBinder (sLoc . ann $ a) <$ a
+    | Just (Refl :: QName (Scoped l) :~: a) <- eqT
+      = lookupQName (fmap sLoc a) sc <$ a
+    | Just (Refl :: Name (Scoped l) :~: a) <- eqT
+      = lookupName (fmap sLoc a) sc <$ a
     | Just (Refl :: FieldUpdate (Scoped l) :~: a) <- eqT
       = case a of
-          FieldPun l n -> FieldPun l (lookupValue (sLoc <$> n) sc <$ n)
+          FieldPun l qname -> FieldPun l (lookupQName (sLoc <$> qname) sc <$ qname)
           FieldWildcard l -> FieldWildcard (Scoped (RecExpWildcard namesRes) (sLoc l)) where
             namesRes = do
                 f <- sc ^. wcNames
-                let qn = setAnn (sLoc l) (UnQual () (annName (wcFieldName f)))
-                case lookupValue qn sc of
+                let qname = setAnn (sLoc l) (UnQual () (annName (wcFieldName f)))
+                case lookupQName qname sc of
                     Scoped info@(GlobalSymbol _ _) _ -> return (wcFieldName f,info)
                     Scoped info@(LocalValue _) _ -> return (wcFieldName f,info)
                     _ -> []
@@ -80,70 +63,76 @@ annotateRec _ sc a = go sc a where
       = let
             namesRes = do
                 f <- sc ^. wcNames
-                let qn = UnQual () (annName (wcFieldName f))
-                Scoped (GlobalSymbol symbol _) _ <- return (lookupValue qn sc)
+                let qname = UnQual () (annName (wcFieldName f))
+                Scoped (GlobalSymbol symbol _) _ <- return (lookupQName qname (exprV sc))
                 return (symbol {symbolModule = wcFieldModuleName f})
-        in PFieldWildcard (Scoped (RecPatWildcard namesRes) (sLoc l))            
+        in PFieldWildcard (Scoped (RecPatWildcard namesRes) (sLoc l))
     | otherwise
       = rmap go sc a
 
-lookupValue :: QName l -> Scope -> Scoped l
-lookupValue (Special l _) _ = Scoped None l
-lookupValue qn sc = Scoped nameInfo (ann qn)
-  where
-    nameInfo =
-      case Local.lookupValue qn $ getL lTable sc of
-        Right r -> LocalValue r
-        _ ->
-          case Global.lookupValue qn $ getL gTable sc of
-            Global.SymbolFound r -> GlobalSymbol r (sQName qn)
-            Global.Error e -> ScopeError e
-            Global.Special -> None
 
-lookupType :: QName l -> Scope -> Scoped l
-lookupType (Special l _) _ = Scoped None l
-lookupType qn sc = Scoped nameInfo (ann qn)
-  where
-    nameInfo =
-      case Global.lookupType qn $ getL gTable sc of
-        Global.SymbolFound r -> GlobalSymbol r (sQName qn)
-        Global.Error e -> ScopeError e
-        Global.Special -> None
+lookupQName :: QName l -> Scope -> Scoped l
+lookupQName (Special l _) _ = Scoped None l
+lookupQName qname scope = Scoped nameInfo (ann qname) where
 
-lookupMethod :: Name l -> Scope -> Scoped l
-lookupMethod n sc = Scoped nameInfo (ann qn)
-  where
-    nameInfo =
-      case Global.lookupMethodOrAssociate qn $ getL gTable sc of
-        Global.SymbolFound r -> GlobalSymbol r (sQName qn)
-        Global.Error e -> ScopeError e
-        Global.Special -> None
-    qn = qualifyName (getL instQual sc) n
+  nameInfo = case getL nameCtx scope of
 
-lookupAssociatedType :: QName l -> Scope -> Scoped l
-lookupAssociatedType qn sc = Scoped nameInfo (ann qn)
-  where
-    nameInfo =
-      case Global.lookupMethodOrAssociate qn' $ getL gTable sc of
-        Global.SymbolFound r -> GlobalSymbol r (sQName qn)
-        Global.Error e -> ScopeError e
-        Global.Special -> None
-    qn' = case qn of
-        UnQual _ n -> qualifyName (getL instQual sc) n
-        _ -> qn
+    ReferenceV -> case Local.lookupValue qname (getL lTable scope) of
+      Right srcloc -> LocalValue srcloc
+      _ ->
+        checkUniqueness (Global.lookupValue qname globalTable)
 
-lookupTypeSignature :: Name l -> Scope -> Scoped l
-lookupTypeSignature n sc = Scoped nameInfo (ann n)
-  where
-    nameInfo =
-      case Global.lookupTypeSignature qn $ getL gTable sc of
-        Global.SymbolFound r -> GlobalSymbol r (sQName qn)
-        Global.Error e -> ScopeError e
-        Global.Special -> None
-    qn = qualifyName (Just (getL moduName sc)) n
+    ReferenceT ->
+      checkUniqueness (Global.lookupType qname globalTable)
+
+    ReferenceUT ->
+      checkUniqueness (Global.lookupMethodOrAssociate qname' globalTable) where
+        qname' = case qname of
+          UnQual _ name -> qualifyName (getL instQual scope) name
+          _ -> qname
+
+    _ -> None
+
+  globalTable = getL gTable scope
+
+  checkUniqueness symbols = case symbols of
+    [] -> ScopeError (ENotInScope qname)
+    [symbol] -> GlobalSymbol symbol (sQName qname)
+    _ -> ScopeError (EAmbiguous qname symbols)
+
+
+lookupName :: Name l -> Scope -> Scoped l
+lookupName name scope = Scoped nameInfo (ann name) where
+
+  nameInfo = case getL nameCtx scope of
+
+    ReferenceUV ->
+      checkUniqueness (Global.lookupMethodOrAssociate qname globalTable) where
+        qname = qualifyName (getL instQual scope) name
+
+    SignatureV ->
+      checkUniqueness (Global.lookupValue qname globalTable) where
+        qname = qualifyName (Just (getL moduName scope)) name
+
+    BindingV -> ValueBinder
+
+    BindingT -> TypeBinder
+
+    _ -> None
+
+  globalTable = getL gTable scope
+
+  unqualifiedQName = UnQual (ann name) name
+
+  checkUniqueness symbols = case symbols of
+    [] -> ScopeError (ENotInScope unqualifiedQName)
+    [symbol] -> GlobalSymbol symbol (sQName unqualifiedQName)
+    _ -> ScopeError (EAmbiguous unqualifiedQName symbols)
+
 
 qualifyName :: Maybe UnAnn.ModuleName -> Name l -> QName l
 qualifyName Nothing n = UnQual (ann n) n
-qualifyName (Just (UnAnn.ModuleName moduleName)) n = Qual (ann n) annotatedModuleName n
-  where
+qualifyName (Just (UnAnn.ModuleName moduleName)) n =
+  Qual (ann n) annotatedModuleName n where
     annotatedModuleName = ModuleName (ann n) moduleName
+

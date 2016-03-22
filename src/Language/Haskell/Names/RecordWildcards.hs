@@ -50,7 +50,7 @@ getElidedFields globalTable con fields =
     -- resolved
     (mbConOrigName, mbTypeOrigName) =
       case Global.lookupValue con globalTable of
-        Global.SymbolFound symbol@Constructor{} ->
+        [symbol@Constructor{}] ->
           (Just $ symbolName symbol, Just $ typeName symbol)
         _ -> (Nothing, Nothing)
 
