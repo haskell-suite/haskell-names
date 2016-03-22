@@ -287,5 +287,5 @@ Test-suite test
     , filemanip >= 0.3.6.3 && < 0.4
     , pretty-show >= 1.6.1 && < 1.7
     , traverse-with-class >= 0.2.0.3 && < 0.3
-    , haskell-names >= 0.6.0 && < 0.7
+    , haskell-names >= 0.7.0 && < 0.8
 
