@@ -107,11 +107,11 @@ lookupName name scope = Scoped nameInfo (ann name) where
   nameInfo = case getL nameCtx scope of
 
     ReferenceUV ->
-      checkUniqueness (Global.lookupMethodOrAssociate qname globalTable) where
+      checkUniqueness qname (Global.lookupMethodOrAssociate qname globalTable) where
         qname = qualifyName (getL instQual scope) name
 
     SignatureV ->
-      checkUniqueness (Global.lookupValue qname globalTable) where
+      checkUniqueness qname (Global.lookupValue qname globalTable) where
         qname = qualifyName (Just (getL moduName scope)) name
 
     BindingV -> ValueBinder
@@ -122,12 +122,10 @@ lookupName name scope = Scoped nameInfo (ann name) where
 
   globalTable = getL gTable scope
 
-  unqualifiedQName = UnQual (ann name) name
-
-  checkUniqueness symbols = case symbols of
-    [] -> ScopeError (ENotInScope unqualifiedQName)
-    [symbol] -> GlobalSymbol symbol (sQName unqualifiedQName)
-    _ -> ScopeError (EAmbiguous unqualifiedQName symbols)
+  checkUniqueness qname symbols = case symbols of
+    [] -> ScopeError (ENotInScope qname)
+    [symbol] -> GlobalSymbol symbol (sQName qname)
+    _ -> ScopeError (EAmbiguous qname symbols)
 
 
 qualifyName :: Maybe UnAnn.ModuleName -> Name l -> QName l
