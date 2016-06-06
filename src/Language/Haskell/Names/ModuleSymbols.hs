@@ -103,7 +103,29 @@ getTopDeclSymbols impTbl modulename d = (case d of
           GadtDecl _ cn (fromMaybe [] -> fields) _ty <- gadtDecls
           return (cn , [f | FieldDecl _ fNames _ <- fields, f <- fNames])
 
-    _ -> [])
+    TypeSig _ names _ -> map (Value (sModuleName modulename) . sName) names
+
+    ClosedTypeFamDecl {} -> []
+    TypeInsDecl {} -> []
+    InstDecl {} -> []
+    DerivDecl {} -> []
+    InfixDecl {} -> []
+    DefaultDecl {} -> []
+    SpliceDecl {} -> []
+    PatSynSig {} -> []
+    PatSyn {} -> []
+    ForExp {} -> []
+    RulePragmaDecl {} -> []
+    DeprPragmaDecl {} -> []
+    WarnPragmaDecl {} -> []
+    InlineSig {} -> []
+    InlineConlikeSig {} -> []
+    SpecSig {} -> []
+    SpecInlineSig {} -> []
+    InstSig {} -> []
+    AnnPragma {} -> []
+    MinimalPragma {} -> []
+    RoleAnnotDecl {} -> [])
         where
             declHeadSymbol c dh = c (sModuleName modulename) (sName (getDeclHeadName dh))
 
