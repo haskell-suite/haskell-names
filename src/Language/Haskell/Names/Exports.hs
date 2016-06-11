@@ -10,9 +10,7 @@ import Control.Applicative
 import Control.Monad
 import Control.Monad.Writer
 import Data.Data
-import qualified Language.Haskell.Exts as UnAnn (QName(Qual,UnQual))
-import Language.Haskell.Exts.Annotated.Simplify (sQName,sModuleName)
-import Language.Haskell.Exts.Annotated
+import Language.Haskell.Exts
 import Language.Haskell.Names.Types
 import Language.Haskell.Names.ScopeUtils
 import Language.Haskell.Names.SyntaxUtils
@@ -42,7 +40,7 @@ exportSpecSymbols globalTable exportSpec =
         Global.Error _ -> []
         Global.SymbolFound i -> [i]
         Global.Special {} -> error "Global.Special in export list?"
-    EThingAll _ qn ->
+    EThingWith _ (EWildcard _ n) qn [] ->
       case Global.lookupType qn globalTable of
         Global.Error _ -> []
         Global.SymbolFound i -> [i] ++ subs where
@@ -52,7 +50,7 @@ exportSpecSymbols globalTable exportSpec =
             guard (n' == symbolName i)
             return symbol)
         Global.Special {} -> error "Global.Special in export list?"
-    EThingWith _ qn cns ->
+    EThingWith _ (NoWildcard _) qn cns ->
       case Global.lookupType qn globalTable of
         Global.Error _ -> []
         Global.SymbolFound i -> [i] ++ subs where
@@ -70,12 +68,12 @@ exportSpecSymbols globalTable exportSpec =
           Set.intersection inScopeQualified inScopeUnqualified)
 
         inScopeQualified = Set.fromList (do
-            (UnAnn.Qual prefix _, symbols) <- Map.toList globalTable
-            guard (prefix == sModuleName modulename)
+            (Qual () prefix _, symbols) <- Map.toList globalTable
+            guard (prefix == dropAnn modulename)
             symbols)
 
         inScopeUnqualified = Set.fromList (do
-            (UnAnn.UnQual _, symbols) <- Map.toList globalTable
+            (UnQual () _, symbols) <- Map.toList globalTable
             symbols)
 
 -- | Annotate the given export list with scoping information using the given
@@ -93,7 +91,7 @@ annotateExportSpec globalTable exportSpec =
         scopeError err exportSpec
       Global.SymbolFound i ->
         EVar (Scoped (Export [i]) l)
-            (Scoped (GlobalSymbol i (sQName qn)) <$> qn)
+            (Scoped (GlobalSymbol i (dropAnn qn)) <$> qn)
       Global.Special {} -> error "Global.Special in export list?"
   EAbs l ns qn ->
     case Global.lookupType qn globalTable of
@@ -102,9 +100,9 @@ annotateExportSpec globalTable exportSpec =
       Global.SymbolFound i ->
         EAbs (Scoped (Export [i]) l)
             (noScope ns)
-            (Scoped (GlobalSymbol i (sQName qn)) <$> qn)
+            (Scoped (GlobalSymbol i (dropAnn qn)) <$> qn)
       Global.Special {} -> error "Global.Special in export list?"
-  EThingAll l qn ->
+  EThingWith l w@(EWildcard l' n) qn [] ->
     case Global.lookupType qn globalTable of
       Global.Error err ->
         scopeError err exportSpec
@@ -117,9 +115,9 @@ annotateExportSpec globalTable exportSpec =
               return symbol)
           s = [i] <> subs
         in
-          EThingAll (Scoped (Export s) l) (Scoped (GlobalSymbol i (sQName qn)) <$> qn)
+          EThingWith (Scoped (Export s) l) (fmap (Scoped None) w) (Scoped (GlobalSymbol i (dropAnn qn)) <$> qn) []
       Global.Special {} -> error "Global.Special in export list?"
-  EThingWith l qn cns ->
+  EThingWith l w@(NoWildcard {}) qn cns ->
     case Global.lookupType qn globalTable of
       Global.Error err ->
         scopeError err exportSpec
@@ -133,7 +131,7 @@ annotateExportSpec globalTable exportSpec =
               cns
           s = [i] <> subs
         in
-          EThingWith (Scoped (Export s) l) (Scoped (GlobalSymbol i (sQName qn)) <$> qn) cns'
+          EThingWith (Scoped (Export s) l) (fmap (Scoped None) w) (Scoped (GlobalSymbol i (dropAnn qn)) <$> qn) cns'
       Global.Special {} -> error "Global.Special in export list?"
   -- FIXME ambiguity check
   EModuleContents _ modulename -> Scoped (Export exportedSymbols) <$> exportSpec where
@@ -141,11 +139,11 @@ annotateExportSpec globalTable exportSpec =
       exportedSymbols = Set.toList (Set.intersection inScopeQualified inScopeUnqualified)
 
       inScopeQualified = Set.fromList (do
-          (UnAnn.Qual prefix _, symbols) <- Map.toList globalTable
-          guard (prefix == sModuleName modulename)
+          (Qual () prefix _, symbols) <- Map.toList globalTable
+          guard (prefix == dropAnn modulename)
           symbols)
 
       inScopeUnqualified = Set.fromList (do
-          (UnAnn.UnQual _, symbols) <- Map.toList globalTable
+          (UnQual () _, symbols) <- Map.toList globalTable
           symbols)
 

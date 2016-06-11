@@ -1,5 +1,5 @@
 [ Value
-    { symbolModule = ModuleName "SimpleValue"
-    , symbolName = Ident "a"
+    { symbolModule = ModuleName () "SimpleValue"
+    , symbolName = Ident () "a"
     }
 ]

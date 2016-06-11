@@ -1,29 +1,29 @@
 [ Data
-    { symbolModule = ModuleName "SimpleTypes"
-    , symbolName = Ident "A"
+    { symbolModule = ModuleName () "SimpleTypes"
+    , symbolName = Ident () "A"
     }
 , Constructor
-    { symbolModule = ModuleName "SimpleTypes"
-    , symbolName = Ident "B"
-    , typeName = Ident "A"
+    { symbolModule = ModuleName () "SimpleTypes"
+    , symbolName = Ident () "B"
+    , typeName = Ident () "A"
     }
 , Selector
-    { symbolModule = ModuleName "SimpleTypes"
-    , symbolName = Ident "c"
-    , typeName = Ident "A"
-    , constructors = [ Ident "B" ]
+    { symbolModule = ModuleName () "SimpleTypes"
+    , symbolName = Ident () "c"
+    , typeName = Ident () "A"
+    , constructors = [ Ident () "B" ]
     }
 , NewType
-    { symbolModule = ModuleName "SimpleTypes"
-    , symbolName = Ident "G"
+    { symbolModule = ModuleName () "SimpleTypes"
+    , symbolName = Ident () "G"
     }
 , Constructor
-    { symbolModule = ModuleName "SimpleTypes"
-    , symbolName = Ident "H"
-    , typeName = Ident "G"
+    { symbolModule = ModuleName () "SimpleTypes"
+    , symbolName = Ident () "H"
+    , typeName = Ident () "G"
     }
 , Type
-    { symbolModule = ModuleName "SimpleTypes"
-    , symbolName = Ident "L"
+    { symbolModule = ModuleName () "SimpleTypes"
+    , symbolName = Ident () "L"
     }
 ]

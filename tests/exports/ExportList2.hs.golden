@@ -1,11 +1,11 @@
 [ Selector
-    { symbolModule = ModuleName "ExportList2"
-    , symbolName = Ident "b"
-    , typeName = Ident "A"
-    , constructors = [ Ident "B" , Ident "A" ]
+    { symbolModule = ModuleName () "ExportList2"
+    , symbolName = Ident () "b"
+    , typeName = Ident () "A"
+    , constructors = [ Ident () "B" , Ident () "A" ]
     }
 , Value
-    { symbolModule = ModuleName "ExportList2"
-    , symbolName = Ident "c"
+    { symbolModule = ModuleName () "ExportList2"
+    , symbolName = Ident () "c"
     }
 ]

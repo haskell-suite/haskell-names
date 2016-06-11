@@ -1,39 +1,39 @@
 [ Data
-    { symbolModule = ModuleName "ExportListMembers"
-    , symbolName = Ident "Foo"
+    { symbolModule = ModuleName () "ExportListMembers"
+    , symbolName = Ident () "Foo"
     }
 , Constructor
-    { symbolModule = ModuleName "ExportListMembers"
-    , symbolName = Ident "Foo1"
-    , typeName = Ident "Foo"
+    { symbolModule = ModuleName () "ExportListMembers"
+    , symbolName = Ident () "Foo1"
+    , typeName = Ident () "Foo"
     }
 , Constructor
-    { symbolModule = ModuleName "ExportListMembers"
-    , symbolName = Ident "Foo3"
-    , typeName = Ident "Foo"
+    { symbolModule = ModuleName () "ExportListMembers"
+    , symbolName = Ident () "Foo3"
+    , typeName = Ident () "Foo"
     }
 , Selector
-    { symbolModule = ModuleName "ExportListMembers"
-    , symbolName = Ident "c"
-    , typeName = Ident "Foo"
-    , constructors = [ Ident "Foo2" ]
+    { symbolModule = ModuleName () "ExportListMembers"
+    , symbolName = Ident () "c"
+    , typeName = Ident () "Foo"
+    , constructors = [ Ident () "Foo2" ]
     }
 , Class
-    { symbolModule = ModuleName "ExportListMembers"
-    , symbolName = Ident "Bar"
+    { symbolModule = ModuleName () "ExportListMembers"
+    , symbolName = Ident () "Bar"
     }
 , Method
-    { symbolModule = ModuleName "ExportListMembers"
-    , symbolName = Ident "x"
-    , className = Ident "Bar"
+    { symbolModule = ModuleName () "ExportListMembers"
+    , symbolName = Ident () "x"
+    , className = Ident () "Bar"
     }
 , NewType
-    { symbolModule = ModuleName "ExportListMembers"
-    , symbolName = Ident "N"
+    { symbolModule = ModuleName () "ExportListMembers"
+    , symbolName = Ident () "N"
     }
 , Constructor
-    { symbolModule = ModuleName "ExportListMembers"
-    , symbolName = Ident "N"
-    , typeName = Ident "N"
+    { symbolModule = ModuleName () "ExportListMembers"
+    , symbolName = Ident () "N"
+    , typeName = Ident () "N"
     }
 ]

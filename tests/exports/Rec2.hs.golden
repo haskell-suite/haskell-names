@@ -1,7 +1,13 @@
 [ Value
-    { symbolModule = ModuleName "Rec2" , symbolName = Ident "rec2" }
+    { symbolModule = ModuleName () "Rec2"
+    , symbolName = Ident () "rec2"
+    }
 , Value
-    { symbolModule = ModuleName "Rec1" , symbolName = Ident "rec1_1" }
+    { symbolModule = ModuleName () "Rec1"
+    , symbolName = Ident () "rec1_1"
+    }
 , Value
-    { symbolModule = ModuleName "Rec3" , symbolName = Ident "rec3" }
+    { symbolModule = ModuleName () "Rec3"
+    , symbolName = Ident () "rec3"
+    }
 ]

@@ -1,3 +1,5 @@
 [ Data
-    { symbolModule = ModuleName "ExportList" , symbolName = Ident "A" }
+    { symbolModule = ModuleName () "ExportList"
+    , symbolName = Ident () "A"
+    }
 ]

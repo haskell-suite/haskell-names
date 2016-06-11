@@ -1,8 +1,10 @@
 [ Data
-    { symbolModule = ModuleName "SimpleData" , symbolName = Ident "A" }
+    { symbolModule = ModuleName () "SimpleData"
+    , symbolName = Ident () "A"
+    }
 , Constructor
-    { symbolModule = ModuleName "SimpleData"
-    , symbolName = Ident "A"
-    , typeName = Ident "A"
+    { symbolModule = ModuleName () "SimpleData"
+    , symbolName = Ident () "A"
+    , typeName = Ident () "A"
     }
 ]
