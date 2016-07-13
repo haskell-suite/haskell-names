@@ -1,6 +1,12 @@
 Changes
 =======
 
+Version 0.7.0
+-------------
+
+* Relax bounds on aeson
+* Relax bounds on transformers
+
 Version 0.6.0
 -------------
 
