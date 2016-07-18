@@ -18,3 +18,7 @@ x        at  5:7 is a local value defined at 5:3
 +        at  5:9 is not in scope
 x        at 5:11 is a local value defined at 5:3
 x        at 5:11 is a local value defined at 5:3
+function at  7:1 is a global value, TypeSignature.function
+Char     at 7:13 is not in scope
+Char     at 7:13 is not in scope
+function at  8:1 is a value bound here

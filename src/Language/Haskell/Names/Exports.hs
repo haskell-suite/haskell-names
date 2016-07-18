@@ -31,52 +31,13 @@ exportedSymbols globalTable modul = case getExportSpecList modul of
 
 exportSpecSymbols :: Global.Table -> ExportSpec l -> [Symbol]
 exportSpecSymbols globalTable exportSpec =
-  case exportSpec of
-    EVar _ qn ->
-      case Global.lookupValue qn globalTable of
-        Global.Error _ -> []
-        Global.SymbolFound i -> [i]
-        Global.Special {} -> error "Global.Special in export list?"
-    EAbs _ _ qn ->
-      case Global.lookupType qn globalTable of
-        Global.Error _ -> []
-        Global.SymbolFound i -> [i]
-        Global.Special {} -> error "Global.Special in export list?"
-    EThingAll _ qn ->
-      case Global.lookupType qn globalTable of
-        Global.Error _ -> []
-        Global.SymbolFound i -> [i] ++ subs where
-          subs = nub (do
-            symbol <- concat (Map.elems globalTable)
-            Just n' <- return $ symbolParent symbol
-            guard (n' == symbolName i)
-            return symbol)
-        Global.Special {} -> error "Global.Special in export list?"
-    EThingWith _ qn cns ->
-      case Global.lookupType qn globalTable of
-        Global.Error _ -> []
-        Global.SymbolFound i -> [i] ++ subs where
-            (_, subs) =
-              resolveCNames
-                (concat (Map.elems globalTable))
-                (symbolName i)
-                (\cn -> ENotInScope (UnQual (ann cn) (unCName cn))) -- FIXME better error
-                cns
-        Global.Special {} -> error "Global.Special in export list?"
-    -- FIXME ambiguity check
-    EModuleContents _ modulename -> exportedSymbols where
-
-        exportedSymbols = Set.toList (
-          Set.intersection inScopeQualified inScopeUnqualified)
-
-        inScopeQualified = Set.fromList (do
-            (UnAnn.Qual prefix _, symbols) <- Map.toList globalTable
-            guard (prefix == sModuleName modulename)
-            symbols)
-
-        inScopeUnqualified = Set.fromList (do
-            (UnAnn.UnQual _, symbols) <- Map.toList globalTable
-            symbols)
+  case annotateExportSpec globalTable exportSpec of
+    EVar (Scoped (Export symbols) _) _ -> symbols
+    EAbs (Scoped (Export symbols) _) _ _ -> symbols
+    EThingAll (Scoped (Export symbols) _) _ -> symbols
+    EThingWith (Scoped (Export symbols) _) _ _ -> symbols
+    EModuleContents (Scoped (Export symbols) _) _ -> symbols
+    _ -> []
 
 -- | Annotate the given export list with scoping information using the given
 -- table of symbols that are in scope in that module.
@@ -89,52 +50,46 @@ annotateExportSpec globalTable exportSpec =
  case exportSpec of
   EVar l qn ->
     case Global.lookupValue qn globalTable of
-      Global.Error err ->
-        scopeError err exportSpec
-      Global.SymbolFound i ->
-        EVar (Scoped (Export [i]) l)
-            (Scoped (GlobalSymbol i (sQName qn)) <$> qn)
-      Global.Special {} -> error "Global.Special in export list?"
+      [] -> scopeError (ENotInScope qn) exportSpec
+      [symbol] -> EVar (Scoped (Export [symbol]) l)
+            (Scoped (GlobalSymbol symbol (sQName qn)) <$> qn)
+      symbols -> scopeError (EAmbiguous qn symbols) exportSpec
   EAbs l ns qn ->
     case Global.lookupType qn globalTable of
-      Global.Error err ->
-        scopeError err exportSpec
-      Global.SymbolFound i ->
-        EAbs (Scoped (Export [i]) l)
+      [] -> scopeError (ENotInScope qn) exportSpec
+      [symbol] -> EAbs (Scoped (Export [symbol]) l)
             (noScope ns)
-            (Scoped (GlobalSymbol i (sQName qn)) <$> qn)
-      Global.Special {} -> error "Global.Special in export list?"
+            (Scoped (GlobalSymbol symbol (sQName qn)) <$> qn)
+      symbols -> scopeError (EAmbiguous qn symbols) exportSpec
   EThingAll l qn ->
     case Global.lookupType qn globalTable of
-      Global.Error err ->
-        scopeError err exportSpec
-      Global.SymbolFound i ->
+      [] -> scopeError (ENotInScope qn) exportSpec
+      [symbol] ->
         let
-          subs = nub (do
-              symbol <- concat (Map.elems globalTable)
-              Just n' <- return $ symbolParent symbol
-              guard (n' == symbolName i)
-              return symbol)
-          s = [i] <> subs
+          subSymbols = nub (do
+              subSymbol <- concat (Map.elems globalTable)
+              Just n' <- return $ symbolParent subSymbol
+              guard (n' == symbolName symbol)
+              return subSymbol)
+          s = [symbol] <> subSymbols
         in
-          EThingAll (Scoped (Export s) l) (Scoped (GlobalSymbol i (sQName qn)) <$> qn)
-      Global.Special {} -> error "Global.Special in export list?"
+          EThingAll (Scoped (Export s) l) (Scoped (GlobalSymbol symbol (sQName qn)) <$> qn)
+      symbols -> scopeError (EAmbiguous qn symbols) exportSpec
   EThingWith l qn cns ->
     case Global.lookupType qn globalTable of
-      Global.Error err ->
-        scopeError err exportSpec
-      Global.SymbolFound i ->
+      [] -> scopeError (ENotInScope qn) exportSpec
+      [symbol] ->
         let
-          (cns', subs) =
+          (cns', subSymbols) =
             resolveCNames
               (concat (Map.elems globalTable))
-              (symbolName i)
+              (symbolName symbol)
               (\cn -> ENotInScope (UnQual (ann cn) (unCName cn))) -- FIXME better error
               cns
-          s = [i] <> subs
+          s = [symbol] <> subSymbols
         in
-          EThingWith (Scoped (Export s) l) (Scoped (GlobalSymbol i (sQName qn)) <$> qn) cns'
-      Global.Special {} -> error "Global.Special in export list?"
+          EThingWith (Scoped (Export s) l) (Scoped (GlobalSymbol symbol (sQName qn)) <$> qn) cns'
+      symbols -> scopeError (EAmbiguous qn symbols) exportSpec
   -- FIXME ambiguity check
   EModuleContents _ modulename -> Scoped (Export exportedSymbols) <$> exportSpec where
 

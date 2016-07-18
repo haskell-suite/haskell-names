@@ -1,9 +1,0 @@
-#!/bin/sh
-
-set -e
-
-# Unfortunately, tests do not build on 7.4
-
-#cabal install --enable-tests
-
-cabal install -v

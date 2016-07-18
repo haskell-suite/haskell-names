@@ -5,9 +5,9 @@ haskell-names does name and module resolution for haskell-src-exts AST.
 
 Namely, it can do the following:
 
-* for a liat of modules, compute the lists of symbols they export.
+* For a list of modules, compute the list of symbols each module exports.
   This is called `resolve`.
-* for each name in a module, figure out what it refers to — whether it's bound
+* For each name in a module, figure out what it refers to — whether it's bound
   locally (say, by a `where` clause) or globally (and then give its origin).
   This is called `annotate`.
 
@@ -23,8 +23,8 @@ a development version of [haskell-src-exts][hse].
 Environments
 -----------------
 
-An environment is a map from module name to list of entities the module exports.
-Entities are for example types, class, functions etc. We store these lists in
+An environment is a map from module name to list of symbols the module exports.
+Symbols are for example types, classes, functions etc. We persist these lists in
 a JSON format.
 For example, here are a couple of entries from `Prelude.names`:
 
@@ -150,8 +150,6 @@ main = do
     Congratulations! Your code doesn't use Prelude.head
 
 ### API documentation
-
-See [haskell-names haddock documentation][doc-index].
 
 The core module you need is [Language.Haskell.Names][]
 
