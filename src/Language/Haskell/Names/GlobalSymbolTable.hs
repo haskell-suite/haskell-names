@@ -2,12 +2,7 @@
 -- | This module is designed to be imported qualified.
 module Language.Haskell.Names.GlobalSymbolTable where
 
-import Language.Haskell.Exts (
-    QName)
-import qualified Language.Haskell.Exts.Annotated as Ann (
-    QName)
-import Language.Haskell.Exts.Annotated.Simplify (
-    sQName)
+import Language.Haskell.Exts hiding (NewType)
 
 import Data.Map (
     Map)
@@ -18,9 +13,10 @@ import Control.Arrow
 import Data.List as List (union)
 
 import Language.Haskell.Names.Types
+import Language.Haskell.Names.SyntaxUtils (dropAnn)
 
 -- | Global symbol table — contains names declared somewhere at the top level.
-type Table = Map QName [Symbol]
+type Table = Map (QName ()) [Symbol]
 
 -- | Empty global symbol table.
 empty :: Table
@@ -35,17 +31,17 @@ data Result l
   | Error (Error l)
   | Special
 
-lookupValue :: Ann.QName l -> Table -> Result l
+lookupValue :: QName l -> Table -> Result l
 lookupValue qn = lookupName qn . filterTable isValue
 
-lookupType :: Ann.QName l -> Table -> Result l
+lookupType :: QName l -> Table -> Result l
 lookupType qn = lookupName qn . filterTable isType
 
-lookupMethodOrAssociate :: Ann.QName l -> Table -> Result l
+lookupMethodOrAssociate :: QName l -> Table -> Result l
 lookupMethodOrAssociate qn = lookupName qn . filterTable isMethodOrAssociated
 
-lookupName :: Ann.QName l -> Table -> Result l
-lookupName qn table = case Map.lookup (sQName qn) table of
+lookupName :: QName l -> Table -> Result l
+lookupName qn table = case Map.lookup (dropAnn qn) table of
     Nothing -> Error $ ENotInScope qn
     Just [] -> Error $ ENotInScope qn
     Just [i] -> SymbolFound i
@@ -79,6 +75,6 @@ isMethodOrAssociated symbol = case symbol of
     DataFam {} -> True
     _ -> False
 
-fromList :: [(QName,Symbol)] -> Table
+fromList :: [(QName (),Symbol)] -> Table
 fromList = Map.fromListWith List.union . map (second (:[]))
 

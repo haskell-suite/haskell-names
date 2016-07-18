@@ -11,8 +11,7 @@ import Control.Monad (forM, forM_, unless)
 
 import qualified Data.Map as Map (insert)
 import Control.Monad.State.Strict (State, execState, get, modify)
-import Language.Haskell.Exts.Annotated
-import Language.Haskell.Exts.Annotated.Simplify (sModuleName)
+import Language.Haskell.Exts
 
 import Language.Haskell.Names.Types
 import Language.Haskell.Names.SyntaxUtils
@@ -50,7 +49,7 @@ findFixPoint :: (Data l, Eq l) => [Module l] -> State Environment ()
 findFixPoint modules = loop (replicate (length modules) []) where
   loop modulesSymbols = do
     forM_ (zip modules modulesSymbols) (\(modul, symbols) -> do
-      modify (Map.insert (sModuleName (getModuleName modul)) symbols))
+      modify (Map.insert (dropAnn (getModuleName modul)) symbols))
     environment <- get
     modulesSymbols' <- forM modules (\modul -> do
       let globalTable = moduleTable (importTable environment modul) modul

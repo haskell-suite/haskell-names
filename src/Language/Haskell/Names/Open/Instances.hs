@@ -15,7 +15,7 @@ import Language.Haskell.Names.Open.Base
 import Language.Haskell.Names.Open.Derived ()
 import Language.Haskell.Names.GetBound
 import Language.Haskell.Names.RecordWildcards
-import Language.Haskell.Exts.Annotated
+import Language.Haskell.Exts
 import Language.Haskell.Names.SyntaxUtils
 import qualified Data.Data as D
 import Control.Applicative

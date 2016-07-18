@@ -1,75 +1,75 @@
 fromList
-  [ ( Qual (ModuleName "Prelude") (Ident "Constructor1")
+  [ ( Qual () (ModuleName () "Prelude") (Ident () "Constructor1")
     , [ Constructor
-          { symbolModule = ModuleName "Prelude"
-          , symbolName = Ident "Constructor1"
-          , typeName = Ident "DataType"
+          { symbolModule = ModuleName () "Prelude"
+          , symbolName = Ident () "Constructor1"
+          , typeName = Ident () "DataType"
           }
       ]
     )
-  , ( Qual (ModuleName "Prelude") (Ident "Constructor2")
+  , ( Qual () (ModuleName () "Prelude") (Ident () "Constructor2")
     , [ Constructor
-          { symbolModule = ModuleName "Prelude"
-          , symbolName = Ident "Constructor2"
-          , typeName = Ident "DataType"
+          { symbolModule = ModuleName () "Prelude"
+          , symbolName = Ident () "Constructor2"
+          , typeName = Ident () "DataType"
           }
       ]
     )
-  , ( Qual (ModuleName "Prelude") (Ident "DataType")
+  , ( Qual () (ModuleName () "Prelude") (Ident () "DataType")
     , [ Data
-          { symbolModule = ModuleName "Prelude"
-          , symbolName = Ident "DataType"
+          { symbolModule = ModuleName () "Prelude"
+          , symbolName = Ident () "DataType"
           }
       ]
     )
-  , ( Qual (ModuleName "Prelude") (Ident "Newtype")
+  , ( Qual () (ModuleName () "Prelude") (Ident () "Newtype")
     , [ NewType
-          { symbolModule = ModuleName "Prelude"
-          , symbolName = Ident "Newtype"
+          { symbolModule = ModuleName () "Prelude"
+          , symbolName = Ident () "Newtype"
           }
       ]
     )
-  , ( Qual (ModuleName "Prelude") (Ident "function")
+  , ( Qual () (ModuleName () "Prelude") (Ident () "function")
     , [ Value
-          { symbolModule = ModuleName "Prelude"
-          , symbolName = Ident "function"
+          { symbolModule = ModuleName () "Prelude"
+          , symbolName = Ident () "function"
           }
       ]
     )
-  , ( UnQual (Ident "Constructor1")
+  , ( UnQual () (Ident () "Constructor1")
     , [ Constructor
-          { symbolModule = ModuleName "Prelude"
-          , symbolName = Ident "Constructor1"
-          , typeName = Ident "DataType"
+          { symbolModule = ModuleName () "Prelude"
+          , symbolName = Ident () "Constructor1"
+          , typeName = Ident () "DataType"
           }
       ]
     )
-  , ( UnQual (Ident "Constructor2")
+  , ( UnQual () (Ident () "Constructor2")
     , [ Constructor
-          { symbolModule = ModuleName "Prelude"
-          , symbolName = Ident "Constructor2"
-          , typeName = Ident "DataType"
+          { symbolModule = ModuleName () "Prelude"
+          , symbolName = Ident () "Constructor2"
+          , typeName = Ident () "DataType"
           }
       ]
     )
-  , ( UnQual (Ident "DataType")
+  , ( UnQual () (Ident () "DataType")
     , [ Data
-          { symbolModule = ModuleName "Prelude"
-          , symbolName = Ident "DataType"
+          { symbolModule = ModuleName () "Prelude"
+          , symbolName = Ident () "DataType"
           }
       ]
     )
-  , ( UnQual (Ident "Newtype")
+  , ( UnQual () (Ident () "Newtype")
     , [ NewType
-          { symbolModule = ModuleName "Prelude"
-          , symbolName = Ident "Newtype"
+          { symbolModule = ModuleName () "Prelude"
+          , symbolName = Ident () "Newtype"
           }
       ]
     )
-  , ( UnQual (Ident "function")
+  , ( UnQual () (Ident () "function")
     , [ Value
-          { symbolModule = ModuleName "Prelude"
-          , symbolName = Ident "function"
+          { symbolModule = ModuleName () "Prelude"
+          , symbolName = Ident () "function"
           }
       ]
     )

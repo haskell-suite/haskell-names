@@ -22,8 +22,8 @@ import Text.Show.Pretty (ppShow)
 import Text.Printf
 import qualified Data.Foldable as F
 
-import Language.Haskell.Exts.Annotated hiding (NewType)
-import qualified Language.Haskell.Exts.Annotated as Syntax (DataOrNew(NewType))
+import Language.Haskell.Exts hiding (DataOrNew(NewType))
+import qualified Language.Haskell.Exts.Syntax as Syntax (DataOrNew(NewType))
 import qualified Language.Haskell.Exts as U (ModuleName(ModuleName))
 import Language.Haskell.Names
 import Language.Haskell.Names.Exports
@@ -96,7 +96,7 @@ environmentTests :: TestTree
 environmentTests = goldenTest path run where
   run = do
     baseEnvironment <- loadBase
-    writeSymbols out (baseEnvironment Map.! (U.ModuleName "Prelude"))
+    writeSymbols out (baseEnvironment Map.! (U.ModuleName () "Prelude"))
   path = "tests/environment/Prelude.symbols"
   out = path <.> "out"
 

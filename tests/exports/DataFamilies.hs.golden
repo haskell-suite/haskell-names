@@ -1,30 +1,30 @@
 [ DataFam
-    { symbolModule = ModuleName "DataFamilies"
-    , symbolName = Ident "Vector"
+    { symbolModule = ModuleName () "DataFamilies"
+    , symbolName = Ident () "Vector"
     , associate = Nothing
     }
 , Class
-    { symbolModule = ModuleName "DataFamilies"
-    , symbolName = Ident "ListLike"
+    { symbolModule = ModuleName () "DataFamilies"
+    , symbolName = Ident () "ListLike"
     }
 , TypeFam
-    { symbolModule = ModuleName "DataFamilies"
-    , symbolName = Ident "I"
-    , associate = Just (Ident "ListLike")
+    { symbolModule = ModuleName () "DataFamilies"
+    , symbolName = Ident () "I"
+    , associate = Just (Ident () "ListLike")
     }
 , Method
-    { symbolModule = ModuleName "DataFamilies"
-    , symbolName = Ident "method1"
-    , className = Ident "ListLike"
+    { symbolModule = ModuleName () "DataFamilies"
+    , symbolName = Ident () "method1"
+    , className = Ident () "ListLike"
     }
 , DataFam
-    { symbolModule = ModuleName "DataFamilies"
-    , symbolName = Ident "Vector"
+    { symbolModule = ModuleName () "DataFamilies"
+    , symbolName = Ident () "Vector"
     , associate = Nothing
     }
 , Constructor
-    { symbolModule = ModuleName "DataFamilies"
-    , symbolName = Ident "U_Vector"
-    , typeName = Ident "Vector"
+    { symbolModule = ModuleName () "DataFamilies"
+    , symbolName = Ident () "U_Vector"
+    , typeName = Ident () "Vector"
     }
 ]

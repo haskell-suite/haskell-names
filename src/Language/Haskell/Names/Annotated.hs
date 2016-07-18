@@ -17,10 +17,9 @@ import Language.Haskell.Names.Open.Base
 import Language.Haskell.Names.Open.Instances ()
 import qualified Language.Haskell.Names.GlobalSymbolTable as Global
 import qualified Language.Haskell.Names.LocalSymbolTable as Local
-import Language.Haskell.Names.SyntaxUtils (annName,setAnn)
-import Language.Haskell.Exts.Annotated.Simplify (sQName)
-import Language.Haskell.Exts.Annotated
-import qualified Language.Haskell.Exts.Syntax as UnAnn
+import Language.Haskell.Names.SyntaxUtils (dropAnn, annName,setAnn)
+import Language.Haskell.Exts
+import Language.Haskell.Exts.Syntax
 import Data.Proxy
 import Data.Lens.Light
 import Data.Typeable (
@@ -93,7 +92,7 @@ lookupValue qn sc = Scoped nameInfo (ann qn)
         Right r -> LocalValue r
         _ ->
           case Global.lookupValue qn $ getL gTable sc of
-            Global.SymbolFound r -> GlobalSymbol r (sQName qn)
+            Global.SymbolFound r -> GlobalSymbol r (dropAnn qn)
             Global.Error e -> ScopeError e
             Global.Special -> None
 
@@ -103,7 +102,7 @@ lookupType qn sc = Scoped nameInfo (ann qn)
   where
     nameInfo =
       case Global.lookupType qn $ getL gTable sc of
-        Global.SymbolFound r -> GlobalSymbol r (sQName qn)
+        Global.SymbolFound r -> GlobalSymbol r (dropAnn qn)
         Global.Error e -> ScopeError e
         Global.Special -> None
 
@@ -112,7 +111,7 @@ lookupMethod n sc = Scoped nameInfo (ann qn)
   where
     nameInfo =
       case Global.lookupMethodOrAssociate qn $ getL gTable sc of
-        Global.SymbolFound r -> GlobalSymbol r (sQName qn)
+        Global.SymbolFound r -> GlobalSymbol r (dropAnn qn)
         Global.Error e -> ScopeError e
         Global.Special -> None
     qn = qualifyName (getL instQual sc) n
@@ -122,15 +121,15 @@ lookupAssociatedType qn sc = Scoped nameInfo (ann qn)
   where
     nameInfo =
       case Global.lookupMethodOrAssociate qn' $ getL gTable sc of
-        Global.SymbolFound r -> GlobalSymbol r (sQName qn)
+        Global.SymbolFound r -> GlobalSymbol r (dropAnn qn)
         Global.Error e -> ScopeError e
         Global.Special -> None
     qn' = case qn of
         UnQual _ n -> qualifyName (getL instQual sc) n
         _ -> qn
 
-qualifyName :: Maybe UnAnn.ModuleName -> Name l -> QName l
+qualifyName :: Maybe (ModuleName ()) -> Name l -> QName l
 qualifyName Nothing n = UnQual (ann n) n
-qualifyName (Just (UnAnn.ModuleName moduleName)) n = Qual (ann n) annotatedModuleName n
+qualifyName (Just (ModuleName () moduleName)) n = Qual (ann n) annotatedModuleName n
   where
     annotatedModuleName = ModuleName (ann n) moduleName
