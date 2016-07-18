@@ -1,12 +1,12 @@
 Name:                   haskell-names
-Version:                0.6.0
+Version:                0.7.0
 License:                BSD3
 Author:                 Philipp Schuster, Roman Cheplyaka, Lennart Augustsson
 Maintainer:             Philipp Schuster
 Category:               Language
 Synopsis:               Name resolution library for Haskell
 Description:
-  This package takes modules parsed with `haskell-src-exts`, resolves used names and annotates the parsed module with scoping information. 
+  This package takes modules parsed with `haskell-src-exts`, resolves used names and annotates the parsed module with scoping information.
 Homepage:               http://documentup.com/haskell-suite/haskell-names
 Stability:              Experimental
 Build-Type:             Simple
@@ -236,11 +236,11 @@ Library
       base >= 4 && < 5
     , haskell-src-exts >= 1.17 && < 1.18
     , mtl >= 2.2.1 && < 2.3
-    , transformers >=0.4.2.0 && < 0.5
+    , transformers >=0.4.2.0 && < 0.6
     , filepath >= 1.1 && < 1.5
     , containers >= 0.2 && < 0.6
     , uniplate >= 1.5.1 && < 1.7
-    , aeson >= 0.8.0.2 && < 0.11
+    , aeson >= 0.8.0.2 && < 0.12
     , bytestring >= 0.10.4.0 && < 0.11
     , data-lens-light >= 0.1.2.1 && < 0.2
     , traverse-with-class >= 0.2.0.3 && < 0.3
