@@ -6,8 +6,6 @@ import Data.Monoid
 import Language.Haskell.Names.Types
 import Language.Haskell.Names.SyntaxUtils
 import Language.Haskell.Exts
-import Language.Haskell.Exts.Annotated.Simplify (sName)
-import qualified Language.Haskell.Exts.Annotated as Ann
 import qualified Language.Haskell.Names.GlobalSymbolTable as Global
 import Control.Monad (guard)
 import Data.List (nub)

@@ -7,8 +7,6 @@ import Data.Maybe
 import Control.Monad
 
 import Language.Haskell.Exts
-import Language.Haskell.Exts.Annotated.Simplify (sName)
-import qualified Language.Haskell.Exts.Annotated as Ann
 import Language.Haskell.Names.Types
 import Language.Haskell.Names.SyntaxUtils
 import qualified Language.Haskell.Names.GlobalSymbolTable as Global

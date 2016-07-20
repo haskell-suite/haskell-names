@@ -2,12 +2,7 @@
 -- | This module is designed to be imported qualified.
 module Language.Haskell.Names.GlobalSymbolTable where
 
-import Language.Haskell.Exts (
-    QName)
-import qualified Language.Haskell.Exts.Annotated as Ann (
-    QName)
-import Language.Haskell.Exts.Annotated.Simplify (
-    sQName)
+import Language.Haskell.Exts hiding (NewType)
 
 import Data.Map (
     Map)
@@ -19,6 +14,7 @@ import Data.List as List (union)
 import Data.Maybe (fromMaybe)
 
 import Language.Haskell.Names.Types
+import Language.Haskell.Names.SyntaxUtils (dropAnn)
 
 -- | Global symbol table — contains names declared somewhere at the top level.
 type Table = Map QName [Symbol]

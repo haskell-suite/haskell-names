@@ -3,7 +3,6 @@
 module Language.Haskell.Names.Types where
 
 import Language.Haskell.Exts
-import qualified Language.Haskell.Exts.Annotated as Ann
 import Data.Typeable
 import Data.Data
 import Data.Foldable as F

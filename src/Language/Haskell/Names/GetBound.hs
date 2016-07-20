@@ -8,8 +8,7 @@ module Language.Haskell.Names.GetBound
 import Data.Generics.Uniplate.Data
 import Data.Data
 
-import qualified Language.Haskell.Exts as UnAnn
-import Language.Haskell.Exts.Annotated
+import Language.Haskell.Exts
 import Language.Haskell.Names.RecordWildcards
 import Language.Haskell.Names.SyntaxUtils
 import qualified Language.Haskell.Names.GlobalSymbolTable as Global

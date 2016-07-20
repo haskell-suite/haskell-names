@@ -10,10 +10,9 @@ import Data.Maybe
 import Data.Data
 import qualified Data.Map as Map
 
-import qualified Language.Haskell.Exts as UnAnn (ModuleName,Name)
-import Language.Haskell.Exts.Annotated hiding (NewType)
-import Language.Haskell.Exts.Annotated.Simplify (sModuleName,sName)
-import qualified Language.Haskell.Exts.Annotated as Syntax (DataOrNew(NewType))
+import Language.Haskell.Exts (ModuleName,Name)
+import Language.Haskell.Exts hiding (DataOrNew(NewType))
+import qualified Language.Haskell.Exts as Syntax (DataOrNew(NewType))
 import Language.Haskell.Names.Types
 import qualified Language.Haskell.Names.GlobalSymbolTable as Global
 import Language.Haskell.Names.SyntaxUtils

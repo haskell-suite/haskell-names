@@ -13,9 +13,8 @@ module Language.Haskell.Names.Environment
   ) where
 
 import Language.Haskell.Names.Types (Environment, Symbol(..))
-import Language.Haskell.Exts (ModuleName(ModuleName),prettyPrint,Name)
-import Language.Haskell.Names.SyntaxUtils (stringToName,nameToString,annName)
-import Language.Haskell.Exts.Annotated.Simplify (sName)
+import Language.Haskell.Exts (ModuleName(ModuleName),Name,prettyPrint)
+import Language.Haskell.Names.SyntaxUtils (stringToName,nameToString,dropAnn, annName)
 import qualified Data.ByteString.Lazy as BS (readFile, writeFile, pack)
 import Data.Aeson
 import Data.Monoid

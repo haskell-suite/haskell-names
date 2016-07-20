@@ -10,9 +10,7 @@ import Control.Applicative
 import Control.Monad
 import Control.Monad.Writer
 import Data.Data
-import qualified Language.Haskell.Exts as UnAnn (QName(Qual,UnQual))
-import Language.Haskell.Exts.Annotated.Simplify (sQName,sModuleName)
-import Language.Haskell.Exts.Annotated
+import Language.Haskell.Exts
 import Language.Haskell.Names.Types
 import Language.Haskell.Names.ScopeUtils
 import Language.Haskell.Names.SyntaxUtils

@@ -11,8 +11,8 @@ import qualified Language.Haskell.Names.GlobalSymbolTable as Global
 import qualified Language.Haskell.Names.LocalSymbolTable as Local
 import Language.Haskell.Names.GetBound
 import Language.Haskell.Names.RecordWildcards
-import Language.Haskell.Exts.Annotated
-import qualified Language.Haskell.Exts.Syntax as UnAnn
+import Language.Haskell.Exts
+import Language.Haskell.Exts.Syntax
 import Control.Applicative
 import Control.Monad.Identity
 import Data.List

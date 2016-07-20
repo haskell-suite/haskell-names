@@ -11,8 +11,7 @@ import Control.Monad (forM, forM_, unless)
 
 import qualified Data.Map as Map (insert)
 import Control.Monad.State.Strict (State, execState, get, modify)
-import Language.Haskell.Exts.Annotated
-import Language.Haskell.Exts.Annotated.Simplify (sModuleName)
+import Language.Haskell.Exts
 
 import Language.Haskell.Names.Types
 import Language.Haskell.Names.SyntaxUtils

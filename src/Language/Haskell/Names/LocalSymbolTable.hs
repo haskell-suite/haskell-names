@@ -9,9 +9,8 @@ module Language.Haskell.Names.LocalSymbolTable
 
 import qualified Data.Map as Map
 import Data.Monoid
-import Language.Haskell.Exts (Name)
-import Language.Haskell.Exts.Annotated.Simplify (sName)
-import qualified Language.Haskell.Exts.Annotated as Ann
+import Language.Haskell.Exts
+import Language.Haskell.Names.SyntaxUtils (dropAnn)
 import Language.Haskell.Names.Types
 
 -- | Local symbol table — contains locally bound names
