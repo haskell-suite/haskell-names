@@ -14,17 +14,17 @@ import Language.Haskell.Names.SyntaxUtils (dropAnn)
 import Language.Haskell.Names.Types
 
 -- | Local symbol table — contains locally bound names
-newtype Table = Table (Map.Map Name Ann.SrcLoc)
+newtype Table = Table (Map.Map (Name ()) SrcLoc)
   deriving Monoid
 
-addValue :: Ann.SrcInfo l => Ann.Name l -> Table -> Table
+addValue :: SrcInfo l => Name l -> Table -> Table
 addValue n (Table vs) =
-  Table (Map.insert (sName n) (Ann.getPointLoc $ Ann.ann n) vs)
+  Table (Map.insert (dropAnn n) (getPointLoc $ ann n) vs)
 
-lookupValue :: Ann.QName l -> Table -> Either (Error l) Ann.SrcLoc
-lookupValue qn@(Ann.UnQual _ n) (Table vs) =
+lookupValue :: QName l -> Table -> Either (Error l) SrcLoc
+lookupValue qn@(UnQual _ n) (Table vs) =
   maybe (Left $ ENotInScope qn) Right $
-    Map.lookup (sName n) vs
+    Map.lookup (dropAnn n) vs
 lookupValue qn _ = Left $ ENotInScope qn
 
 empty :: Table

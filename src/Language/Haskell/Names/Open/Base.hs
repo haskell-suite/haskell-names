@@ -48,18 +48,18 @@ data NameContext
 -- If we enter an instance with a qualified class name we have to
 -- remember the qualification to resolve method names.
 data Scope = Scope
-  { _moduName :: UnAnn.ModuleName
+  { _moduName :: ModuleName ()
   , _gTable :: Global.Table
   , _lTable :: Local.Table
   , _nameCtx :: NameContext
-  , _instQual :: Maybe UnAnn.ModuleName
+  , _instQual :: Maybe (ModuleName ())
   , _wcNames :: WcNames
   }
 
 makeLens ''Scope
 
 -- | Create an initial scope
-initialScope :: UnAnn.ModuleName -> Global.Table -> Scope
+initialScope :: ModuleName () -> Global.Table -> Scope
 initialScope moduleName tbl = Scope moduleName tbl Local.empty Other Nothing []
 
 -- | Merge local tables of two scopes. The other fields of the scopes are
@@ -158,5 +158,5 @@ exprUV = setNameCtx ReferenceUV
 exprUT :: Scope -> Scope
 exprUT = setNameCtx ReferenceUT
 
-instQ :: Maybe UnAnn.ModuleName -> Scope -> Scope
+instQ :: Maybe (ModuleName ()) -> Scope -> Scope
 instQ m = setL instQual m

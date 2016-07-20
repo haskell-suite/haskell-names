@@ -1,3 +1,5 @@
 [ Value
-    { symbolModule = ModuleName "Main" , symbolName = Ident "main" }
+    { symbolModule = ModuleName () "Main"
+    , symbolName = Ident () "main"
+    }
 ]

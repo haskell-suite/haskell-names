@@ -36,17 +36,16 @@ dropAnn = fmap (const ())
 setAnn :: (Functor a) => l' -> a l -> a l'
 setAnn l = fmap (const l)
 
-annName :: UnAnn.Name -> Name ()
-annName (UnAnn.Ident n) = Ident () n
-annName (UnAnn.Symbol n) = Symbol () n
+annName :: a -> a
+annName = id
 
-nameQualification :: QName l -> Maybe UnAnn.ModuleName
+nameQualification :: QName l -> Maybe (ModuleName ())
 nameQualification (UnQual _ _) =
   Nothing
 nameQualification (Special _ _) =
   Nothing
 nameQualification (Qual _ (ModuleName _ moduleName) _) =
-  Just (UnAnn.ModuleName moduleName)
+  Just (ModuleName () moduleName)
 
 getModuleName :: Module l -> ModuleName l
 getModuleName (Module _ (Just (ModuleHead _ mn _ _)) _ _ _) = mn

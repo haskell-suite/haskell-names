@@ -24,9 +24,9 @@ type WcNames = [WcField]
 
 -- | Information about a field in the wildcard
 data WcField = WcField
-  { wcFieldName :: Name
+  { wcFieldName :: Name ()
     -- ^ the field's simple name
-  , wcFieldModuleName :: ModuleName
+  , wcFieldModuleName :: ModuleName ()
     -- ^ the field's original name
   , wcExistsGlobalValue :: Bool
     -- ^ whether there is a global value in scope with the same name as
@@ -35,14 +35,14 @@ data WcField = WcField
 
 getElidedFields
   :: Global.Table
-  -> Ann.QName l
-  -> [Ann.Name l] -- mentioned field names
+  -> QName l
+  -> [Name l] -- mentioned field names
   -> WcNames
 getElidedFields globalTable con fields =
   let
-    givenFieldNames :: Map.Map Name ()
+    givenFieldNames :: Map.Map (Name ()) ()
     givenFieldNames =
-      Map.fromList . map ((, ()) . sName) $ fields
+      Map.fromList . map ((, ()) . dropAnn) $ fields
 
     -- FIXME must report error when the constructor cannot be
     -- resolved
@@ -59,9 +59,9 @@ getElidedFields globalTable con fields =
         guard (conOrigName `elem` constructors)
         return symbol)
 
-    existsGlobalValue :: Name -> Bool
+    existsGlobalValue :: Name () -> Bool
     existsGlobalValue name =
-      case Map.lookup (UnQual name) globalTable of
+      case Map.lookup (UnQual () name) globalTable of
         Just [symbol]
           | Just typeOrigName <- mbTypeOrigName
           , Selector {} <- symbol
@@ -70,7 +70,7 @@ getElidedFields globalTable con fields =
           | otherwise -> True -- exists, but not this field's selector
         _ -> False -- doesn't exist or ambiguous
 
-    ourFieldNames :: Map.Map Name WcField
+    ourFieldNames :: Map.Map (Name ()) WcField
     ourFieldNames = Map.fromList (do
         symbol <- ourFieldInfos
         let name = symbolName symbol
@@ -83,24 +83,24 @@ getElidedFields globalTable con fields =
 
   in Map.elems $ ourFieldNames `Map.difference` givenFieldNames
 
-nameOfPatField :: Ann.PatField l -> Maybe (Ann.Name l)
+nameOfPatField :: PatField l -> Maybe (Name l)
 nameOfPatField pf =
   case pf of
-    Ann.PFieldPat _ qn _ -> Just $ qNameToName qn
-    Ann.PFieldPun _ qn -> Just $ qNameToName qn
-    Ann.PFieldWildcard {} -> Nothing
+    PFieldPat _ qn _ -> Just $ qNameToName qn
+    PFieldPun _ qn -> Just $ qNameToName qn
+    PFieldWildcard {} -> Nothing
 
-nameOfUpdField :: Ann.FieldUpdate l -> Maybe (Ann.Name l)
+nameOfUpdField :: FieldUpdate l -> Maybe (Name l)
 nameOfUpdField pf =
   case pf of
-    Ann.FieldUpdate _ qn _ -> Just $ qNameToName qn
-    Ann.FieldPun _ qn -> Just $ qNameToName qn
-    Ann.FieldWildcard {} -> Nothing
+    FieldUpdate _ qn _ -> Just $ qNameToName qn
+    FieldPun _ qn -> Just $ qNameToName qn
+    FieldWildcard {} -> Nothing
 
 patWcNames
   :: Global.Table
-  -> Ann.QName l
-  -> [Ann.PatField l]
+  -> QName l
+  -> [PatField l]
   -> WcNames
 patWcNames gt con patfs =
   getElidedFields gt con $
@@ -109,8 +109,8 @@ patWcNames gt con patfs =
 expWcNames
   :: Global.Table
   -> Local.Table
-  -> Ann.QName l
-  -> [Ann.FieldUpdate l]
+  -> QName l
+  -> [FieldUpdate l]
   -> WcNames
 expWcNames gt lt con patfs =
   filter isInScope $
@@ -121,4 +121,4 @@ expWcNames gt lt con patfs =
       | Right {} <- Local.lookupValue qn lt = True
       | otherwise = wcExistsGlobalValue field
       where
-        qn = Ann.UnQual () (annName (wcFieldName field))
+        qn = UnQual () (annName (wcFieldName field))

@@ -96,7 +96,7 @@ lookupQName qname scope = Scoped nameInfo (ann qname) where
 
   checkUniqueness symbols = case symbols of
     [] -> ScopeError (ENotInScope qname)
-    [symbol] -> GlobalSymbol symbol (sQName qname)
+    [symbol] -> GlobalSymbol symbol (dropAnn qname)
     _ -> ScopeError (EAmbiguous qname symbols)
 
 
@@ -123,13 +123,13 @@ lookupName name scope = Scoped nameInfo (ann name) where
 
   checkUniqueness qname symbols = case symbols of
     [] -> ScopeError (ENotInScope qname)
-    [symbol] -> GlobalSymbol symbol (sQName qname)
+    [symbol] -> GlobalSymbol symbol (dropAnn qname)
     _ -> ScopeError (EAmbiguous qname symbols)
 
 
-qualifyName :: Maybe UnAnn.ModuleName -> Name l -> QName l
+qualifyName :: Maybe (ModuleName ()) -> Name l -> QName l
 qualifyName Nothing n = UnQual (ann n) n
-qualifyName (Just (UnAnn.ModuleName moduleName)) n =
+qualifyName (Just (ModuleName () moduleName)) n =
   Qual (ann n) annotatedModuleName n where
     annotatedModuleName = ModuleName (ann n) moduleName
 

@@ -143,7 +143,7 @@ instance (Data l) => GetBound (Pat l) l where
       dropExp (PViewPat _ _ x) = x
       dropExp x = x
 
-      getRecVars :: [UnAnn.Name] -> PatField l -> [Name l]
+      getRecVars :: [Name ()] -> PatField l -> [Name l]
       getRecVars _ PFieldPat {} = [] -- this is already found by the generic algorithm
       getRecVars _ (PFieldPun _ qn) = [qNameToName qn]
       getRecVars elidedFields (PFieldWildcard l) = map (setAnn l . annName) elidedFields

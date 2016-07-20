@@ -44,26 +44,26 @@ importTable environment modul =
       DisableExtension ImplicitPrelude `elem` extensions || isPreludeImported
     isPreludeImported = not (null (do
       importDecl <- importDecls
-      guard (sModuleName (importModule importDecl) == preludeModuleName)))
+      guard (dropAnn (importModule importDecl) == preludeModuleName)))
     preludeSymbols = fromMaybe [] (Map.lookup preludeModuleName environment)
     (_, extensions) = getModuleExtensions modul
 
-preludeModuleName :: UnAnn.ModuleName
-preludeModuleName = UnAnn.ModuleName "Prelude"
+preludeModuleName :: ModuleName ()
+preludeModuleName = ModuleName () "Prelude"
 
 importDeclTable :: Environment -> ImportDecl l -> Global.Table
 importDeclTable environment importDecl =
   computeSymbolTable isQualified moduleName importSymbols where
     ImportDecl _ importModuleName isQualified _ _ _ maybeAs maybeImportSpecList =
       importDecl
-    moduleName = sModuleName (fromMaybe importModuleName maybeAs)
+    moduleName = dropAnn (fromMaybe importModuleName maybeAs)
     importSymbols = case maybeImportSpecList of
       Nothing ->
         importModuleSymbols
       Just importSpecList ->
         importSpecListSymbols importModuleName importModuleSymbols importSpecList
     importModuleSymbols = fromMaybe [] (
-      Map.lookup (sModuleName importModuleName) environment)
+      Map.lookup (dropAnn importModuleName) environment)
 
 
 importSpecListSymbols :: ModuleName l -> [Symbol] -> ImportSpecList l -> [Symbol]
@@ -99,7 +99,7 @@ annotateImportDecl moduleName environment importDecl = importDecl' where
     maybeAs
     maybeImportSpecList = importDecl
 
-  importDecl' = case Map.lookup (sModuleName importModuleName) environment of
+  importDecl' = case Map.lookup (dropAnn importModuleName) environment of
     Nothing -> scopeError (EModNotFound importModuleName) importDecl
     Just symbols ->
       ImportDecl
@@ -121,7 +121,7 @@ annotateImportDecl moduleName environment importDecl = importDecl' where
               ScopeError e
             _ -> Import table
           table = computeSymbolTable isQualified qualificationName importSymbols
-          qualificationName = sModuleName (fromMaybe importModuleName maybeAs)
+          qualificationName = dropAnn (fromMaybe importModuleName maybeAs)
           importSymbols =
             maybe
               symbols
@@ -235,7 +235,7 @@ resolveImportSpec mod isHiding symbols spec =
           cns'
   where
     (~~) :: Symbol -> Name l -> Bool
-    symbol ~~ name = symbolName symbol == sName name
+    symbol ~~ name = symbolName symbol == dropAnn name
 
     isConstructor :: Symbol -> Bool
     isConstructor Constructor {} = True

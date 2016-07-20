@@ -96,7 +96,7 @@ environmentTests :: TestTree
 environmentTests = goldenTest path run where
   run = do
     baseEnvironment <- loadBase
-    writeSymbols out (baseEnvironment Map.! (U.ModuleName "Prelude"))
+    writeSymbols out (baseEnvironment Map.! (U.ModuleName () "Prelude"))
   path = "tests/environment/Prelude.symbols"
   out = path <.> "out"
 
