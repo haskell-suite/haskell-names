@@ -89,7 +89,7 @@ getImportDecls (XmlHybrid _ _ _ is _ _ _ _ _) = is
 
 getDeclHead :: Decl l -> Maybe (DeclHead l)
 getDeclHead (TypeDecl _ dhead _) = Just dhead
-getDeclHead (TypeFamDecl _ dhead _) = Just dhead
+getDeclHead (TypeFamDecl _ dhead _ _) = Just dhead
 getDeclHead (DataDecl _ _ _ dhead _ _) = Just dhead
 getDeclHead (GDataDecl _ _ _ dhead _ _ _) = Just dhead
 getDeclHead (DataFamDecl _ _ dhead _) = Just dhead
@@ -108,7 +108,7 @@ getDeclHeadName dh =
 
 isTypeDecl :: Decl l -> Bool
 isTypeDecl (TypeDecl _ _ _) = True
-isTypeDecl (TypeFamDecl _ _ _) = True
+isTypeDecl (TypeFamDecl _ _ _ _) = True
 isTypeDecl (DataDecl _ _ _ _ _ _) = True
 isTypeDecl (GDataDecl _ _ _ _ _ _ _) = True
 isTypeDecl (DataFamDecl _ _ _ _) = True

@@ -32,8 +32,7 @@ exportSpecSymbols globalTable exportSpec =
   case annotateExportSpec globalTable exportSpec of
     EVar (Scoped (Export symbols) _) _ -> symbols
     EAbs (Scoped (Export symbols) _) _ _ -> symbols
-    EThingAll (Scoped (Export symbols) _) _ -> symbols
-    EThingWith (Scoped (Export symbols) _) _ _ -> symbols
+    EThingWith (Scoped (Export symbols) _) _ _ _ -> symbols
     EModuleContents (Scoped (Export symbols) _) _ -> symbols
     _ -> []
 
@@ -59,7 +58,7 @@ annotateExportSpec globalTable exportSpec =
             (noScope ns)
             (Scoped (GlobalSymbol symbol (dropAnn qn)) <$> qn)
       symbols -> scopeError (EAmbiguous qn symbols) exportSpec
-  EThingAll l qn ->
+  EThingWith l w@(EWildcard l' n) qn [] ->
     case Global.lookupType qn globalTable of
       [] -> scopeError (ENotInScope qn) exportSpec
       [symbol] ->
@@ -71,9 +70,9 @@ annotateExportSpec globalTable exportSpec =
               return subSymbol)
           s = [symbol] <> subSymbols
         in
-          EThingAll (Scoped (Export s) l) (Scoped (GlobalSymbol symbol (dropAnn qn)) <$> qn)
+          EThingWith (Scoped (Export s) l) (fmap (Scoped None) w) (Scoped (GlobalSymbol symbol (dropAnn qn)) <$> qn) []
       symbols -> scopeError (EAmbiguous qn symbols) exportSpec
-  EThingWith l qn cns ->
+  EThingWith l w@(NoWildcard {}) qn cns ->
     case Global.lookupType qn globalTable of
       [] -> scopeError (ENotInScope qn) exportSpec
       [symbol] ->
@@ -86,7 +85,7 @@ annotateExportSpec globalTable exportSpec =
               cns
           s = [symbol] <> subSymbols
         in
-          EThingWith (Scoped (Export s) l) (Scoped (GlobalSymbol symbol (dropAnn qn)) <$> qn) cns'
+          EThingWith (Scoped (Export s) l) (fmap (Scoped None) w) (Scoped (GlobalSymbol symbol (dropAnn qn)) <$> qn) cns'
       symbols -> scopeError (EAmbiguous qn symbols) exportSpec
   -- FIXME ambiguity check
   EModuleContents _ modulename -> Scoped (Export exportedSymbols) <$> exportSpec where

@@ -52,7 +52,7 @@ getTopDeclSymbols
 getTopDeclSymbols impTbl modulename d = (case d of
     TypeDecl _ dh _ -> [declHeadSymbol Type dh]
 
-    TypeFamDecl _ dh _ -> [TypeFam (dropAnn modulename) (dropAnn (getDeclHeadName dh)) Nothing]
+    TypeFamDecl _ dh _ _ -> [TypeFam (dropAnn modulename) (dropAnn (getDeclHeadName dh)) Nothing]
 
     DataDecl _ dataOrNew _ dh qualConDecls _ -> declHeadSymbol (dataOrNewCon dataOrNew) dh : infos where
 
@@ -77,7 +77,7 @@ getTopDeclSymbols impTbl modulename d = (case d of
         cdecls = fromMaybe [] mds
         classSymbol = declHeadSymbol Class declHead
         typeFamilySymbols = do
-            ClsTyFam   _   familyHead _ <- cdecls
+            ClsTyFam   _   familyHead _ _ <- cdecls
             return (TypeFam (dropAnn modulename) (dropAnn (getDeclHeadName familyHead)) (Just (dropAnn (getDeclHeadName declHead))))
         dataFamilySymbols = do
             ClsDataFam _ _ familyHead _ <- cdecls
@@ -133,7 +133,7 @@ typeOuterName t = case t of
     TyParen _ typ -> typeOuterName typ
     TyInfix _ _ qname _ -> qNameToName qname
     TyKind _ typ _ -> typeOuterName typ
-    TyBang _ _ typ -> typeOuterName typ
+    TyBang _ _ _ typ -> typeOuterName typ
     _ -> error "illegal data family in data instance"
 
 qualConDeclNames :: [QualConDecl l] -> [(Name l,[Name l])]

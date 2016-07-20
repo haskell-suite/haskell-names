@@ -150,3 +150,11 @@ deriveGTraversable ''Namespace
 deriveGTraversable ''PatternSynDirection
 
 deriveGTraversable ''Role
+
+deriveGTraversable ''InjectivityInfo
+
+deriveGTraversable ''ResultSig
+
+deriveGTraversable ''Unpackedness
+
+deriveGTraversable ''EWildcard
