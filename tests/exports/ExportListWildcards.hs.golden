@@ -1,50 +1,50 @@
 [ Data
-    { symbolModule = ModuleName "ExportListWildcards"
-    , symbolName = Ident "Foo"
+    { symbolModule = ModuleName () "ExportListWildcards"
+    , symbolName = Ident () "Foo"
     }
 , Constructor
-    { symbolModule = ModuleName "ExportListWildcards"
-    , symbolName = Ident "Foo1"
-    , typeName = Ident "Foo"
+    { symbolModule = ModuleName () "ExportListWildcards"
+    , symbolName = Ident () "Foo1"
+    , typeName = Ident () "Foo"
     }
 , Constructor
-    { symbolModule = ModuleName "ExportListWildcards"
-    , symbolName = Ident "Foo2"
-    , typeName = Ident "Foo"
+    { symbolModule = ModuleName () "ExportListWildcards"
+    , symbolName = Ident () "Foo2"
+    , typeName = Ident () "Foo"
     }
 , Constructor
-    { symbolModule = ModuleName "ExportListWildcards"
-    , symbolName = Ident "Foo3"
-    , typeName = Ident "Foo"
+    { symbolModule = ModuleName () "ExportListWildcards"
+    , symbolName = Ident () "Foo3"
+    , typeName = Ident () "Foo"
     }
 , Selector
-    { symbolModule = ModuleName "ExportListWildcards"
-    , symbolName = Ident "c"
-    , typeName = Ident "Foo"
-    , constructors = [ Ident "Foo3" ]
+    { symbolModule = ModuleName () "ExportListWildcards"
+    , symbolName = Ident () "c"
+    , typeName = Ident () "Foo"
+    , constructors = [ Ident () "Foo3" ]
     }
 , Class
-    { symbolModule = ModuleName "ExportListWildcards"
-    , symbolName = Ident "Bar"
+    { symbolModule = ModuleName () "ExportListWildcards"
+    , symbolName = Ident () "Bar"
     }
 , Method
-    { symbolModule = ModuleName "ExportListWildcards"
-    , symbolName = Ident "x"
-    , className = Ident "Bar"
+    { symbolModule = ModuleName () "ExportListWildcards"
+    , symbolName = Ident () "x"
+    , className = Ident () "Bar"
     }
 , NewType
-    { symbolModule = ModuleName "ExportListWildcards"
-    , symbolName = Ident "N"
+    { symbolModule = ModuleName () "ExportListWildcards"
+    , symbolName = Ident () "N"
     }
 , Constructor
-    { symbolModule = ModuleName "ExportListWildcards"
-    , symbolName = Ident "N"
-    , typeName = Ident "N"
+    { symbolModule = ModuleName () "ExportListWildcards"
+    , symbolName = Ident () "N"
+    , typeName = Ident () "N"
     }
 , Selector
-    { symbolModule = ModuleName "ExportListWildcards"
-    , symbolName = Ident "unN"
-    , typeName = Ident "N"
-    , constructors = [ Ident "N" ]
+    { symbolModule = ModuleName () "ExportListWildcards"
+    , symbolName = Ident () "unN"
+    , typeName = Ident () "N"
+    , constructors = [ Ident () "N" ]
     }
 ]

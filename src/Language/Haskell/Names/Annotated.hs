@@ -17,10 +17,9 @@ import Language.Haskell.Names.Open.Base
 import Language.Haskell.Names.Open.Instances ()
 import qualified Language.Haskell.Names.GlobalSymbolTable as Global
 import qualified Language.Haskell.Names.LocalSymbolTable as Local
-import Language.Haskell.Names.SyntaxUtils (annName,setAnn)
-import Language.Haskell.Exts.Annotated.Simplify (sQName)
-import Language.Haskell.Exts.Annotated
-import qualified Language.Haskell.Exts.Syntax as UnAnn
+import Language.Haskell.Names.SyntaxUtils (dropAnn, annName,setAnn)
+import Language.Haskell.Exts
+import Language.Haskell.Exts.Syntax
 import Data.Proxy
 import Data.Lens.Light
 import Data.Typeable (
@@ -97,7 +96,7 @@ lookupQName qname scope = Scoped nameInfo (ann qname) where
 
   checkUniqueness symbols = case symbols of
     [] -> ScopeError (ENotInScope qname)
-    [symbol] -> GlobalSymbol symbol (sQName qname)
+    [symbol] -> GlobalSymbol symbol (dropAnn qname)
     _ -> ScopeError (EAmbiguous qname symbols)
 
 
@@ -124,13 +123,13 @@ lookupName name scope = Scoped nameInfo (ann name) where
 
   checkUniqueness qname symbols = case symbols of
     [] -> ScopeError (ENotInScope qname)
-    [symbol] -> GlobalSymbol symbol (sQName qname)
+    [symbol] -> GlobalSymbol symbol (dropAnn qname)
     _ -> ScopeError (EAmbiguous qname symbols)
 
 
-qualifyName :: Maybe UnAnn.ModuleName -> Name l -> QName l
+qualifyName :: Maybe (ModuleName ()) -> Name l -> QName l
 qualifyName Nothing n = UnQual (ann n) n
-qualifyName (Just (UnAnn.ModuleName moduleName)) n =
+qualifyName (Just (ModuleName () moduleName)) n =
   Qual (ann n) annotatedModuleName n where
     annotatedModuleName = ModuleName (ann n) moduleName
 

@@ -2,7 +2,7 @@
 {-# LANGUAGE TemplateHaskell, MultiParamTypeClasses, FlexibleInstances, ConstraintKinds, UndecidableInstances #-}
 module Language.Haskell.Names.Open.Derived where
 
-import Language.Haskell.Exts.Annotated
+import Language.Haskell.Exts
 import Data.Generics.Traversable.TH
 
 deriveGTraversable ''ModuleName
@@ -150,3 +150,11 @@ deriveGTraversable ''Namespace
 deriveGTraversable ''PatternSynDirection
 
 deriveGTraversable ''Role
+
+deriveGTraversable ''InjectivityInfo
+
+deriveGTraversable ''ResultSig
+
+deriveGTraversable ''Unpackedness
+
+deriveGTraversable ''EWildcard

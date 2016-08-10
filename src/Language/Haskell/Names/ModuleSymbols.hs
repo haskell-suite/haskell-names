@@ -10,10 +10,9 @@ import Data.Maybe
 import Data.Data
 import qualified Data.Map as Map
 
-import qualified Language.Haskell.Exts as UnAnn (ModuleName,Name)
-import Language.Haskell.Exts.Annotated hiding (NewType)
-import Language.Haskell.Exts.Annotated.Simplify (sModuleName,sName)
-import qualified Language.Haskell.Exts.Annotated as Syntax (DataOrNew(NewType))
+import Language.Haskell.Exts (ModuleName,Name)
+import Language.Haskell.Exts hiding (DataOrNew(NewType))
+import qualified Language.Haskell.Exts as Syntax (DataOrNew(NewType))
 import Language.Haskell.Names.Types
 import qualified Language.Haskell.Names.GlobalSymbolTable as Global
 import Language.Haskell.Names.SyntaxUtils
@@ -28,7 +27,7 @@ moduleTable
   -> Module l
   -> Global.Table
 moduleTable impTbl m = Global.mergeTables impTbl (computeSymbolTable
-  False (sModuleName (getModuleName m)) (moduleSymbols impTbl m))
+  False (dropAnn (getModuleName m)) (moduleSymbols impTbl m))
 
 -- | Compute the symbols that are defined in the given module.
 --
@@ -53,7 +52,7 @@ getTopDeclSymbols
 getTopDeclSymbols impTbl modulename d = (case d of
     TypeDecl _ dh _ -> [declHeadSymbol Type dh]
 
-    TypeFamDecl _ dh _ -> [TypeFam (sModuleName modulename) (sName (getDeclHeadName dh)) Nothing]
+    TypeFamDecl _ dh _ _ -> [TypeFam (dropAnn modulename) (dropAnn (getDeclHeadName dh)) Nothing]
 
     DataDecl _ dataOrNew _ dh qualConDecls _ -> declHeadSymbol (dataOrNewCon dataOrNew) dh : infos where
 
@@ -72,27 +71,27 @@ getTopDeclSymbols impTbl modulename d = (case d of
 
         infos = constructorsToInfos modulename dq cons          
 
-    DataFamDecl _ _ dh _ -> [DataFam (sModuleName modulename) (sName (getDeclHeadName dh)) Nothing]
+    DataFamDecl _ _ dh _ -> [DataFam (dropAnn modulename) (dropAnn (getDeclHeadName dh)) Nothing]
 
     ClassDecl _ _ declHead _ mds -> classSymbol : typeFamilySymbols ++ dataFamilySymbols ++ methodSymbols where
         cdecls = fromMaybe [] mds
         classSymbol = declHeadSymbol Class declHead
         typeFamilySymbols = do
-            ClsTyFam   _   familyHead _ <- cdecls
-            return (TypeFam (sModuleName modulename) (sName (getDeclHeadName familyHead)) (Just (sName (getDeclHeadName declHead))))
+            ClsTyFam   _   familyHead _ _ <- cdecls
+            return (TypeFam (dropAnn modulename) (dropAnn (getDeclHeadName familyHead)) (Just (dropAnn (getDeclHeadName declHead))))
         dataFamilySymbols = do
             ClsDataFam _ _ familyHead _ <- cdecls
-            return (DataFam (sModuleName modulename) (sName (getDeclHeadName familyHead)) (Just (sName (getDeclHeadName declHead))))
+            return (DataFam (dropAnn modulename) (dropAnn (getDeclHeadName familyHead)) (Just (dropAnn (getDeclHeadName declHead))))
         methodSymbols = do
             methodName <- getBound impTbl d
-            return (Method (sModuleName modulename) (sName methodName) (sName (getDeclHeadName declHead)))
+            return (Method (dropAnn modulename) (dropAnn methodName) (dropAnn (getDeclHeadName declHead)))
 
-    FunBind _ ms -> [ Value (sModuleName modulename) (sName vn) ] where
+    FunBind _ ms -> [ Value (dropAnn modulename) (dropAnn vn) ] where
       vn : _ = getBound impTbl ms
 
-    PatBind _ p _ _ -> [ Value (sModuleName modulename) (sName vn) | vn <- getBound impTbl p ]
+    PatBind _ p _ _ -> [ Value (dropAnn modulename) (dropAnn vn) | vn <- getBound impTbl p ]
 
-    ForImp _ _ _ _ fn _ -> [ Value (sModuleName modulename) (sName fn)]
+    ForImp _ _ _ _ fn _ -> [ Value (dropAnn modulename) (dropAnn fn)]
 
     DataInsDecl _ _ typ qualConDecls _ -> constructorsToInfos modulename (typeOuterName typ) (qualConDeclNames qualConDecls)
 
@@ -105,7 +104,7 @@ getTopDeclSymbols impTbl modulename d = (case d of
 
     _ -> [])
         where
-            declHeadSymbol c dh = c (sModuleName modulename) (sName (getDeclHeadName dh))
+            declHeadSymbol c dh = c (dropAnn modulename) (dropAnn (getDeclHeadName dh))
 
 -- | Takes a type name and a list of constructor names paired with selector names. Returns
 --   all symbols i.e. constructors and selectors.
@@ -113,7 +112,7 @@ constructorsToInfos :: ModuleName l -> Name l -> [(Name l,[Name l])] -> [Symbol]
 constructorsToInfos modulename typename constructors = conInfos ++ selInfos where
         conInfos = do
             (constructorname,_) <- constructors
-            return (Constructor (sModuleName modulename) (sName constructorname) (sName typename))
+            return (Constructor (dropAnn modulename) (dropAnn constructorname) (dropAnn typename))
 
         selectorsMap = Map.fromListWith (++) (do
             (constructorname,selectornames) <- constructors
@@ -124,7 +123,7 @@ constructorsToInfos modulename typename constructors = conInfos ++ selInfos wher
             (_,selectornames) <- constructors
             selectorname <- selectornames
             constructornames <- maybeToList (Map.lookup (nameToString selectorname) selectorsMap)
-            return (Selector (sModuleName modulename) (sName selectorname) (sName typename) (map sName constructornames))
+            return (Selector (dropAnn modulename) (dropAnn selectorname) (dropAnn typename) (map dropAnn constructornames))
 
 typeOuterName :: Type l -> Name l
 typeOuterName t = case t of
@@ -134,7 +133,7 @@ typeOuterName t = case t of
     TyParen _ typ -> typeOuterName typ
     TyInfix _ _ qname _ -> qNameToName qname
     TyKind _ typ _ -> typeOuterName typ
-    TyBang _ _ typ -> typeOuterName typ
+    TyBang _ _ _ typ -> typeOuterName typ
     _ -> error "illegal data family in data instance"
 
 qualConDeclNames :: [QualConDecl l] -> [(Name l,[Name l])]
@@ -147,5 +146,5 @@ qualConDeclNames qualConDecls = do
             return (n , [f | FieldDecl _ fNames _ <- fields, f <- fNames])
 
 
-dataOrNewCon :: Syntax.DataOrNew l -> UnAnn.ModuleName -> UnAnn.Name -> Symbol
+dataOrNewCon :: Syntax.DataOrNew l -> ModuleName () -> Name () -> Symbol
 dataOrNewCon dataOrNew = case dataOrNew of DataType {} -> Data; Syntax.NewType {} -> NewType

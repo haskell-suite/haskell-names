@@ -1,117 +1,118 @@
 fromList
-  [ ( Qual (ModuleName "Prelude") (Ident "Constructor2")
+  [ ( Qual () (ModuleName () "Prelude") (Ident () "Constructor2")
     , [ Constructor
-          { symbolModule = ModuleName "Prelude"
-          , symbolName = Ident "Constructor2"
-          , typeName = Ident "DataType"
+          { symbolModule = ModuleName () "Prelude"
+          , symbolName = Ident () "Constructor2"
+          , typeName = Ident () "DataType"
           }
       ]
     )
-  , ( Qual (ModuleName "Prelude") (Ident "DataType")
+  , ( Qual () (ModuleName () "Prelude") (Ident () "DataType")
     , [ Data
-          { symbolModule = ModuleName "Prelude"
-          , symbolName = Ident "DataType"
+          { symbolModule = ModuleName () "Prelude"
+          , symbolName = Ident () "DataType"
           }
       ]
     )
-  , ( Qual (ModuleName "Prelude") (Ident "DataTypeWithSelectors")
+  , ( Qual
+        () (ModuleName () "Prelude") (Ident () "DataTypeWithSelectors")
     , [ Constructor
-          { symbolModule = ModuleName "Prelude"
-          , symbolName = Ident "DataTypeWithSelectors"
-          , typeName = Ident "DataTypeWithSelectors"
+          { symbolModule = ModuleName () "Prelude"
+          , symbolName = Ident () "DataTypeWithSelectors"
+          , typeName = Ident () "DataTypeWithSelectors"
           }
       , Data
-          { symbolModule = ModuleName "Prelude"
-          , symbolName = Ident "DataTypeWithSelectors"
+          { symbolModule = ModuleName () "Prelude"
+          , symbolName = Ident () "DataTypeWithSelectors"
           }
       ]
     )
-  , ( Qual (ModuleName "Prelude") (Ident "TypeSynonym")
+  , ( Qual () (ModuleName () "Prelude") (Ident () "TypeSynonym")
     , [ Type
-          { symbolModule = ModuleName "Prelude"
-          , symbolName = Ident "TypeSynonym"
+          { symbolModule = ModuleName () "Prelude"
+          , symbolName = Ident () "TypeSynonym"
           }
       ]
     )
-  , ( Qual (ModuleName "Prelude") (Ident "function")
+  , ( Qual () (ModuleName () "Prelude") (Ident () "function")
     , [ Value
-          { symbolModule = ModuleName "Prelude"
-          , symbolName = Ident "function"
+          { symbolModule = ModuleName () "Prelude"
+          , symbolName = Ident () "function"
           }
       ]
     )
-  , ( Qual (ModuleName "Prelude") (Ident "method2")
+  , ( Qual () (ModuleName () "Prelude") (Ident () "method2")
     , [ Method
-          { symbolModule = ModuleName "Prelude"
-          , symbolName = Ident "method2"
-          , className = Ident "Class"
+          { symbolModule = ModuleName () "Prelude"
+          , symbolName = Ident () "method2"
+          , className = Ident () "Class"
           }
       ]
     )
-  , ( Qual (ModuleName "Prelude") (Ident "selector1")
+  , ( Qual () (ModuleName () "Prelude") (Ident () "selector1")
     , [ Selector
-          { symbolModule = ModuleName "Prelude"
-          , symbolName = Ident "selector1"
-          , typeName = Ident "DataTypeWithSelectors"
-          , constructors = [ Ident "DataTypeWithSelectors" ]
+          { symbolModule = ModuleName () "Prelude"
+          , symbolName = Ident () "selector1"
+          , typeName = Ident () "DataTypeWithSelectors"
+          , constructors = [ Ident () "DataTypeWithSelectors" ]
           }
       ]
     )
-  , ( UnQual (Ident "Constructor2")
+  , ( UnQual () (Ident () "Constructor2")
     , [ Constructor
-          { symbolModule = ModuleName "Prelude"
-          , symbolName = Ident "Constructor2"
-          , typeName = Ident "DataType"
+          { symbolModule = ModuleName () "Prelude"
+          , symbolName = Ident () "Constructor2"
+          , typeName = Ident () "DataType"
           }
       ]
     )
-  , ( UnQual (Ident "DataType")
+  , ( UnQual () (Ident () "DataType")
     , [ Data
-          { symbolModule = ModuleName "Prelude"
-          , symbolName = Ident "DataType"
+          { symbolModule = ModuleName () "Prelude"
+          , symbolName = Ident () "DataType"
           }
       ]
     )
-  , ( UnQual (Ident "DataTypeWithSelectors")
+  , ( UnQual () (Ident () "DataTypeWithSelectors")
     , [ Constructor
-          { symbolModule = ModuleName "Prelude"
-          , symbolName = Ident "DataTypeWithSelectors"
-          , typeName = Ident "DataTypeWithSelectors"
+          { symbolModule = ModuleName () "Prelude"
+          , symbolName = Ident () "DataTypeWithSelectors"
+          , typeName = Ident () "DataTypeWithSelectors"
           }
       , Data
-          { symbolModule = ModuleName "Prelude"
-          , symbolName = Ident "DataTypeWithSelectors"
+          { symbolModule = ModuleName () "Prelude"
+          , symbolName = Ident () "DataTypeWithSelectors"
           }
       ]
     )
-  , ( UnQual (Ident "TypeSynonym")
+  , ( UnQual () (Ident () "TypeSynonym")
     , [ Type
-          { symbolModule = ModuleName "Prelude"
-          , symbolName = Ident "TypeSynonym"
+          { symbolModule = ModuleName () "Prelude"
+          , symbolName = Ident () "TypeSynonym"
           }
       ]
     )
-  , ( UnQual (Ident "function")
+  , ( UnQual () (Ident () "function")
     , [ Value
-          { symbolModule = ModuleName "Prelude"
-          , symbolName = Ident "function"
+          { symbolModule = ModuleName () "Prelude"
+          , symbolName = Ident () "function"
           }
       ]
     )
-  , ( UnQual (Ident "method2")
+  , ( UnQual () (Ident () "method2")
     , [ Method
-          { symbolModule = ModuleName "Prelude"
-          , symbolName = Ident "method2"
-          , className = Ident "Class"
+          { symbolModule = ModuleName () "Prelude"
+          , symbolName = Ident () "method2"
+          , className = Ident () "Class"
           }
       ]
     )
-  , ( UnQual (Ident "selector1")
+  , ( UnQual () (Ident () "selector1")
     , [ Selector
-          { symbolModule = ModuleName "Prelude"
-          , symbolName = Ident "selector1"
-          , typeName = Ident "DataTypeWithSelectors"
-          , constructors = [ Ident "DataTypeWithSelectors" ]
+          { symbolModule = ModuleName () "Prelude"
+          , symbolName = Ident () "selector1"
+          , typeName = Ident () "DataTypeWithSelectors"
+          , constructors = [ Ident () "DataTypeWithSelectors" ]
           }
       ]
     )

@@ -2,12 +2,7 @@
 -- | This module is designed to be imported qualified.
 module Language.Haskell.Names.GlobalSymbolTable where
 
-import Language.Haskell.Exts (
-    QName)
-import qualified Language.Haskell.Exts.Annotated as Ann (
-    QName)
-import Language.Haskell.Exts.Annotated.Simplify (
-    sQName)
+import Language.Haskell.Exts hiding (NewType)
 
 import Data.Map (
     Map)
@@ -19,9 +14,10 @@ import Data.List as List (union)
 import Data.Maybe (fromMaybe)
 
 import Language.Haskell.Names.Types
+import Language.Haskell.Names.SyntaxUtils (dropAnn)
 
 -- | Global symbol table — contains names declared somewhere at the top level.
-type Table = Map QName [Symbol]
+type Table = Map (QName ()) [Symbol]
 
 -- | Empty global symbol table.
 empty :: Table
@@ -31,17 +27,17 @@ empty = Map.empty
 mergeTables :: Table -> Table -> Table
 mergeTables = Map.unionWith List.union
 
-lookupValue :: Ann.QName l -> Table -> [Symbol]
+lookupValue :: QName l -> Table -> [Symbol]
 lookupValue qn = filter isValue . lookupName qn
 
-lookupType :: Ann.QName l -> Table -> [Symbol]
+lookupType :: QName l -> Table -> [Symbol]
 lookupType qn = filter isType . lookupName qn
 
-lookupMethodOrAssociate :: Ann.QName l -> Table -> [Symbol]
+lookupMethodOrAssociate :: QName l -> Table -> [Symbol]
 lookupMethodOrAssociate qn = filter isMethodOrAssociated . lookupName qn
 
-lookupName :: Ann.QName l -> Table -> [Symbol]
-lookupName qn table = fromMaybe [] (Map.lookup (sQName qn) table)
+lookupName ::  QName l -> Table -> [Symbol]
+lookupName qn table = fromMaybe [] (Map.lookup (dropAnn qn) table)
 
 isValue :: Symbol -> Bool
 isValue symbol = case symbol of
@@ -68,6 +64,6 @@ isMethodOrAssociated symbol = case symbol of
     DataFam {} -> True
     _ -> False
 
-fromList :: [(QName,Symbol)] -> Table
+fromList :: [(QName (),Symbol)] -> Table
 fromList = Map.fromListWith List.union . map (second (:[]))
 
