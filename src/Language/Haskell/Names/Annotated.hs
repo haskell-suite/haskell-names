@@ -19,7 +19,6 @@ import qualified Language.Haskell.Names.GlobalSymbolTable as Global
 import qualified Language.Haskell.Names.LocalSymbolTable as Local
 import Language.Haskell.Names.SyntaxUtils (dropAnn, annName,setAnn)
 import Language.Haskell.Exts
-import Language.Haskell.Exts.Syntax
 import Data.Proxy
 import Data.Lens.Light
 import Data.Typeable (

@@ -27,7 +27,6 @@ import Data.Either
 import Data.Foldable hiding (elem)
 import qualified Data.Set as Set
 import Language.Haskell.Exts
-import Language.Haskell.Exts.Extension
 import Language.Haskell.Names.Types
 
 dropAnn :: (Functor a) => a l -> a ()
