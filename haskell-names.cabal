@@ -1,5 +1,5 @@
 Name:                   haskell-names
-Version:                0.7.0
+Version:                0.8.0
 License:                BSD3
 Author:                 Philipp Schuster, Roman Cheplyaka, Lennart Augustsson
 Maintainer:             Philipp Schuster
@@ -282,6 +282,7 @@ Test-suite test
     run.hs
   Build-depends:
       base >= 4 && < 5
+    , haskell-names >= 0.8.0 && < 0.9
     , haskell-src-exts >= 1.18 && < 1.19
     , mtl >= 2.2.1 && < 2.3
     , filepath >= 1.1 && <1.5
@@ -291,5 +292,4 @@ Test-suite test
     , filemanip >= 0.3.6.3 && < 0.4
     , pretty-show >= 1.6.1 && < 1.7
     , traverse-with-class >= 0.2.0.3 && < 0.3
-    , haskell-names >= 0.7.0 && < 0.8
 
