@@ -1,5 +1,5 @@
 Name:                   haskell-names
-Version:                0.7.0
+Version:                0.8.0
 License:                BSD3
 Author:                 Philipp Schuster, Roman Cheplyaka, Lennart Augustsson
 Maintainer:             Philipp Schuster
@@ -22,6 +22,7 @@ extra-source-files:
   tests/imports/*.hs
   tests/exports/*.hs.golden
   tests/exports/*.hs
+  tests/environment/Prelude.symbols.golden
 data-files:
   data/baseEnvironment/Control.Applicative.symbols
   data/baseEnvironment/Control.Arrow.symbols
@@ -241,7 +242,7 @@ Library
     , filepath >= 1.1 && < 1.5
     , containers >= 0.2 && < 0.6
     , uniplate >= 1.5.1 && < 1.7
-    , aeson >= 0.8.0.2 && < 0.12
+    , aeson >= 0.8.0.2 && < 1.1
     , bytestring >= 0.10.4.0 && < 0.11
     , data-lens-light >= 0.1.2.1 && < 0.2
               , traverse-with-class >= 0.2.0.3 && < 0.3
@@ -281,6 +282,7 @@ Test-suite test
     run.hs
   Build-depends:
       base >= 4 && < 5
+    , haskell-names >= 0.8.0 && < 0.9
     , haskell-src-exts >= 1.18 && < 1.19
     , mtl >= 2.2.1 && < 2.3
     , filepath >= 1.1 && <1.5
@@ -290,5 +292,4 @@ Test-suite test
     , filemanip >= 0.3.6.3 && < 0.4
     , pretty-show >= 1.6.1 && < 1.7
     , traverse-with-class >= 0.2.0.3 && < 0.3
-    , haskell-names >= 0.7.0 && < 0.8
 

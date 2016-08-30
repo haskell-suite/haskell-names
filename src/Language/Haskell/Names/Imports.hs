@@ -14,9 +14,7 @@ import Control.Applicative
 import Control.Monad.Writer
 import Data.Map as Map (lookup)
 import Language.Haskell.Exts (
-   ModuleName(ModuleName))
-import Language.Haskell.Exts (
-  Module(Module), ModuleName,ImportDecl(..),
+  Module(Module), ModuleName(ModuleName), ImportDecl(..),
   ann,ImportSpecList(..),ImportSpec(..),Name(..),
   Annotated)
 import Language.Haskell.Exts.Extension (

@@ -1,13 +1,18 @@
 Changes
 =======
 
+Version 0.8.0
+------------
+
+* Relax bounds on aeson
+* Relax bounds on transformers
+* Bugfixes
+* Use haskell-src-exts 1.18
+
 Version 0.7.0
 -------------
 
 * Improve annotation performance
-* Relax bounds on aeson
-* Relax bounds on transformers
-* Bugfixes
 
 Version 0.6.0
 -------------

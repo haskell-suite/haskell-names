@@ -10,7 +10,6 @@ import Data.Maybe
 import Data.Data
 import qualified Data.Map as Map
 
-import Language.Haskell.Exts (ModuleName,Name)
 import Language.Haskell.Exts hiding (DataOrNew(NewType))
 import qualified Language.Haskell.Exts as Syntax (DataOrNew(NewType))
 import Language.Haskell.Names.Types

@@ -58,7 +58,7 @@ annotateExportSpec globalTable exportSpec =
             (noScope ns)
             (Scoped (GlobalSymbol symbol (dropAnn qn)) <$> qn)
       symbols -> scopeError (EAmbiguous qn symbols) exportSpec
-  EThingWith l w@(EWildcard l' n) qn [] ->
+  EThingWith l w@(EWildcard _ _) qn _ ->
     case Global.lookupType qn globalTable of
       [] -> scopeError (ENotInScope qn) exportSpec
       [symbol] ->
