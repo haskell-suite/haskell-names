@@ -167,6 +167,7 @@ formatSymbol NewType {} = "newtype"
 formatSymbol TypeFam {} = "type family"
 formatSymbol DataFam {} = "data family"
 formatSymbol Class {} = "type class"
+formatSymbol PatSyn {} = "pattern synonym"
 
 formatInfo :: NameInfo SrcSpan -> String
 formatInfo (LocalValue loc) =

@@ -8,10 +8,11 @@ module Language.Haskell.Names.ModuleSymbols
 
 import Data.Maybe
 import Data.Data
+import Data.Generics.Uniplate.Operations (transform, universe)
 import qualified Data.Map as Map
 
-import Language.Haskell.Exts hiding (DataOrNew(NewType))
-import qualified Language.Haskell.Exts as Syntax (DataOrNew(NewType))
+import Language.Haskell.Exts hiding (DataOrNew(NewType), PatSyn)
+import qualified Language.Haskell.Exts as Syntax (DataOrNew(NewType), Decl(PatSyn))
 import Language.Haskell.Names.Types
 import qualified Language.Haskell.Names.GlobalSymbolTable as Global
 import Language.Haskell.Names.SyntaxUtils
@@ -89,6 +90,31 @@ getTopDeclSymbols impTbl modulename d = (case d of
       vn : _ = getBound impTbl ms
 
     PatBind _ p _ _ -> [ Value (dropAnn modulename) (dropAnn vn) | vn <- getBound impTbl p ]
+
+    Syntax.PatSyn _ p _ _ -> fromMaybe [] $ do
+      patSyn <- listToMaybe [ PatSyn (dropAnn modulename) (dropAnn vn) | p' <- universe $ transform dropFields $ transform dropExp p, UnQual _ vn <- varp p' ]
+      let
+        patName = symbolName patSyn
+        fields = [ Selector (dropAnn modulename) (dropAnn vn) patName [patName] | p' <- universe $ transform dropExp p, UnQual _ vn <- vfield p' ]
+      return (patSyn : fields)
+
+      where
+        varp (PApp _ q _) = [q]
+        varp (PInfixApp _ _ q _) = [q]
+        varp (PRec _ q _) = [q]
+        varp _ = []
+
+        vfield (PRec _ _ fs) = concatMap get' fs where
+          get' (PFieldPat _ q _) = [q]
+          get' (PFieldPun _ q) = [q]
+          get' _ = []
+        vfield _ = []
+
+        dropExp (PViewPat _ _ x) = x
+        dropExp x = x
+
+        dropFields (PRec l q _) = PRec l q []
+        dropFields x = x
 
     ForImp _ _ _ _ fn _ -> [ Value (dropAnn modulename) (dropAnn fn)]
 

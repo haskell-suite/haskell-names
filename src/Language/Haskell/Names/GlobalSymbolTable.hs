@@ -2,7 +2,7 @@
 -- | This module is designed to be imported qualified.
 module Language.Haskell.Names.GlobalSymbolTable where
 
-import Language.Haskell.Exts hiding (NewType)
+import Language.Haskell.Exts hiding (NewType, PatSyn)
 
 import Data.Map (
     Map)
@@ -55,6 +55,7 @@ isType symbol = case symbol of
     TypeFam {} -> True
     DataFam {} -> True
     Class   {} -> True
+    PatSyn {} -> True
     _ -> False
 
 isMethodOrAssociated :: Symbol -> Bool
