@@ -10,7 +10,7 @@
 
 module Language.Haskell.Names.Open.Instances where
 
-import Language.Haskell.Names.Types
+import Language.Haskell.Names.Types hiding (PatSyn)
 import Language.Haskell.Names.Open.Base
 import Language.Haskell.Names.Open.Derived ()
 import Language.Haskell.Names.GetBound
@@ -19,10 +19,14 @@ import Language.Haskell.Exts
 import Language.Haskell.Names.SyntaxUtils
 import qualified Data.Data as D
 import Control.Applicative
+import Data.Generics.Traversable
 import Data.Typeable
+import Data.Type.Equality
 import Data.Lens.Light
 import Data.List
 import qualified Data.Traversable as T
+
+import Debug.Trace
 
 c :: Applicative w => c -> w c
 c = pure
@@ -57,7 +61,16 @@ instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (Decl l) where
           <| sc                -: pat
           <| exprV scWithWhere -: rhs
           <| sc                -: mbWhere
-      -- FunBind consists of Matches, which we handle below anyway.
+      p@(PatSyn l pat rpat dir) ->
+        let
+          scWithPatSyn = intro p sc
+          scWithPat = intro pat scWithPatSyn
+        in
+        c PatSyn
+          <| sc                -: l
+          <| (setMode BindQNames sc) -: pat
+          <| (setMode SuppressBindings $ exprV scWithPat) -: rpat
+          <| sc                -: dir
       TypeSig l names ty ->
         c TypeSig
           <| sc            -: l
@@ -77,6 +90,37 @@ instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (Decl l) where
           <| sc'       -: rule
           <| sc'       -: mInstDecls
       _ -> defaultRtraverse e sc
+    where
+      patSyn pat sc = case pat of
+        PInfixApp l pat1 name pat2 ->
+          c PInfixApp
+            <| sc             -: l
+            <| sc             -: pat1
+            <*> qname name sc
+            <| sc             -: pat2
+        PApp l name pat ->
+          c PApp
+            <| sc           -: l
+            <*> qname name sc
+            <| sc           -: pat
+        PRec l name pfs ->
+          c PRec
+            <| sc           -: l
+            <*> qname name sc
+            <*> T.for pfs (`patSynField` sc)
+        _ -> defaultRtraverse pat sc
+      patSynField fs sc = case fs of
+        PFieldPat l name pat ->
+          c PFieldPat
+            <| sc         -: l
+            <*> qname name sc
+            <| sc         -: pat
+        PFieldPun l name ->
+          c PFieldPun
+            <| sc         -: l
+            <*> qname name sc
+        PFieldWildcard {} -> defaultRtraverse fs sc
+      qname name sc = fmap nameToQName (alg (qNameToName name) (binderV sc))
 
 instanceRuleClass :: InstRule l -> QName l
 instanceRuleClass (IParen _ instRule) = instanceRuleClass instRule
@@ -135,28 +179,55 @@ instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (FieldDecl l) where
           <| binderV sc -: name
           <| sc -: tys
 
+-- | Affected by resolve mode
+mbinderV :: Scope -> Scope
+mbinderV sc = case getL resMode sc of
+  SuppressBindings -> exprV sc
+  _ -> binderV sc
+
+mexprV :: Scope -> Scope
+mexprV sc = case getL resMode sc of
+  BindQNames -> binderV sc
+  _ -> exprV sc
+
+(%|)
+  :: (Applicative w, Resolvable (QName l), Resolvable (Name l), ?alg :: Alg w)
+  => w (QName l -> c) -> (QName l, Scope) -> w c
+f %| (name, sc) = case getL resMode sc of
+  BindQNames -> (fmap (. nameToQName) f) <| (qNameToName name, sc)
+  _ -> f <| (name, sc)
+infixl 4 %|
+
+(%-)
+  :: (Applicative w, Resolvable (QName l), Resolvable (Name l), ?alg :: Alg w)
+  => w (Name l -> c) -> (Name l, Scope) -> w c
+f %- (name, sc) = case getL resMode sc of
+  SuppressBindings -> (fmap (. qNameToName) f) <| (nameToQName name, sc)
+  _ -> f <| (name, sc)
+infixl 4 %-
+
 instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (Pat l) where
   rtraverse e sc =
     case e of
       PVar l name ->
         c PVar
           <| sc         -: l
-          <| binderV sc -: name
+          %- mbinderV sc -: name
       PNPlusK l name i ->
         c PNPlusK
           <| sc         -: l
-          <| binderV sc -: name
+          %- mbinderV sc -: name
           <| sc         -: i
       PInfixApp l pat1 name pat2 ->
         c PInfixApp
           <| sc       -: l
           <| sc       -: pat1
-          <| exprV sc -: name
+          %| mexprV sc -: name
           <| sc       -: pat2
       PApp l qn pat ->
         c PApp
           <| sc       -: l
-          <| exprV sc -: qn
+          %| mexprV sc -: qn
           <| sc       -: pat
       PRec l qn pfs ->
         let
@@ -165,17 +236,17 @@ instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (Pat l) where
         in
         c PRec
           <| sc       -: l
-          <| exprV sc -: qn
+          %| mexprV sc -: qn
           <| scWc     -: pfs
       PAsPat l n pat ->
         c PAsPat
           <| sc         -: l
-          <| binderV sc -: n
+          %- mbinderV sc -: n
           <| sc         -: pat
       PViewPat l exp pat ->
         c PViewPat
           <| sc       -: l
-          <| exprV sc -: exp
+          <| mexprV sc -: exp
           <| sc       -: pat
       _ -> defaultRtraverse e sc
 
@@ -185,12 +256,12 @@ instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (PatField l) where
       PFieldPat l qn pat ->
         c PFieldPat
           <| sc       -: l
-          <| exprV sc -: qn
+          %| mexprV sc -: qn
           <| sc       -: pat
       PFieldPun l qn ->
         c PFieldPun
           <| sc -: l
-          <| exprV sc -: qn
+          %| mexprV sc -: qn
       -- In future we might want to annotate PFieldWildcard with the names
       -- it introduces.
       PFieldWildcard {} -> defaultRtraverse e sc

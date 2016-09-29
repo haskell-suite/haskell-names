@@ -56,6 +56,14 @@ instance (Data l) => GetBound (Decl l) l where
       FunBind _ (Match _ n _ _ _ : _) -> [n]
       FunBind _ (InfixMatch _ _ n _ _ _ : _) -> [n]
       PatBind _ p _ _ -> getBound ctx p
+      PatSyn _ p _ _ -> case p of
+        PInfixApp _ _ qn _ -> [qNameToName qn]
+        PApp _ qn _ -> [qNameToName qn]
+        PRec _ qn fs -> qNameToName qn : concatMap getFieldBound fs where
+          getFieldBound (PFieldPat _ qn' _) = [qNameToName qn']
+          getFieldBound (PFieldPun _ qn') = [qNameToName qn']
+          _ = []
+        _ -> []
       ForImp _ _ _ _ n _ -> [n]
       ForExp _ _ _ n _ -> [n]
       RulePragmaDecl{} -> []
