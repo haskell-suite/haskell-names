@@ -95,8 +95,9 @@ getTopDeclSymbols impTbl modulename d = (case d of
       patSyn <- listToMaybe [ PatSyn (dropAnn modulename) (dropAnn vn) | p' <- universe $ transform dropFields $ transform dropExp p, UnQual _ vn <- varp p' ]
       let
         patName = symbolName patSyn
-        fields = [ Selector (dropAnn modulename) (dropAnn vn) patName [patName] | p' <- universe $ transform dropExp p, UnQual _ vn <- vfield p' ]
-      return (patSyn : fields)
+        patCtor = Constructor (symbolModule patSyn) patName patName
+        fields = [ Selector (symbolModule patSyn) (dropAnn vn) patName [patName] | p' <- universe $ transform dropExp p, UnQual _ vn <- vfield p' ]
+      return (patSyn : patCtor : fields)
 
       where
         varp (PApp _ q _) = [q]
