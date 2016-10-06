@@ -1,3 +1,5 @@
+{-# LANGUAGE MultiParamTypeClasses #-}
+
 module Prelude where
 
 data DataType = Constructor1 | Constructor2
