@@ -6,7 +6,6 @@ module Language.Haskell.Names.Exports
 
 import qualified Data.Map as Map
 import qualified Data.Set as Set
-import Control.Applicative
 import Control.Monad
 import Control.Monad.Writer
 import Data.Data
@@ -54,14 +53,7 @@ annotateExportSpec globalTable exportSpec =
   EAbs l ns qn ->
     case Global.lookupType qn globalTable of
       [] -> scopeError (ENotInScope qn) exportSpec
-      [symbol@(PatSyn _ n)] ->
-        let
-          s = symbol : (filter ((== Just n) . symbolParent) $ Global.lookupValue qn globalTable)
-        in
-          EAbs (Scoped (Export s) l)
-            (noScope ns)
-            (Scoped (GlobalSymbol symbol (dropAnn qn)) <$> qn)
-      [symbol@(PatSyn m n)] -> case Global.lookupValue qn globalTable of
+      [symbol@(PatSyn _ _)] -> case Global.lookupValue qn globalTable of
                 [] -> scopeError (ENotInScope qn) exportSpec
                 [patCtor] -> EAbs (Scoped (Export [symbol, patCtor]) l)
                           (noScope ns)
