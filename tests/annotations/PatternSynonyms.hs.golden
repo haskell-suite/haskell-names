@@ -1,0 +1,21 @@
+PatternSynonyms at 1:14 is none
+SimplePat at  5:9 is a value bound here
+SimplePat at  5:9 is a value bound here
+x        at 5:19 is a value bound here
+y        at 5:21 is a value bound here
+Just     at 5:27 is not in scope
+Just     at 5:27 is not in scope
+x        at 5:33 is a local value defined at 5:19
+Right    at 5:37 is not in scope
+Right    at 5:37 is not in scope
+y        at 5:43 is a local value defined at 5:21
+RecordPat at  7:9 is a value bound here
+RecordPat at  7:9 is a value bound here
+patLeft  at 7:21 is a value bound here
+patLeft  at 7:21 is a value bound here
+patRight at 7:30 is a value bound here
+patRight at 7:30 is a value bound here
+Just     at 7:43 is not in scope
+Just     at 7:43 is not in scope
+patLeft  at 7:49 is a local value defined at 7:21
+patRight at 7:58 is a local value defined at 7:30
