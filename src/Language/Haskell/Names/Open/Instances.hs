@@ -10,7 +10,7 @@
 
 module Language.Haskell.Names.Open.Instances where
 
-import Language.Haskell.Names.Types hiding (PatSyn)
+import Language.Haskell.Names.Types
 import Language.Haskell.Names.Open.Base
 import Language.Haskell.Names.Open.Derived ()
 import Language.Haskell.Names.GetBound
@@ -19,14 +19,12 @@ import Language.Haskell.Exts
 import Language.Haskell.Names.SyntaxUtils
 import qualified Data.Data as D
 import Control.Applicative
-import Data.Generics.Traversable
 import Data.Typeable
 import Data.Type.Equality
 import Data.Lens.Light
 import Data.List
 import qualified Data.Traversable as T
 
-import Debug.Trace
 
 c :: Applicative w => c -> w c
 c = pure
@@ -90,37 +88,7 @@ instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (Decl l) where
           <| sc'       -: rule
           <| sc'       -: mInstDecls
       _ -> defaultRtraverse e sc
-    where
-      patSyn pat sc = case pat of
-        PInfixApp l pat1 name pat2 ->
-          c PInfixApp
-            <| sc             -: l
-            <| sc             -: pat1
-            <*> qname name sc
-            <| sc             -: pat2
-        PApp l name pat ->
-          c PApp
-            <| sc           -: l
-            <*> qname name sc
-            <| sc           -: pat
-        PRec l name pfs ->
-          c PRec
-            <| sc           -: l
-            <*> qname name sc
-            <*> T.for pfs (`patSynField` sc)
-        _ -> defaultRtraverse pat sc
-      patSynField fs sc = case fs of
-        PFieldPat l name pat ->
-          c PFieldPat
-            <| sc         -: l
-            <*> qname name sc
-            <| sc         -: pat
-        PFieldPun l name ->
-          c PFieldPun
-            <| sc         -: l
-            <*> qname name sc
-        PFieldWildcard {} -> defaultRtraverse fs sc
-      qname name sc = fmap nameToQName (alg (qNameToName name) (binderV sc))
+
 
 instanceRuleClass :: InstRule l -> QName l
 instanceRuleClass (IParen _ instRule) = instanceRuleClass instRule
