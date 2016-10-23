@@ -70,6 +70,11 @@ data Symbol
       , symbolName :: Name ()
       }
       -- ^ type class
+    | PatSyn
+      { symbolModule :: ModuleName ()
+      , symbolName :: Name ()
+      }
+      -- ^ pattern synonym
     deriving (Eq, Ord, Show, Data, Typeable)
 
 -- | A map from module name to list of symbols it exports.

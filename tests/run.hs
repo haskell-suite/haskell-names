@@ -22,7 +22,7 @@ import Text.Show.Pretty (ppShow)
 import Text.Printf
 import qualified Data.Foldable as F
 
-import Language.Haskell.Exts hiding (DataOrNew(NewType))
+import Language.Haskell.Exts hiding (DataOrNew(NewType), PatSyn)
 import qualified Language.Haskell.Exts.Syntax as Syntax (DataOrNew(NewType))
 import qualified Language.Haskell.Exts as U (ModuleName(ModuleName))
 import Language.Haskell.Names
@@ -167,6 +167,7 @@ formatSymbol NewType {} = "newtype"
 formatSymbol TypeFam {} = "type family"
 formatSymbol DataFam {} = "data family"
 formatSymbol Class {} = "type class"
+formatSymbol PatSyn {} = "pattern synonym"
 
 formatInfo :: NameInfo SrcSpan -> String
 formatInfo (LocalValue loc) =

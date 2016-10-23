@@ -84,6 +84,7 @@ symbolEntity i = case i of
   TypeFam {} -> "typeFamily"
   DataFam {} -> "dataFamily"
   Class   {} -> "class"
+  PatSyn {} -> "patSyn"
 
 parseName :: String -> Name ()
 parseName = dropAnn . stringToName
@@ -116,6 +117,7 @@ instance FromJSON Symbol where
         associate <- fmap parseName <$> v .: "associate"
         return $ DataFam symbolmodule symbolname associate
       "class" -> return $ Class symbolmodule symbolname
+      "patSyn" -> return $ PatSyn symbolmodule symbolname
       _ -> mzero
 
   parseJSON _ = mzero

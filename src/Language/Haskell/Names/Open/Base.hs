@@ -41,6 +41,14 @@ data NameContext
       -- refers to a value bound in the same module.
   | Other
 
+-- | Pat node can work in different modes depending on where it got from
+data ResolveMode
+  = NormalMode
+  | SuppressBindings
+      -- ^ Supress bindings, force references instead (even for Name)
+  | BindQNames
+      -- ^ Bind QName's too
+
 -- | Contains information about the node's enclosing scope. Can be
 -- accessed through the lenses: 'gTable', 'lTable', 'nameCtx',
 -- 'instanceQualification', 'wcNames'.
@@ -53,13 +61,14 @@ data Scope = Scope
   , _nameCtx :: NameContext
   , _instQual :: Maybe (ModuleName ())
   , _wcNames :: WcNames
+  , _resMode :: ResolveMode
   }
 
 makeLens ''Scope
 
 -- | Create an initial scope
 initialScope :: ModuleName () -> Global.Table -> Scope
-initialScope moduleName tbl = Scope moduleName tbl Local.empty Other Nothing []
+initialScope moduleName tbl = Scope moduleName tbl Local.empty Other Nothing [] NormalMode
 
 -- | Merge local tables of two scopes. The other fields of the scopes are
 -- assumed to be the same.
@@ -159,3 +168,6 @@ exprUT = setNameCtx ReferenceUT
 
 instQ :: Maybe (ModuleName ()) -> Scope -> Scope
 instQ m = setL instQual m
+
+setMode :: ResolveMode -> Scope -> Scope
+setMode = setL resMode
