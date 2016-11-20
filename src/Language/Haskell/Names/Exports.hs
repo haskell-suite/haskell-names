@@ -10,7 +10,7 @@ import Control.Applicative
 import Control.Monad
 import Control.Monad.Writer
 import Data.Data
-import Language.Haskell.Exts hiding (PatSyn)
+import Language.Haskell.Exts
 import Language.Haskell.Names.Types
 import Language.Haskell.Names.ScopeUtils
 import Language.Haskell.Names.SyntaxUtils
@@ -51,15 +51,16 @@ annotateExportSpec globalTable exportSpec =
       [symbol] -> EVar (Scoped (Export [symbol]) l)
             (Scoped (GlobalSymbol symbol (dropAnn qn)) <$> qn)
       symbols -> scopeError (EAmbiguous qn symbols) exportSpec
+  EAbs l ns@(PatternNamespace _) qn ->
+    case Global.lookupValue qn globalTable of
+      [] -> scopeError (ENotInScope qn) exportSpec
+      [symbol] -> EAbs (Scoped (Export [symbol]) l)
+            (noScope ns)
+            (Scoped (GlobalSymbol symbol (dropAnn qn)) <$> qn)
+      symbols -> scopeError (EAmbiguous qn symbols) exportSpec
   EAbs l ns qn ->
     case Global.lookupType qn globalTable of
       [] -> scopeError (ENotInScope qn) exportSpec
-      [symbol@(PatSyn _ _)] -> case Global.lookupValue qn globalTable of
-                [] -> scopeError (ENotInScope qn) exportSpec
-                [patCtor] -> EAbs (Scoped (Export [symbol, patCtor]) l)
-                          (noScope ns)
-                          (Scoped (GlobalSymbol symbol (dropAnn qn)) <$> qn)
-                symbols -> scopeError (EAmbiguous qn symbols) exportSpec
       [symbol] -> EAbs (Scoped (Export [symbol]) l)
             (noScope ns)
             (Scoped (GlobalSymbol symbol (dropAnn qn)) <$> qn)

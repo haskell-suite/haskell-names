@@ -8,11 +8,10 @@ module Language.Haskell.Names.ModuleSymbols
 
 import Data.Maybe
 import Data.Data
-import Data.Generics.Uniplate.Operations (transform, universe)
 import qualified Data.Map as Map
 
-import Language.Haskell.Exts hiding (DataOrNew(NewType), PatSyn)
-import qualified Language.Haskell.Exts as Syntax (DataOrNew(NewType), Decl(PatSyn))
+import Language.Haskell.Exts hiding (DataOrNew(NewType))
+import qualified Language.Haskell.Exts as Syntax (DataOrNew(NewType))
 import Language.Haskell.Names.Types
 import qualified Language.Haskell.Names.GlobalSymbolTable as Global
 import Language.Haskell.Names.SyntaxUtils
@@ -91,31 +90,11 @@ getTopDeclSymbols impTbl modulename d = (case d of
 
     PatBind _ p _ _ -> [ Value (dropAnn modulename) (dropAnn vn) | vn <- getBound impTbl p ]
 
-    Syntax.PatSyn _ p _ _ -> fromMaybe [] $ do
-      patSyn <- listToMaybe [ PatSyn (dropAnn modulename) (dropAnn vn) | p' <- universe $ transform dropFields $ transform dropExp p, UnQual _ vn <- varp p' ]
-      let
-        patName = symbolName patSyn
-        patCtor = Constructor (symbolModule patSyn) patName patName
-        fields = [ Selector (symbolModule patSyn) (dropAnn vn) patName [patName] | p' <- universe $ transform dropExp p, UnQual _ vn <- vfield p' ]
-      return (patSyn : patCtor : fields)
-
-      where
-        varp (PApp _ q _) = [q]
-        varp (PInfixApp _ _ q _) = [q]
-        varp (PRec _ q _) = [q]
-        varp _ = []
-
-        vfield (PRec _ _ fs) = concatMap get' fs where
-          get' (PFieldPat _ q _) = [q]
-          get' (PFieldPun _ q) = [q]
-          get' _ = []
-        vfield _ = []
-
-        dropExp (PViewPat _ _ x) = x
-        dropExp x = x
-
-        dropFields (PRec l q _) = PRec l q []
-        dropFields x = x
+    PatSyn _ p _ _ -> case patternHead p of
+      Just patternName -> patternConstructor : patternSelectors where
+        patternConstructor = PatternConstructor (dropAnn modulename) (dropAnn patternName) Nothing
+        patternSelectors = [PatternSelector (dropAnn modulename) (dropAnn fn) Nothing (dropAnn patternName) | fn <- patternFields p ]
+      Nothing -> []
 
     ForImp _ _ _ _ fn _ -> [ Value (dropAnn modulename) (dropAnn fn)]
 
@@ -174,3 +153,19 @@ qualConDeclNames qualConDecls = do
 
 dataOrNewCon :: Syntax.DataOrNew l -> ModuleName () -> Name () -> Symbol
 dataOrNewCon dataOrNew = case dataOrNew of DataType {} -> Data; Syntax.NewType {} -> NewType
+
+
+patternHead :: Pat l -> Maybe (Name l)
+patternHead (PApp _ (UnQual _ n) _) = Just n
+patternHead (PInfixApp _ _ (UnQual _ n) _) = Just n
+patternHead (PRec _ (UnQual _ n) _) = Just n
+patternHead _ = Nothing
+
+
+patternFields :: Pat l -> [Name l]
+patternFields (PRec _ _ fs) = concatMap get' fs where
+  get' (PFieldPat _ (UnQual _ n) _) = [n]
+  get' (PFieldPun _ (UnQual _ n)) = [n]
+  get' _ = []
+patternFields _ = []
+

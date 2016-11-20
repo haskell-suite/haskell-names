@@ -1,21 +1,159 @@
 PatternSynonyms at 1:14 is none
-SimplePat at  5:9 is a value bound here
-SimplePat at  5:9 is a value bound here
-x        at 5:19 is a value bound here
-y        at 5:21 is a value bound here
-Just     at 5:27 is not in scope
-Just     at 5:27 is not in scope
-x        at 5:33 is a local value defined at 5:19
-Right    at 5:37 is not in scope
-Right    at 5:37 is not in scope
-y        at 5:43 is a local value defined at 5:21
-RecordPat at  7:9 is a value bound here
-RecordPat at  7:9 is a value bound here
-patLeft  at 7:21 is a value bound here
-patLeft  at 7:21 is a value bound here
-patRight at 7:30 is a value bound here
-patRight at 7:30 is a value bound here
-Just     at 7:43 is not in scope
-Just     at 7:43 is not in scope
-patLeft  at 7:49 is a local value defined at 7:21
-patRight at 7:58 is a local value defined at 7:30
+NamedFieldPuns at 1:31 is none
+Type     at  6:6 is a type or class defined here
+App      at 6:13 is a value bound here
+String   at 6:17 is not in scope
+String   at 6:17 is not in scope
+Type     at 6:25 is a global data type, PatternSynonyms.Type
+Type     at 6:25 is a global data type, PatternSynonyms.Type
+Arrow    at  8:9 is a value bound here
+Arrow    at  8:9 is a value bound here
+t1       at 8:15 is a value bound here
+t2       at 8:18 is a value bound here
+App      at 8:23 is a global constructor, PatternSynonyms.App
+App      at 8:23 is a global constructor, PatternSynonyms.App
+t1       at 8:33 is a local value defined at 8:15
+t2       at 8:37 is a local value defined at 8:18
+Int      at  9:9 is a value bound here
+Int      at  9:9 is a value bound here
+App      at 9:15 is a global constructor, PatternSynonyms.App
+App      at 9:15 is a global constructor, PatternSynonyms.App
+Maybe    at 10:9 is a value bound here
+Maybe    at 10:9 is a value bound here
+t        at 10:15 is a value bound here
+App      at 10:19 is a global constructor, PatternSynonyms.App
+App      at 10:19 is a global constructor, PatternSynonyms.App
+t        at 10:32 is a local value defined at 10:15
+collectArgs at 12:1 is a global value, PatternSynonyms.collectArgs
+Type     at 12:16 is a global data type, PatternSynonyms.Type
+Type     at 12:16 is a global data type, PatternSynonyms.Type
+Type     at 12:25 is a global data type, PatternSynonyms.Type
+Type     at 12:25 is a global data type, PatternSynonyms.Type
+collectArgs at 13:1 is a value bound here
+Arrow    at 13:14 is a global pattern constructor, PatternSynonyms.Arrow
+Arrow    at 13:14 is a global pattern constructor, PatternSynonyms.Arrow
+t1       at 13:20 is a value bound here
+t2       at 13:23 is a value bound here
+t1       at 13:29 is a local value defined at 13:20
+t1       at 13:29 is a local value defined at 13:20
+:        at 13:32 is none
+collectArgs at 13:34 is a global value, PatternSynonyms.collectArgs
+collectArgs at 13:34 is a global value, PatternSynonyms.collectArgs
+t2       at 13:46 is a local value defined at 13:23
+t2       at 13:46 is a local value defined at 13:23
+collectArgs at 14:1 is a value bound here
+isInt    at 16:1 is a global value, PatternSynonyms.isInt
+Type     at 16:10 is a global data type, PatternSynonyms.Type
+Type     at 16:10 is a global data type, PatternSynonyms.Type
+Bool     at 16:18 is not in scope
+Bool     at 16:18 is not in scope
+isInt    at 17:1 is a value bound here
+Int      at 17:7 is a global pattern constructor, PatternSynonyms.Int
+Int      at 17:7 is a global pattern constructor, PatternSynonyms.Int
+True     at 17:13 is not in scope
+True     at 17:13 is not in scope
+isInt    at 18:1 is a value bound here
+False    at 18:13 is not in scope
+False    at 18:13 is not in scope
+isIntEndo at 20:1 is a global value, PatternSynonyms.isIntEndo
+Type     at 20:14 is a global data type, PatternSynonyms.Type
+Type     at 20:14 is a global data type, PatternSynonyms.Type
+Bool     at 20:22 is not in scope
+Bool     at 20:22 is not in scope
+isIntEndo at 21:1 is a value bound here
+Arrow    at 21:12 is a global pattern constructor, PatternSynonyms.Arrow
+Arrow    at 21:12 is a global pattern constructor, PatternSynonyms.Arrow
+Int      at 21:18 is a global pattern constructor, PatternSynonyms.Int
+Int      at 21:18 is a global pattern constructor, PatternSynonyms.Int
+Int      at 21:22 is a global pattern constructor, PatternSynonyms.Int
+Int      at 21:22 is a global pattern constructor, PatternSynonyms.Int
+True     at 21:29 is not in scope
+True     at 21:29 is not in scope
+isIntEndo at 22:1 is a value bound here
+False    at 22:29 is not in scope
+False    at 22:29 is not in scope
+intEndo  at 24:1 is a global value, PatternSynonyms.intEndo
+Type     at 24:12 is a global data type, PatternSynonyms.Type
+Type     at 24:12 is a global data type, PatternSynonyms.Type
+intEndo  at 25:1 is a value bound here
+Arrow    at 25:11 is a global pattern constructor, PatternSynonyms.Arrow
+Arrow    at 25:11 is a global pattern constructor, PatternSynonyms.Arrow
+Int      at 25:17 is a global pattern constructor, PatternSynonyms.Int
+Int      at 25:17 is a global pattern constructor, PatternSynonyms.Int
+Int      at 25:21 is a global pattern constructor, PatternSynonyms.Int
+Int      at 25:21 is a global pattern constructor, PatternSynonyms.Int
+Head     at 27:9 is a value bound here
+Head     at 27:9 is a value bound here
+x        at 27:14 is a value bound here
+x        at 27:19 is a local value defined at 27:14
+:        at 27:20 is none
+xs       at 27:21 is not in scope
+HeadC    at 29:9 is a value bound here
+HeadC    at 29:9 is a value bound here
+x        at 29:15 is a value bound here
+x        at 29:20 is a local value defined at 29:15
+:        at 29:21 is none
+xs       at 29:22 is not in scope
+HeadC    at 30:3 is a global pattern constructor, PatternSynonyms.HeadC
+HeadC    at 30:3 is a global pattern constructor, PatternSynonyms.HeadC
+x        at 30:9 is a value bound here
+x        at 30:14 is a global pattern selector, PatternSynonyms.x
+x        at 30:14 is a global pattern selector, PatternSynonyms.x
+Point    at 32:9 is none
+Int      at 32:18 is not in scope
+Int      at 32:18 is not in scope
+Int      at 32:25 is not in scope
+Int      at 32:25 is not in scope
+Int      at 32:33 is not in scope
+Int      at 32:33 is not in scope
+Int      at 32:38 is not in scope
+Int      at 32:38 is not in scope
+Point    at 33:9 is a value bound here
+Point    at 33:9 is a value bound here
+x        at 33:15 is a value bound here
+x        at 33:15 is a value bound here
+y        at 33:18 is a value bound here
+y        at 33:18 is a value bound here
+x        at 33:24 is a local value defined at 33:15
+y        at 33:27 is a local value defined at 33:18
+zero     at 35:1 is a value bound here
+Point    at 35:8 is a global pattern constructor, PatternSynonyms.Point
+Point    at 35:8 is a global pattern constructor, PatternSynonyms.Point
+zero'    at 36:1 is a value bound here
+Point    at 36:9 is a global pattern constructor, PatternSynonyms.Point
+Point    at 36:9 is a global pattern constructor, PatternSynonyms.Point
+x        at 36:17 is a global pattern selector, PatternSynonyms.x
+x        at 36:17 is a global pattern selector, PatternSynonyms.x
+y        at 36:24 is a global pattern selector, PatternSynonyms.y
+y        at 36:24 is a global pattern selector, PatternSynonyms.y
+isZero   at 37:1 is a value bound here
+Point    at 37:9 is a global pattern constructor, PatternSynonyms.Point
+Point    at 37:9 is a global pattern constructor, PatternSynonyms.Point
+True     at 37:22 is not in scope
+True     at 37:22 is not in scope
+isZero'  at 38:1 is a value bound here
+Point    at 38:10 is a global pattern constructor, PatternSynonyms.Point
+Point    at 38:10 is a global pattern constructor, PatternSynonyms.Point
+x        at 38:18 is a global pattern selector, PatternSynonyms.x
+x        at 38:18 is a global pattern selector, PatternSynonyms.x
+y        at 38:25 is a global pattern selector, PatternSynonyms.y
+y        at 38:25 is a global pattern selector, PatternSynonyms.y
+True     at 38:36 is not in scope
+True     at 38:36 is not in scope
+getX     at 39:1 is a value bound here
+Point    at 39:7 is a global pattern constructor, PatternSynonyms.Point
+Point    at 39:7 is a global pattern constructor, PatternSynonyms.Point
+x        at 39:14 is a global pattern selector, PatternSynonyms.x
+x        at 39:14 is a global pattern selector, PatternSynonyms.x
+x        at 39:20 is a local value defined at 39:14
+x        at 39:20 is a local value defined at 39:14
+setX     at 40:1 is a value bound here
+x        at 40:17 is a global pattern selector, PatternSynonyms.x
+x        at 40:17 is a global pattern selector, PatternSynonyms.x
+==       at 40:25 is not in scope
+==       at 40:25 is not in scope
+getX'    at 41:1 is a value bound here
+x        at 41:9 is a global pattern selector, PatternSynonyms.x
+x        at 41:9 is a global pattern selector, PatternSynonyms.x
+==       at 41:17 is not in scope
+==       at 41:17 is not in scope

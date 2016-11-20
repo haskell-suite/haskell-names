@@ -70,11 +70,19 @@ data Symbol
       , symbolName :: Name ()
       }
       -- ^ type class
-    | PatSyn
+    | PatternConstructor
       { symbolModule :: ModuleName ()
       , symbolName :: Name ()
+      , patternTypeName :: Maybe (Name ())
       }
-      -- ^ pattern synonym
+      -- ^ pattern synonym constructor
+    | PatternSelector
+      { symbolModule :: ModuleName ()
+      , symbolName :: Name ()
+      , patternTypeName :: Maybe (Name ())
+      , patternConstructorName :: Name ()
+      }
+      -- ^ pattern synonym selector
     deriving (Eq, Ord, Show, Data, Typeable)
 
 -- | A map from module name to list of symbols it exports.

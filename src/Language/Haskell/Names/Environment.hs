@@ -70,6 +70,11 @@ instance ToJSON Symbol where
           ["associate" .= fmap prettyName as]
         DataFam { associate = as } ->
           ["associate" .= fmap prettyName as]
+        PatternConstructor { patternTypeName = mty } ->
+          ["patternTypeName" .= fmap prettyName mty]
+        PatternSelector { patternTypeName = mty, patternConstructorName = pn } ->
+          ["patternTypeName" .= fmap prettyName mty
+          ,"patternConstructorName" .= prettyName pn]
         _ -> []
 
 symbolEntity :: Symbol -> String
@@ -84,7 +89,8 @@ symbolEntity i = case i of
   TypeFam {} -> "typeFamily"
   DataFam {} -> "dataFamily"
   Class   {} -> "class"
-  PatSyn {} -> "patSyn"
+  PatternConstructor {} -> "patternConstructor"
+  PatternSelector {} -> "patternSelector"
 
 parseName :: String -> Name ()
 parseName = dropAnn . stringToName
@@ -117,7 +123,13 @@ instance FromJSON Symbol where
         associate <- fmap parseName <$> v .: "associate"
         return $ DataFam symbolmodule symbolname associate
       "class" -> return $ Class symbolmodule symbolname
-      "patSyn" -> return $ PatSyn symbolmodule symbolname
+      "patternConstructor" -> do
+        typ <- fmap parseName <$> v .: "patternTypeName"
+        return (PatternConstructor symbolmodule symbolname typ)
+      "patternSelector" -> do
+        typ <- fmap parseName <$> v .: "patternTypeName"
+        patternname <- parseName <$> v .: "patternConstructorName"
+        return (PatternSelector symbolmodule symbolname typ patternname)
       _ -> mzero
 
   parseJSON _ = mzero

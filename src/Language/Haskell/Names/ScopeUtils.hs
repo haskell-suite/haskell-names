@@ -25,6 +25,8 @@ symbolParent (Constructor { typeName = n }) = Just n
 symbolParent (Method { className = n }) = Just n
 symbolParent (TypeFam { associate = as }) = as
 symbolParent (DataFam { associate = as }) = as
+symbolParent (PatternConstructor { patternTypeName = mn}) = mn
+symbolParent (PatternSelector { patternTypeName = mn}) = mn
 symbolParent _ = Nothing
 
 computeSymbolTable

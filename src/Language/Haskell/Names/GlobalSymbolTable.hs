@@ -45,6 +45,8 @@ isValue symbol = case symbol of
     Method {} -> True
     Selector {} -> True
     Constructor {} -> True
+    PatternConstructor {} -> True
+    PatternSelector {} -> True
     _ -> False
 
 isType :: Symbol -> Bool
@@ -55,7 +57,6 @@ isType symbol = case symbol of
     TypeFam {} -> True
     DataFam {} -> True
     Class   {} -> True
-    PatSyn {} -> True
     _ -> False
 
 isMethodOrAssociated :: Symbol -> Bool
