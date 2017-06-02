@@ -36,18 +36,20 @@ data NameContext
       -- ^ Reference an associated type in an instance declaration
       -- Unqualified names also match qualified names in scope
       -- https://www.haskell.org/pipermail/haskell-prime/2008-April/002569.html
+  | ReferenceRS
+      -- ^ Reference a record field selector
   | SignatureV
       -- ^ A type signature contains an always unqualified 'Name' that always
       -- refers to a value bound in the same module.
   | Other
 
--- | Pat node can work in different modes depending on where it got from
-data ResolveMode
-  = NormalMode
-  | SuppressBindings
-      -- ^ Supress bindings, force references instead (even for Name)
-  | BindQNames
+-- | Pattern synonyms can work in different modes depending on if we are on the
+-- left hand side or right hand side
+data PatSynMode
+  = PatSynLeftHandSide
       -- ^ Bind QName's too
+  | PatSynRightHandSide
+      -- ^ Supress bindings, force references instead (even for Name)
 
 -- | Contains information about the node's enclosing scope. Can be
 -- accessed through the lenses: 'gTable', 'lTable', 'nameCtx',
@@ -61,14 +63,14 @@ data Scope = Scope
   , _nameCtx :: NameContext
   , _instQual :: Maybe (ModuleName ())
   , _wcNames :: WcNames
-  , _resMode :: ResolveMode
+  , _patSynMode :: Maybe PatSynMode
   }
 
 makeLens ''Scope
 
 -- | Create an initial scope
 initialScope :: ModuleName () -> Global.Table -> Scope
-initialScope moduleName tbl = Scope moduleName tbl Local.empty Other Nothing [] NormalMode
+initialScope moduleName tbl = Scope moduleName tbl Local.empty Other Nothing [] Nothing
 
 -- | Merge local tables of two scopes. The other fields of the scopes are
 -- assumed to be the same.
@@ -166,8 +168,11 @@ exprUV = setNameCtx ReferenceUV
 exprUT :: Scope -> Scope
 exprUT = setNameCtx ReferenceUT
 
+exprRS :: Scope -> Scope
+exprRS = setNameCtx ReferenceRS
+
 instQ :: Maybe (ModuleName ()) -> Scope -> Scope
 instQ m = setL instQual m
 
-setMode :: ResolveMode -> Scope -> Scope
-setMode = setL resMode
+setPatSynMode :: PatSynMode -> Scope -> Scope
+setPatSynMode = setL patSynMode . Just

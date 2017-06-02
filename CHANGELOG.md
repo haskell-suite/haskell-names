@@ -6,6 +6,7 @@ Version 0.9.0
 
 * Preliminary support for pattern synonyms
 * Relax bounds on aeson and haskell-src-exts
+* Fix bugs with record wildcards and record puns
 
 Version 0.8.0
 ------------

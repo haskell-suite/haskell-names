@@ -1,0 +1,35 @@
+RecordWildCards at 1:14 is none
+NamedFieldPuns at 2:14 is none
+Record   at  4:6 is a type or class defined here
+a        at 4:13 is none
+Record   at 4:17 is a value bound here
+field    at 4:26 is a value bound here
+a        at 4:35 is none
+record1  at  5:1 is a value bound here
+field    at  5:9 is a value bound here
+r        at 5:17 is a local value defined at 6:9
+r        at 5:17 is a local value defined at 6:9
+r        at  6:9 is a value bound here
+Record   at 6:13 is a global constructor, RecordFieldUpdate.Record
+Record   at 6:13 is a global constructor, RecordFieldUpdate.Record
+field    at 6:22 is a global selector, RecordFieldUpdate.field
+field    at 6:22 is a global selector, RecordFieldUpdate.field
+field    at 6:30 is a local value defined at 5:9
+field    at 6:30 is a local value defined at 5:9
+record2  at  7:1 is a value bound here
+field    at  7:9 is a value bound here
+r        at 7:17 is a local value defined at 8:9
+r        at 7:17 is a local value defined at 8:9
+r        at  8:9 is a value bound here
+Record   at 8:13 is a global constructor, RecordFieldUpdate.Record
+Record   at 8:13 is a global constructor, RecordFieldUpdate.Record
+field    at 8:22 is a global selector, RecordFieldUpdate.field
+field    at 8:22 is a global selector, RecordFieldUpdate.field
+record3  at  9:1 is a value bound here
+field    at  9:9 is a value bound here
+r        at 9:17 is a local value defined at 10:9
+r        at 9:17 is a local value defined at 10:9
+r        at 10:9 is a value bound here
+Record   at 10:13 is a global constructor, RecordFieldUpdate.Record
+Record   at 10:13 is a global constructor, RecordFieldUpdate.Record
+..       at 10:22 is a record construction wildcard which assigns the following fields: RecordFieldUpdate.field = (a local value defined at 9:9)

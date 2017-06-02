@@ -187,8 +187,8 @@ formatInfo (RecExpWildcard symbols) =
   printf
     "a record construction wildcard which assigns the following fields: %s"
     $ intercalate ", "
-      [ printf "%s = (%s)" (prettyPrint field) valueDesc
-      | (field, vinfo) <- symbols
+      [ printf "%s = (%s)" (ppSymbol symbol) valueDesc
+      | (symbol, vinfo) <- symbols
       , let valueDesc = formatInfo vinfo
       ]
 formatInfo (ScopeError (ENotInScope {})) = "not in scope"

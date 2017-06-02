@@ -87,13 +87,13 @@ Head     at 27:9 is a value bound here
 x        at 27:14 is a value bound here
 x        at 27:19 is a local value defined at 27:14
 :        at 27:20 is none
-xs       at 27:21 is not in scope
+xs       at 27:21 is none
 HeadC    at 29:9 is a value bound here
 HeadC    at 29:9 is a value bound here
 x        at 29:15 is a value bound here
 x        at 29:20 is a local value defined at 29:15
 :        at 29:21 is none
-xs       at 29:22 is not in scope
+xs       at 29:22 is none
 HeadC    at 30:3 is a global pattern constructor, PatternSynonyms.HeadC
 HeadC    at 30:3 is a global pattern constructor, PatternSynonyms.HeadC
 x        at 30:9 is a value bound here
