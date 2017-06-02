@@ -17,7 +17,7 @@ import Language.Haskell.Names.Open.Base
 import Language.Haskell.Names.Open.Instances ()
 import qualified Language.Haskell.Names.GlobalSymbolTable as Global
 import qualified Language.Haskell.Names.LocalSymbolTable as Local
-import Language.Haskell.Names.SyntaxUtils (dropAnn, annName,setAnn)
+import Language.Haskell.Names.SyntaxUtils (dropAnn, setAnn)
 import Language.Haskell.Exts
 import Data.Proxy
 import Data.Lens.Light
@@ -46,25 +46,26 @@ annotateRec _ sc a = go sc a where
       = lookupName (fmap sLoc a) sc <$ a
     | Just (Refl :: FieldUpdate (Scoped l) :~: a) <- eqT
       = case a of
-          FieldPun l qname -> FieldPun l (lookupQName (sLoc <$> qname) sc <$ qname)
-          FieldWildcard l -> FieldWildcard (Scoped (RecExpWildcard namesRes) (sLoc l)) where
-            namesRes = do
+          FieldWildcard l ->
+            FieldWildcard (Scoped (RecExpWildcard namesRes) (sLoc l)) where
+              namesRes = do
                 f <- sc ^. wcNames
-                let qname = setAnn (sLoc l) (UnQual () (annName (wcFieldName f)))
-                case lookupQName qname sc of
-                    Scoped info@(GlobalSymbol _ _) _ -> return (wcFieldName f,info)
-                    Scoped info@(LocalValue _) _ -> return (wcFieldName f,info)
-                    _ -> []
+                let localQName = qualifyName Nothing (setAnn (sLoc l) (wcFieldName f))
+                    selectorQName = qualifyName (Just (wcFieldModuleName f)) (wcFieldName f)
+                Scoped info _ <- return (lookupQName localQName sc)
+                Scoped (GlobalSymbol symbol _) _ <- return (lookupQName selectorQName (exprRS sc))
+                return (symbol, info)
           _ -> rmap go sc a
     | Just (Refl :: PatField (Scoped l) :~: a) <- eqT
-    , PFieldWildcard l <- a
-      = let
-            namesRes = do
+      = case a of
+          PFieldWildcard l ->
+            PFieldWildcard (Scoped (RecPatWildcard namesRes) (sLoc l)) where
+              namesRes = do
                 f <- sc ^. wcNames
-                let qname = UnQual () (annName (wcFieldName f))
-                Scoped (GlobalSymbol symbol _) _ <- return (lookupQName qname (exprV sc))
-                return (symbol {symbolModule = wcFieldModuleName f})
-        in PFieldWildcard (Scoped (RecPatWildcard namesRes) (sLoc l))
+                let qname = qualifyName (Just (wcFieldModuleName f)) (wcFieldName f)
+                Scoped (GlobalSymbol symbol _) _ <- return (lookupQName qname (exprRS sc))
+                return symbol
+          _ -> rmap go sc a
     | otherwise
       = rmap go sc a
 
@@ -73,23 +74,47 @@ lookupQName :: QName l -> Scope -> Scoped l
 lookupQName (Special l _) _ = Scoped None l
 lookupQName qname scope = Scoped nameInfo (ann qname) where
 
-  nameInfo = case getL nameCtx scope of
+  nameInfo = case getL patSynMode scope of
 
-    ReferenceV -> case Local.lookupValue qname (getL lTable scope) of
-      Right srcloc -> LocalValue srcloc
-      _ ->
-        checkUniqueness (Global.lookupValue qname globalTable)
+    Nothing -> case getL nameCtx scope of
 
-    ReferenceT ->
-      checkUniqueness (Global.lookupType qname globalTable)
+      ReferenceV -> case Local.lookupValue qname (getL lTable scope) of
+        Right srcloc -> LocalValue srcloc
+        _ ->
+          checkUniqueness (Global.lookupValue qname globalTable)
 
-    ReferenceUT ->
-      checkUniqueness (Global.lookupMethodOrAssociate qname' globalTable) where
-        qname' = case qname of
-          UnQual _ name -> qualifyName (getL instQual scope) name
-          _ -> qname
+      ReferenceT ->
+        checkUniqueness (Global.lookupType qname globalTable)
 
-    _ -> None
+      ReferenceUT ->
+        checkUniqueness (Global.lookupMethodOrAssociate qname' globalTable) where
+          qname' = case qname of
+            UnQual _ name -> qualifyName (getL instQual scope) name
+            _ -> qname
+
+      ReferenceRS ->
+        checkUniqueness (Global.lookupSelector qname globalTable)
+
+      _ -> None
+
+    Just PatSynLeftHandSide -> case getL nameCtx scope of
+
+      ReferenceV -> ValueBinder
+
+      ReferenceRS -> ValueBinder
+
+      _ -> None
+
+    Just PatSynRightHandSide -> case getL nameCtx scope of
+
+      ReferenceV -> case Local.lookupValue qname (getL lTable scope) of
+        Right srcloc -> LocalValue srcloc
+        _ -> checkUniqueness (Global.lookupValue qname globalTable)
+      ReferenceRS ->
+        checkUniqueness (Global.lookupSelector qname globalTable)
+
+      _ -> None
+
 
   globalTable = getL gTable scope
 
@@ -102,21 +127,39 @@ lookupQName qname scope = Scoped nameInfo (ann qname) where
 lookupName :: Name l -> Scope -> Scoped l
 lookupName name scope = Scoped nameInfo (ann name) where
 
-  nameInfo = case getL nameCtx scope of
+  nameInfo = case getL patSynMode scope of
 
-    ReferenceUV ->
-      checkUniqueness qname (Global.lookupMethodOrAssociate qname globalTable) where
-        qname = qualifyName (getL instQual scope) name
+    Nothing -> case getL nameCtx scope of
 
-    SignatureV ->
-      checkUniqueness qname (Global.lookupValue qname globalTable) where
-        qname = qualifyName (Just (getL moduName scope)) name
+      ReferenceUV ->
+        checkUniqueness qname (Global.lookupMethodOrAssociate qname globalTable) where
+          qname = qualifyName (getL instQual scope) name
 
-    BindingV -> ValueBinder
+      SignatureV ->
+        checkUniqueness qname (Global.lookupValue qname globalTable) where
+          qname = qualifyName (Just (getL moduName scope)) name
 
-    BindingT -> TypeBinder
+      BindingV -> ValueBinder
 
-    _ -> None
+      BindingT -> TypeBinder
+
+      _ -> None
+
+    Just PatSynLeftHandSide -> case getL nameCtx scope of
+
+      BindingV -> ValueBinder
+
+      _ -> None
+
+    Just PatSynRightHandSide -> case getL nameCtx scope of
+
+      BindingV ->
+        case Local.lookupValue (qualifyName Nothing name) (getL lTable scope) of
+          Right srcloc -> LocalValue srcloc
+          _ -> None
+
+      _ -> None
+
 
   globalTable = getL gTable scope
 

@@ -36,6 +36,9 @@ lookupType qn = filter isType . lookupName qn
 lookupMethodOrAssociate :: QName l -> Table -> [Symbol]
 lookupMethodOrAssociate qn = filter isMethodOrAssociated . lookupName qn
 
+lookupSelector :: QName l -> Table -> [Symbol]
+lookupSelector qn = filter isSelector . lookupName qn
+
 lookupName ::  QName l -> Table -> [Symbol]
 lookupName qn table = fromMaybe [] (Map.lookup (dropAnn qn) table)
 
@@ -64,6 +67,12 @@ isMethodOrAssociated symbol = case symbol of
     Method {} -> True
     TypeFam {} -> True
     DataFam {} -> True
+    _ -> False
+
+isSelector :: Symbol -> Bool
+isSelector symbol = case symbol of
+    Selector {} -> True
+    PatternSelector {} -> True
     _ -> False
 
 fromList :: [(QName (),Symbol)] -> Table

@@ -1,0 +1,37 @@
+RecordWildCards at 1:14 is none
+NamedFieldPuns at 2:14 is none
+Record   at  4:6 is a type or class defined here
+a        at 4:13 is none
+Record   at 4:17 is a value bound here
+field    at 4:26 is a value bound here
+a        at 4:35 is none
+unRecord1 at  5:1 is a value bound here
+r        at 5:11 is a value bound here
+field    at 5:15 is a local value defined at 6:26
+field    at 5:15 is a local value defined at 6:26
+Record   at  6:9 is a global constructor, RecordPattern.Record
+Record   at  6:9 is a global constructor, RecordPattern.Record
+field    at 6:18 is a global selector, RecordPattern.field
+field    at 6:18 is a global selector, RecordPattern.field
+field    at 6:26 is a value bound here
+r        at 6:36 is a local value defined at 5:11
+r        at 6:36 is a local value defined at 5:11
+unRecord2 at  7:1 is a value bound here
+r        at 7:11 is a value bound here
+field    at 7:15 is a local value defined at 8:18
+field    at 7:15 is a local value defined at 8:18
+Record   at  8:9 is a global constructor, RecordPattern.Record
+Record   at  8:9 is a global constructor, RecordPattern.Record
+field    at 8:18 is a global selector, RecordPattern.field
+field    at 8:18 is a global selector, RecordPattern.field
+r        at 8:28 is a local value defined at 7:11
+r        at 8:28 is a local value defined at 7:11
+unRecord3 at  9:1 is a value bound here
+r        at 9:11 is a value bound here
+field    at 9:15 is a local value defined at 10:18
+field    at 9:15 is a local value defined at 10:18
+Record   at 10:9 is a global constructor, RecordPattern.Record
+Record   at 10:9 is a global constructor, RecordPattern.Record
+..       at 10:18 is a record pattern wildcard which brings the following fields: RecordPattern.field
+r        at 10:25 is a local value defined at 9:11
+r        at 10:25 is a local value defined at 9:11

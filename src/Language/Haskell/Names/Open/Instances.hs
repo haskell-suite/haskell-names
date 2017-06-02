@@ -65,10 +65,10 @@ instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (Decl l) where
           scWithPat = intro pat scWithPatSyn
         in
         c PatSyn
-          <| sc                -: l
-          <| (setMode BindQNames sc) -: pat
-          <| (setMode SuppressBindings $ exprV scWithPat) -: rpat
-          <| sc                -: dir
+          <| sc                                            -: l
+          <| (setPatSynMode PatSynLeftHandSide sc)         -: pat
+          <| (setPatSynMode PatSynRightHandSide scWithPat) -: rpat
+          <| sc                                            -: dir
       TypeSig l names ty ->
         c TypeSig
           <| sc            -: l
@@ -147,32 +147,6 @@ instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (FieldDecl l) where
           <| binderV sc -: name
           <| sc -: tys
 
--- | Affected by resolve mode
-mbinderV :: Scope -> Scope
-mbinderV sc = case getL resMode sc of
-  SuppressBindings -> exprV sc
-  _ -> binderV sc
-
-mexprV :: Scope -> Scope
-mexprV sc = case getL resMode sc of
-  BindQNames -> binderV sc
-  _ -> exprV sc
-
-(%|)
-  :: (Applicative w, Resolvable (QName l), Resolvable (Name l), ?alg :: Alg w)
-  => w (QName l -> c) -> (QName l, Scope) -> w c
-f %| (name, sc) = case getL resMode sc of
-  BindQNames -> (fmap (. nameToQName) f) <| (qNameToName name, sc)
-  _ -> f <| (name, sc)
-infixl 4 %|
-
-(%-)
-  :: (Applicative w, Resolvable (QName l), Resolvable (Name l), ?alg :: Alg w)
-  => w (Name l -> c) -> (Name l, Scope) -> w c
-f %- (name, sc) = case getL resMode sc of
-  SuppressBindings -> (fmap (. qNameToName) f) <| (nameToQName name, sc)
-  _ -> f <| (name, sc)
-infixl 4 %-
 
 instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (Pat l) where
   rtraverse e sc =
@@ -180,22 +154,22 @@ instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (Pat l) where
       PVar l name ->
         c PVar
           <| sc         -: l
-          %- mbinderV sc -: name
+          <| binderV sc -: name
       PNPlusK l name i ->
         c PNPlusK
           <| sc         -: l
-          %- mbinderV sc -: name
+          <| binderV sc -: name
           <| sc         -: i
       PInfixApp l pat1 name pat2 ->
         c PInfixApp
           <| sc       -: l
           <| sc       -: pat1
-          %| mexprV sc -: name
+          <| exprV sc -: name
           <| sc       -: pat2
       PApp l qn pat ->
         c PApp
           <| sc       -: l
-          %| mexprV sc -: qn
+          <| exprV sc -: qn
           <| sc       -: pat
       PRec l qn pfs ->
         let
@@ -204,17 +178,17 @@ instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (Pat l) where
         in
         c PRec
           <| sc       -: l
-          %| mexprV sc -: qn
+          <| exprV sc -: qn
           <| scWc     -: pfs
       PAsPat l n pat ->
         c PAsPat
           <| sc         -: l
-          %- mbinderV sc -: n
+          <| binderV sc -: n
           <| sc         -: pat
       PViewPat l exp pat ->
         c PViewPat
           <| sc       -: l
-          <| mexprV sc -: exp
+          <| exprV sc -: exp
           <| sc       -: pat
       _ -> defaultRtraverse e sc
 
@@ -224,14 +198,12 @@ instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (PatField l) where
       PFieldPat l qn pat ->
         c PFieldPat
           <| sc       -: l
-          %| mexprV sc -: qn
+          <| exprRS sc -: qn
           <| sc       -: pat
       PFieldPun l qn ->
         c PFieldPun
           <| sc -: l
-          %| mexprV sc -: qn
-      -- In future we might want to annotate PFieldWildcard with the names
-      -- it introduces.
+          <| exprRS sc -: qn
       PFieldWildcard {} -> defaultRtraverse e sc
 
 -- | Chain a sequence of nodes where every node may introduce some
@@ -350,11 +322,27 @@ instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (Exp l) where
               sc
         in
         c RecConstr
-          <| sc   -: l
-          <| sc   -: qn
+          <| sc          -: l
+          <| sc          -: qn
           <| scWc -: fields
 
       _ -> defaultRtraverse e sc
+
+
+instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (FieldUpdate l) where
+  rtraverse e sc =
+    case e of
+      FieldUpdate l qn exp ->
+        c FieldUpdate
+          <| sc        -: l
+          <| exprRS sc -: qn
+          <| sc        -: exp
+      FieldPun l qn ->
+        c FieldPun
+          <| sc        -: l
+          <| exprRS sc -: qn
+      FieldWildcard {} -> defaultRtraverse e sc
+
 
 instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (Alt l) where
   rtraverse e sc =

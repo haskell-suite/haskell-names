@@ -17,9 +17,9 @@ fu x = x { b = b x }
 -- pattern pun
 g A {b} = b
 
--- top-level pattern pun
-A { tx } = undefined
-ty = tx
+-- top-level pattern pun clashes with selector
+-- A { c } = undefined
+ty = c
 
 -- expression pun
 tz = let b = 1 in A { b }
