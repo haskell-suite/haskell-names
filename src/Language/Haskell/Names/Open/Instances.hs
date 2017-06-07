@@ -81,7 +81,7 @@ instance (Resolvable l, SrcInfo l, D.Data l) => Resolvable (Decl l) where
           <| sc       -: mp
           <| exprV sc -: ops
       InstDecl l mOverlap rule mInstDecls ->
-        let sc' = instQ (nameQualification (instanceRuleClass rule)) sc
+        let sc' = setInstClassName (Just (dropAnn (instanceRuleClass rule))) sc
         in c InstDecl
           <| sc'       -: l
           <| sc'       -: mOverlap
