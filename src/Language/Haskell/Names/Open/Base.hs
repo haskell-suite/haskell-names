@@ -61,7 +61,7 @@ data Scope = Scope
   , _gTable :: Global.Table
   , _lTable :: Local.Table
   , _nameCtx :: NameContext
-  , _instQual :: Maybe (ModuleName ())
+  , _instClassName :: Maybe (QName ())
   , _wcNames :: WcNames
   , _patSynMode :: Maybe PatSynMode
   }
@@ -171,8 +171,8 @@ exprUT = setNameCtx ReferenceUT
 exprRS :: Scope -> Scope
 exprRS = setNameCtx ReferenceRS
 
-instQ :: Maybe (ModuleName ()) -> Scope -> Scope
-instQ m = setL instQual m
+setInstClassName :: Maybe (QName ()) -> Scope -> Scope
+setInstClassName m = setL instClassName m
 
 setPatSynMode :: PatSynMode -> Scope -> Scope
 setPatSynMode = setL patSynMode . Just

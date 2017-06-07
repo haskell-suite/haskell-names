@@ -17,7 +17,8 @@ import Language.Haskell.Names.Open.Base
 import Language.Haskell.Names.Open.Instances ()
 import qualified Language.Haskell.Names.GlobalSymbolTable as Global
 import qualified Language.Haskell.Names.LocalSymbolTable as Local
-import Language.Haskell.Names.SyntaxUtils (dropAnn, setAnn)
+import Language.Haskell.Names.SyntaxUtils (
+  dropAnn, setAnn, nameQualification, qNameToName)
 import Language.Haskell.Exts
 import Data.Proxy
 import Data.Lens.Light
@@ -89,7 +90,8 @@ lookupQName qname scope = Scoped nameInfo (ann qname) where
       ReferenceUT ->
         checkUniqueness (Global.lookupMethodOrAssociate qname' globalTable) where
           qname' = case qname of
-            UnQual _ name -> qualifyName (getL instQual scope) name
+            UnQual _ name -> qualifyName maybeQualification name where
+              maybeQualification = maybe Nothing nameQualification (getL instClassName scope)
             _ -> qname
 
       ReferenceRS ->
@@ -132,8 +134,10 @@ lookupName name scope = Scoped nameInfo (ann name) where
     Nothing -> case getL nameCtx scope of
 
       ReferenceUV ->
-        checkUniqueness qname (Global.lookupMethodOrAssociate qname globalTable) where
-          qname = qualifyName (getL instQual scope) name
+        disambiguateMethod maybeClassName qname (Global.lookupMethodOrAssociate qname globalTable) where
+          qname = qualifyName maybeQualification name
+          maybeQualification = maybe Nothing nameQualification maybeClassName
+          maybeClassName = getL instClassName scope
 
       SignatureV ->
         checkUniqueness qname (Global.lookupValue qname globalTable) where
@@ -163,11 +167,19 @@ lookupName name scope = Scoped nameInfo (ann name) where
 
   globalTable = getL gTable scope
 
-  checkUniqueness qname symbols = case symbols of
-    [] -> ScopeError (ENotInScope qname)
-    [symbol] -> GlobalSymbol symbol (dropAnn qname)
-    _ -> ScopeError (EAmbiguous qname symbols)
 
+checkUniqueness :: QName l -> [Symbol] -> NameInfo l
+checkUniqueness qname symbols = case symbols of
+  [] -> ScopeError (ENotInScope qname)
+  [symbol] -> GlobalSymbol symbol (dropAnn qname)
+  _ -> ScopeError (EAmbiguous qname symbols)
+
+
+disambiguateMethod :: Maybe (QName ()) -> QName l -> [Symbol] -> NameInfo l
+disambiguateMethod Nothing _ _ = ScopeError (EInternal "method in instance of unknown class")
+disambiguateMethod (Just instanceClassName) qname symbols = checkUniqueness qname disambiguatedSymbols where
+  disambiguatedSymbols =
+    filter (\symbol -> className symbol == qNameToName instanceClassName) symbols
 
 qualifyName :: Maybe (ModuleName ()) -> Name l -> QName l
 qualifyName Nothing n = UnQual (ann n) n
