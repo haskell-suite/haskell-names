@@ -1,0 +1,15 @@
+[ Data
+    { symbolModule = ModuleName () "ExportAmbiguous"
+    , symbolName = Ident () "DataType"
+    }
+, Constructor
+    { symbolModule = ModuleName () "ExportAmbiguous"
+    , symbolName = Ident () "Constructor1"
+    , typeName = Ident () "DataType"
+    }
+, Constructor
+    { symbolModule = ModuleName () "ExportAmbiguous"
+    , symbolName = Ident () "Constructor2"
+    , typeName = Ident () "DataType"
+    }
+]

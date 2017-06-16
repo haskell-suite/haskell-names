@@ -72,8 +72,9 @@ annotateExportSpec globalTable exportSpec =
         let
           subSymbols = nub (do
               subSymbol <- concat (Map.elems globalTable)
-              Just n' <- return $ symbolParent subSymbol
-              guard (n' == symbolName symbol)
+              Just subSymbolParentName <- return $ symbolParent subSymbol
+              guard (subSymbolParentName == symbolName symbol)
+              guard (symbolModule subSymbol == symbolModule symbol)
               return subSymbol)
           s = [symbol] <> subSymbols
         in
