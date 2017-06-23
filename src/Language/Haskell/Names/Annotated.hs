@@ -52,9 +52,8 @@ annotateRec _ sc a = go sc a where
               namesRes = do
                 f <- sc ^. wcNames
                 let localQName = qualifyName Nothing (setAnn (sLoc l) (wcFieldName f))
-                    selectorQName = qualifyName (Just (wcFieldModuleName f)) (wcFieldName f)
+                    symbol = wcFieldSymbol f
                 Scoped info _ <- return (lookupQName localQName sc)
-                Scoped (GlobalSymbol symbol _) _ <- return (lookupQName selectorQName (exprRS sc))
                 return (symbol, info)
           _ -> rmap go sc a
     | Just (Refl :: PatField (Scoped l) :~: a) <- eqT
@@ -63,8 +62,7 @@ annotateRec _ sc a = go sc a where
             PFieldWildcard (Scoped (RecPatWildcard namesRes) (sLoc l)) where
               namesRes = do
                 f <- sc ^. wcNames
-                let qname = qualifyName (Just (wcFieldModuleName f)) (wcFieldName f)
-                Scoped (GlobalSymbol symbol _) _ <- return (lookupQName qname (exprRS sc))
+                let symbol = wcFieldSymbol f
                 return symbol
           _ -> rmap go sc a
     | otherwise

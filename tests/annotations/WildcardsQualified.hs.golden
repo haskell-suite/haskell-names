@@ -1,0 +1,16 @@
+RecordWildCards at 1:14 is none
+DataTypeWithSelectors at 4:32 is import part for a global data type, Prelude.DataTypeWithSelectors
+DataTypeWithSelectors at 4:54 is a global constructor, Prelude.DataTypeWithSelectors
+selector1 at 4:76 is a global selector, Prelude.selector1
+u        at  6:1 is a global value, WildcardsQualified.u
+DataTypeWithSelectors at  6:6 is not in scope
+DataTypeWithSelectors at  6:6 is not in scope
+()       at 6:31 is none
+u        at  7:1 is a value bound here
+DataTypeWithSelectors at  7:3 is a global constructor, Prelude.DataTypeWithSelectors
+DataTypeWithSelectors at  7:3 is a global constructor, Prelude.DataTypeWithSelectors
+..       at 7:27 is a record pattern wildcard which brings the following fields: Prelude.selector1
+x        at 7:37 is a value bound here
+selector1 at 7:41 is a local value defined at 7:27
+selector1 at 7:41 is a local value defined at 7:27
+()       at 7:54 is none
