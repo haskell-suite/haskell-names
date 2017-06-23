@@ -26,8 +26,8 @@ type WcNames = [WcField]
 data WcField = WcField
   { wcFieldName :: Name ()
     -- ^ the field's simple name
-  , wcFieldModuleName :: ModuleName ()
-    -- ^ the field's original name
+  , wcFieldSymbol :: Symbol
+    -- ^ the field's selector symbol
   , wcExistsGlobalValue :: Bool
     -- ^ whether there is a global value in scope with the same name as
     -- the field but different from the field selector
@@ -76,7 +76,7 @@ getElidedFields globalTable con fields =
         let name = symbolName symbol
             wcfield = WcField
                 { wcFieldName = name
-                , wcFieldModuleName = symbolModule symbol
+                , wcFieldSymbol = symbol
                 , wcExistsGlobalValue = existsGlobalValue name
             }
         return (name,wcfield))
