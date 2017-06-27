@@ -16,16 +16,16 @@ import Language.Haskell.Names.ScopeUtils
 import Language.Haskell.Names.SyntaxUtils
 import Language.Haskell.Names.ModuleSymbols
 import Language.Haskell.Names.GlobalSymbolTable as Global
-import Data.List (nub)
+import qualified Data.Set as Set (fromList, toList)
 
 
 -- | Compute the list of symbols the given module exports using the given
 -- table of symbols that are in scope in that module.
 exportedSymbols :: (Data l, Eq l) => Global.Table -> Module l -> [Symbol]
-exportedSymbols globalTable modul = case getExportSpecList modul of
+exportedSymbols globalTable modul = nubSymbols (case getExportSpecList modul of
   Nothing -> moduleSymbols globalTable modul
   Just (ExportSpecList _ exportSpecs) ->
-    concatMap (exportSpecSymbols globalTable) exportSpecs
+    concatMap (exportSpecSymbols globalTable) exportSpecs)
 
 exportSpecSymbols :: Global.Table -> ExportSpec l -> [Symbol]
 exportSpecSymbols globalTable exportSpec =
@@ -70,7 +70,7 @@ annotateExportSpec globalTable exportSpec =
       [] -> scopeError (ENotInScope qn) exportSpec
       [symbol] ->
         let
-          subSymbols = nub (do
+          subSymbols = nubSymbols (do
               subSymbol <- concat (Map.elems globalTable)
               Just subSymbolParentName <- return $ symbolParent subSymbol
               guard (subSymbolParentName == symbolName symbol)
@@ -108,4 +108,12 @@ annotateExportSpec globalTable exportSpec =
       inScopeUnqualified = Set.fromList (do
           (UnQual _ _, symbols) <- Map.toList globalTable
           symbols)
+
+
+nubSymbols :: [Symbol] -> [Symbol]
+nubSymbols = loop Set.empty where
+  loop _ [] = []
+  loop a (b : c) = if Set.member b a
+    then loop a c
+    else b : loop (Set.insert b a) c
 
