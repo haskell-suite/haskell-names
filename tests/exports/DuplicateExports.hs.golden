@@ -1,0 +1,10 @@
+[ Data
+    { symbolModule = ModuleName () "DuplicateExports"
+    , symbolName = Ident () "A"
+    }
+, Constructor
+    { symbolModule = ModuleName () "DuplicateExports"
+    , symbolName = Ident () "A"
+    , typeName = Ident () "A"
+    }
+]

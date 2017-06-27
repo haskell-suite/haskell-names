@@ -17,11 +17,6 @@
     , symbolName = Ident () "method1"
     , className = Ident () "ListLike"
     }
-, DataFam
-    { symbolModule = ModuleName () "DataFamilies"
-    , symbolName = Ident () "Vector"
-    , associate = Nothing
-    }
 , Constructor
     { symbolModule = ModuleName () "DataFamilies"
     , symbolName = Ident () "U_Vector"
