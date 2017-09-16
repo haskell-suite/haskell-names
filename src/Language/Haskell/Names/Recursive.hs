@@ -24,7 +24,8 @@ import Language.Haskell.Names.Annotated
 
 
 -- | Takes a list of modules and an environment and updates the environment
--- with each of the given modules' exported symbols.
+-- with each of the given modules' exported symbols. The modules can appear
+-- in any order and can be mutually recursive.
 resolve :: (Data l, Eq l) => [Module l] -> Environment -> Environment
 resolve modules environment = updatedEnvironment where
   moduleSCCs = groupModules modules
