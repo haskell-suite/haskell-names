@@ -11,7 +11,7 @@ Homepage:               http://documentup.com/haskell-suite/haskell-names
 Stability:              Experimental
 Build-Type:             Simple
 Cabal-Version:          >= 1.10
-Tested-With:            GHC == 7.8.4, GHC == 7.10.1, GHC == 8.0.1
+Tested-With:            GHC == 7.10.1, GHC == 8.0.1, GHC == 8.2.1
 
 extra-source-files:
   README.md
