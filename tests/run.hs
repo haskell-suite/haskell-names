@@ -1,5 +1,6 @@
 {-# LANGUAGE FlexibleInstances, OverlappingInstances, ImplicitParams,
-             MultiParamTypeClasses, FlexibleContexts, GADTs #-}
+             MultiParamTypeClasses, FlexibleContexts, GADTs,
+             TypeApplications #-}
 -- GHC 7.8 fails with the default context stack size of 20
 {-# OPTIONS_GHC -fcontext-stack=50 #-}
 import Test.Tasty hiding (defaultMain)
@@ -135,7 +136,6 @@ printAnns
   :: Rec TestAnn (a (Scoped SrcSpan))
   => a (Scoped SrcSpan) -> String
 printAnns =
-  let ?c = Proxy :: Proxy (Rec TestAnn) in
   let
     -- format one annotation
     one :: TestAnn a => a -> String
@@ -143,7 +143,7 @@ printAnns =
       flip F.foldMap (getAnn a) $ uncurry formatAnn
     -- tie the knot
     go :: Rec TestAnn a => a -> String
-    go a = one a ++ gfoldMap go a
+    go a = one a ++ gfoldMap @(Rec TestAnn) go a
   in go
 
 -----------------------

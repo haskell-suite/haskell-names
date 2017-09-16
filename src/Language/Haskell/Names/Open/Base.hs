@@ -4,7 +4,7 @@
 -- You can look at "Language.Haskell.Exts.Annotated" source as an example
 -- of how to use this module.
 {-# LANGUAGE RankNTypes, FlexibleInstances, FlexibleContexts, UndecidableInstances, DefaultSignatures, TemplateHaskell, ScopedTypeVariables #-}
-{-# LANGUAGE ImplicitParams, KindSignatures #-}
+{-# LANGUAGE ImplicitParams, KindSignatures, TypeApplications #-}
 module Language.Haskell.Names.Open.Base where
 
 import qualified Language.Haskell.Names.GlobalSymbolTable as Global
@@ -91,9 +91,7 @@ data ConstraintProxy (p :: * -> Constraint) = ConstraintProxy
 defaultRtraverse
   :: (GTraversable Resolvable a, Applicative f, ?alg :: Alg f)
   => a -> Scope -> f a
-defaultRtraverse a sc =
-  let ?c = ConstraintProxy :: ConstraintProxy Resolvable
-  in gtraverse (\a -> alg a sc) a
+defaultRtraverse a sc = gtraverse @Resolvable (\d -> alg d sc) a
 
 -- | A type that implements 'Resolvable' provides a way to perform
 -- a shallow scope-aware traversal.
