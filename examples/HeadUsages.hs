@@ -1,9 +1,8 @@
 module Main where
 
-import Language.Haskell.Exts.Annotated (
-  fromParseResult, parseModuleWithMode, defaultParseMode,
-  parseFilename, prettyPrint, srcInfoSpan)
 import Language.Haskell.Exts (
+  fromParseResult, parseModuleWithMode, defaultParseMode,
+  parseFilename, prettyPrint, srcInfoSpan,
   Name(Ident), ModuleName(ModuleName))
 import Language.Haskell.Names (
   loadBase, annotate, symbolName,
@@ -36,13 +35,13 @@ main = do
 
   -- get symbols defined in prelude
   let preludeSymbols = fromMaybe (error "Prelude not found") (
-        Map.lookup (ModuleName "Prelude") baseEnvironment)
+        Map.lookup (ModuleName () "Prelude") baseEnvironment)
 
   -- find a Prelude symbol with name 'head' using the List monad
   let headSymbol = fromMaybe (error "Prelude.head not found") (
         listToMaybe (do
           preludeSymbol <- preludeSymbols
-          guard (symbolName preludeSymbol == Ident "head")
+          guard (symbolName preludeSymbol == Ident () "head")
           return preludeSymbol))
 
   -- annotate the AST
