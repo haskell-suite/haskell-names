@@ -11,7 +11,7 @@ Homepage:               http://documentup.com/haskell-suite/haskell-names
 Stability:              Experimental
 Build-Type:             Simple
 Cabal-Version:          >= 1.10
-Tested-With:            GHC == 7.10.1, GHC == 8.0.1, GHC == 8.2.1
+Tested-With:            GHC == 8.0.1, GHC == 8.2.1
 
 extra-source-files:
   README.md
@@ -245,7 +245,7 @@ Library
     , aeson >= 0.8.0.2 && < 1.3
     , bytestring >= 0.10.4.0 && < 0.11
     , data-lens-light >= 0.1.2.1 && < 0.2
-    , traverse-with-class >= 0.2.0.3 && < 0.3
+    , traverse-with-class >= 1.0.0.0 && < 1.1
   if impl(ghc <= 7.8)
     Build-depends: tagged >= 0.8.4 && < 0.9
   Hs-source-dirs:       src
@@ -291,5 +291,5 @@ Test-suite test
     , tasty-golden >= 2.2.1 && < 2.4
     , filemanip >= 0.3.6.3 && < 0.4
     , pretty-show >= 1.6.1 && < 1.7
-    , traverse-with-class >= 0.2.0.3 && < 0.3
+    , traverse-with-class >= 1.0.0.0 && < 1.1
 
