@@ -6,7 +6,11 @@ Version 0.9.0
 
 * Preliminary support for pattern synonyms
 * Relax bounds on aeson and haskell-src-exts
+* Fix bug with instance declarations where class is qualified
 * Fix bugs with record wildcards and record puns
+* Fix bug where we'd produce duplicate symbols in environment
+* Use traverse-with-class-1.0.0.0
+* haskell-names now requires GHC 8.0 or later
 
 Version 0.8.0
 ------------
