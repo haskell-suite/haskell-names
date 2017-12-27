@@ -6,3 +6,6 @@ cabal-dev
 *.chs.h
 *.out
 *.tix
+
+# stack cache
+.stack-work/

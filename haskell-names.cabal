@@ -236,7 +236,7 @@ Library
   Default-Language: Haskell2010
   Build-depends:
       base >= 4 && < 5
-    , haskell-src-exts >= 1.18 && < 1.20
+    , haskell-src-exts >= 1.20 && < 1.21
     , mtl >= 2.2.1 && < 2.3
     , transformers >=0.4.2.0 && < 0.6
     , filepath >= 1.1 && < 1.5
@@ -283,13 +283,12 @@ Test-suite test
   Build-depends:
       base >= 4 && < 5
     , haskell-names
-    , haskell-src-exts >= 1.18 && < 1.20
+    , haskell-src-exts >= 1.20 && < 1.21
     , mtl >= 2.2.1 && < 2.3
     , filepath >= 1.1 && <1.5
     , containers >= 0.2 && < 0.6
-    , tasty >= 0.10.1.2 && < 0.12
+    , tasty >= 0.12 && < 0.13
     , tasty-golden >= 2.2.1 && < 2.4
     , filemanip >= 0.3.6.3 && < 0.4
     , pretty-show >= 1.6.1 && < 1.7
     , traverse-with-class >= 1.0.0.0 && < 1.1
-
