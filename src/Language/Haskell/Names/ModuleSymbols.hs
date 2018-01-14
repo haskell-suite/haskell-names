@@ -136,7 +136,8 @@ typeOuterName t = case t of
     TyApp _ typ _ -> typeOuterName typ
     TyCon _ qname -> qNameToName qname
     TyParen _ typ -> typeOuterName typ
-    TyInfix _ _ qname _ -> qNameToName qname
+    TyInfix _ _ (PromotedName _ qname) _ -> qNameToName qname
+    TyInfix _ _ (UnpromotedName _ qname) _ -> qNameToName qname
     TyKind _ typ _ -> typeOuterName typ
     TyBang _ _ _ typ -> typeOuterName typ
     _ -> error "illegal data family in data instance"

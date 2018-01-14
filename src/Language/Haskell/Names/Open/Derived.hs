@@ -158,3 +158,7 @@ deriveGTraversable ''ResultSig
 deriveGTraversable ''Unpackedness
 
 deriveGTraversable ''EWildcard
+
+deriveGTraversable ''DerivStrategy
+
+deriveGTraversable ''MaybePromotedName
