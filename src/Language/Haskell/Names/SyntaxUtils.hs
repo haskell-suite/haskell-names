@@ -143,6 +143,8 @@ specialConToString (TupleCon _ Boxed n)   = replicate (n-1) ','
 specialConToString (TupleCon _ Unboxed n) = '#':replicate (n-1) ','
 specialConToString (Cons _)               = ":"
 specialConToString (UnboxedSingleCon _)   = "#"
+specialConToString (ExprHole _)   = "_"
+
 
 unCName :: CName l -> Name l
 unCName (VarName _ n) = n

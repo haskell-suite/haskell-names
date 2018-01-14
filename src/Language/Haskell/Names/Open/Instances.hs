@@ -1,8 +1,7 @@
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 {-# LANGUAGE FlexibleContexts, FlexibleInstances, TemplateHaskell,
              MultiParamTypeClasses, UndecidableInstances, RankNTypes,
-             OverlappingInstances #-}
-{-# LANGUAGE ImplicitParams #-}
+             ImplicitParams #-}
 
 -- MonoLocalBinds extension prevents premature generalization, which
 -- results in the "default" instance being picked.
@@ -18,9 +17,7 @@ import Language.Haskell.Names.RecordWildcards
 import Language.Haskell.Exts
 import Language.Haskell.Names.SyntaxUtils
 import qualified Data.Data as D
-import Control.Applicative
 import Data.Typeable
-import Data.Type.Equality
 import Data.Lens.Light
 import Data.List
 import qualified Data.Traversable as T

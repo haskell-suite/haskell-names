@@ -5,6 +5,7 @@
 -- of how to use this module.
 {-# LANGUAGE RankNTypes, FlexibleInstances, FlexibleContexts, UndecidableInstances, DefaultSignatures, TemplateHaskell, ScopedTypeVariables #-}
 {-# LANGUAGE ImplicitParams, KindSignatures, TypeApplications #-}
+{-# LANGUAGE MonoLocalBinds #-}
 module Language.Haskell.Names.Open.Base where
 
 import qualified Language.Haskell.Names.GlobalSymbolTable as Global
@@ -12,7 +13,6 @@ import qualified Language.Haskell.Names.LocalSymbolTable as Local
 import Language.Haskell.Names.GetBound
 import Language.Haskell.Names.RecordWildcards
 import Language.Haskell.Exts
-import Control.Applicative
 import Control.Monad.Identity
 import Data.List
 import Data.Lens.Light
@@ -20,7 +20,6 @@ import Data.Generics.Traversable
 import Data.Typeable
 import Data.Monoid
 import Data.Functor.Constant
-import GHC.Exts (Constraint)
 
 -- | Describes how we should treat names in the current context
 data NameContext
@@ -85,8 +84,6 @@ newtype Alg w = Alg
 
 alg :: (?alg :: Alg w, Resolvable d) => d -> Scope -> w d
 alg = runAlg ?alg
-
-data ConstraintProxy (p :: * -> Constraint) = ConstraintProxy
 
 defaultRtraverse
   :: (GTraversable Resolvable a, Applicative f, ?alg :: Alg f)
