@@ -292,4 +292,3 @@ Test-suite test
     , filemanip >= 0.3.6.3 && < 0.4
     , pretty-show >= 1.6.1 && < 1.7
     , traverse-with-class >= 1.0.0.0 && < 1.1
-
