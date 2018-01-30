@@ -62,7 +62,7 @@ instance (Data l) => GetBound (Decl l) l where
         PRec _ qn fs -> qNameToName qn : concatMap getFieldBound fs where
           getFieldBound (PFieldPat _ qn' _) = [qNameToName qn']
           getFieldBound (PFieldPun _ qn') = [qNameToName qn']
-          _ = []
+          getFieldBound (PFieldWildcard _) = []
         _ -> []
       ForImp _ _ _ _ n _ -> [n]
       ForExp _ _ _ n _ -> [n]

@@ -6,7 +6,6 @@ import Language.Haskell.Exts
 import Data.Typeable
 import Data.Data
 import Data.Foldable as F
-import Data.Traversable
 import Data.Map (Map)
 import Text.Printf
 

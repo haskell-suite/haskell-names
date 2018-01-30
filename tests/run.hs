@@ -1,8 +1,5 @@
-{-# LANGUAGE FlexibleInstances, OverlappingInstances, ImplicitParams,
-             MultiParamTypeClasses, FlexibleContexts, GADTs,
-             TypeApplications #-}
--- GHC 7.8 fails with the default context stack size of 20
-{-# OPTIONS_GHC -fcontext-stack=50 #-}
+{-# LANGUAGE FlexibleInstances, ImplicitParams, MultiParamTypeClasses,
+             FlexibleContexts, GADTs, TypeApplications #-}
 import Test.Tasty hiding (defaultMain)
 import Test.Tasty.Golden
 import Test.Tasty.Golden.Manage
@@ -112,7 +109,7 @@ goldenTest path = goldenVsFileDiff
 class TestAnn a where
   getAnn :: a -> Maybe (String, Scoped SrcSpan)
 
-instance TestAnn a where
+instance {-# OVERLAPS #-} TestAnn a where
   getAnn = const Nothing
 
 instance TestAnn (QName (Scoped SrcSpan)) where

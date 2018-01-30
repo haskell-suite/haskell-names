@@ -1,6 +1,11 @@
 Changes
 =======
 
+Version 0.9.1
+-------------
+
+* Use haskell-src-exts 1.20
+
 Version 0.9.0
 -------------
 

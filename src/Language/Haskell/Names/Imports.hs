@@ -9,7 +9,6 @@ module Language.Haskell.Names.Imports
 import Data.Monoid
 import Data.Maybe
 import Data.Either
-import Control.Applicative
 
 import Control.Monad.Writer
 import Data.Map as Map (lookup)

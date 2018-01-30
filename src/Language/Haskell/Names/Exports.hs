@@ -6,7 +6,6 @@ module Language.Haskell.Names.Exports
 
 import qualified Data.Map as Map
 import qualified Data.Set as Set
-import Control.Applicative
 import Control.Monad
 import Control.Monad.Writer
 import Data.Data

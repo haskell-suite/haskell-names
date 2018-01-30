@@ -17,11 +17,9 @@ import Language.Haskell.Exts (ModuleName(ModuleName),Name,prettyPrint)
 import Language.Haskell.Names.SyntaxUtils (stringToName,nameToString,dropAnn, annName)
 import qualified Data.ByteString.Lazy as BS (readFile, writeFile, pack)
 import Data.Aeson
-import Data.Monoid
 import Data.Char
 import Data.Typeable
 import Control.Exception
-import Control.Applicative
 import Control.Monad
 import System.FilePath ((</>), (<.>))
 import qualified Data.Map as Map (fromList)

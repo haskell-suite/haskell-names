@@ -24,8 +24,6 @@ import Data.Proxy
 import Data.Lens.Light
 import Data.Typeable (
   Typeable, (:~:)(Refl), eqT)
-  -- in GHC 7.8 Data.Typeable exports (:~:). Be careful to avoid the clash.
-import Control.Applicative
 
 
 annotateDecl
