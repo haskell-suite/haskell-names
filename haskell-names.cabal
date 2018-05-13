@@ -246,6 +246,9 @@ Library
     , bytestring >= 0.10.4.0 && < 0.11
     , data-lens-light >= 0.1.2.1 && < 0.2
     , traverse-with-class >= 1.0.0.0 && < 1.1
+    , template-haskell >= 2.9 && < 2.14
+    , hint >= 0.7 && < 0.9
+    , th-lift, th-orphans
   if impl(ghc <= 7.8)
     Build-depends: tagged >= 0.8.4 && < 0.9
   Hs-source-dirs:       src
@@ -262,6 +265,7 @@ Library
                         Language.Haskell.Names.ModuleSymbols
                         Language.Haskell.Names.SyntaxUtils
                         Language.Haskell.Names.GetBound
+                        Language.Haskell.Names.Reify
 
   Other-modules:
                         Language.Haskell.Names.Open.Base
@@ -287,7 +291,7 @@ Test-suite test
     , mtl >= 2.2.1 && < 2.3
     , filepath >= 1.1 && <1.5
     , containers >= 0.2 && < 0.6
-    , tasty >= 0.12 && < 0.13
+    , tasty >= 0.12 && < 1.1
     , tasty-golden >= 2.2.1 && < 2.4
     , filemanip >= 0.3.6.3 && < 0.4
     , pretty-show >= 1.6.1 && < 1.7
