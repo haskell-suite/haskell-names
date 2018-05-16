@@ -248,7 +248,7 @@ Library
     , traverse-with-class >= 1.0.0.0 && < 1.1
     , template-haskell >= 2.9 && < 2.14
     , hint >= 0.7 && < 0.9
-    , th-lift, th-orphans
+    , th-lift, th-lift-instances, th-orphans
   if impl(ghc <= 7.8)
     Build-depends: tagged >= 0.8.4 && < 0.9
   Hs-source-dirs:       src

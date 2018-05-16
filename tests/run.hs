@@ -95,7 +95,7 @@ environmentTests :: TestTree
 environmentTests = goldenTest path run where
   run = do
     let preludeSymbols :: [Symbol]
-        preludeSymbols = sort $(findModuleSymbols "Prelude")
+        preludeSymbols = sort $(findModuleSymbols 0 dangerous "Prelude")
     writeSymbols out preludeSymbols
   path = "tests/environment/Prelude.symbols"
   out = path <.> "out"
