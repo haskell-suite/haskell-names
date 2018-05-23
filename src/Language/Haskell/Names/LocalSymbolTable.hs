@@ -8,6 +8,7 @@ module Language.Haskell.Names.LocalSymbolTable
   ) where
 
 import qualified Data.Map as Map
+import Data.Semigroup
 import Language.Haskell.Exts
 import Language.Haskell.Names.SyntaxUtils (dropAnn)
 import Language.Haskell.Names.Types
