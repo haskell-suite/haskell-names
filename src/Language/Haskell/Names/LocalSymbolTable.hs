@@ -14,7 +14,7 @@ import Language.Haskell.Names.Types
 
 -- | Local symbol table — contains locally bound names
 newtype Table = Table (Map.Map (Name ()) SrcLoc)
-  deriving Monoid
+  deriving (Semigroup, Monoid)
 
 addValue :: SrcInfo l => Name l -> Table -> Table
 addValue n (Table vs) =
