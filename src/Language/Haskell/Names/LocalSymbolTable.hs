@@ -8,13 +8,14 @@ module Language.Haskell.Names.LocalSymbolTable
   ) where
 
 import qualified Data.Map as Map
+import Data.Semigroup
 import Language.Haskell.Exts
 import Language.Haskell.Names.SyntaxUtils (dropAnn)
 import Language.Haskell.Names.Types
 
 -- | Local symbol table — contains locally bound names
 newtype Table = Table (Map.Map (Name ()) SrcLoc)
-  deriving Monoid
+  deriving (Semigroup, Monoid)
 
 addValue :: SrcInfo l => Name l -> Table -> Table
 addValue n (Table vs) =
