@@ -246,6 +246,9 @@ Library
     , bytestring >= 0.10.4.0 && < 0.11
     , data-lens-light >= 0.1.2.1 && < 0.2
     , traverse-with-class >= 1.0.0.0 && < 1.1
+    , template-haskell >= 2.9 && < 2.14
+    , hint >= 0.7 && < 0.9
+    , th-lift, th-lift-instances, th-orphans
   if impl(ghc <= 7.8)
     Build-depends: tagged >= 0.8.4 && < 0.9
   Hs-source-dirs:       src
@@ -262,6 +265,7 @@ Library
                         Language.Haskell.Names.ModuleSymbols
                         Language.Haskell.Names.SyntaxUtils
                         Language.Haskell.Names.GetBound
+                        Language.Haskell.Names.Reify
 
   Other-modules:
                         Language.Haskell.Names.Open.Base

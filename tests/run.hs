@@ -1,5 +1,5 @@
 {-# LANGUAGE FlexibleInstances, ImplicitParams, MultiParamTypeClasses,
-             FlexibleContexts, GADTs, TypeApplications #-}
+             FlexibleContexts, GADTs, TypeApplications, TemplateHaskell #-}
 import Test.Tasty hiding (defaultMain)
 import Test.Tasty.Golden
 import Test.Tasty.Golden.Manage
@@ -29,6 +29,7 @@ import Language.Haskell.Names.Imports
 import Language.Haskell.Names.Annotated
 import Language.Haskell.Names.Open
 import Language.Haskell.Names.ModuleSymbols
+import Language.Haskell.Names.Reify
 import Language.Haskell.Names.SyntaxUtils
 import qualified Language.Haskell.Names.GlobalSymbolTable as Global
 
@@ -93,8 +94,9 @@ annotationTest environment (path, modul) = goldenTest path run where
 environmentTests :: TestTree
 environmentTests = goldenTest path run where
   run = do
-    baseEnvironment <- loadBase
-    writeSymbols out (baseEnvironment Map.! (U.ModuleName () "Prelude"))
+    let preludeSymbols :: [Symbol]
+        preludeSymbols = sort $(findModuleSymbols 0 dangerous "Prelude")
+    writeSymbols out preludeSymbols
   path = "tests/environment/Prelude.symbols"
   out = path <.> "out"
 
