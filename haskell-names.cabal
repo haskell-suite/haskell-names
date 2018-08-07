@@ -287,7 +287,7 @@ Test-suite test
     , mtl >= 2.2.1 && < 2.3
     , filepath >= 1.1 && <1.5
     , containers >= 0.2 && < 0.6
-    , tasty >= 0.12 && < 1.1
+    , tasty >= 0.12 && < 1.2
     , tasty-golden >= 2.2.1 && < 2.4
     , filemanip >= 0.3.6.3 && < 0.4
     , pretty-show >= 1.6.1 && < 1.8
