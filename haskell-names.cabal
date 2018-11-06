@@ -1,5 +1,5 @@
 Name:                   haskell-names
-Version:                0.9.3
+Version:                0.9.4
 License:                BSD3
 Author:                 Philipp Schuster, Roman Cheplyaka, Lennart Augustsson
 Maintainer:             Philipp Schuster
@@ -290,6 +290,6 @@ Test-suite test
     , tasty >= 0.12 && < 1.2
     , tasty-golden >= 2.2.1 && < 2.4
     , filemanip >= 0.3.6.3 && < 0.4
-    , pretty-show >= 1.6.1 && < 1.9
+    , pretty-show >= 1.6.1 && < 1.10
     , traverse-with-class >= 1.0.0.0 && < 1.1
 
