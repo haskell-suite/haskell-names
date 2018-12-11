@@ -1,5 +1,5 @@
 {-# OPTIONS_GHC -fno-warn-orphans -fno-warn-unused-matches #-}
-{-# LANGUAGE TemplateHaskell, MultiParamTypeClasses, FlexibleInstances, ConstraintKinds, UndecidableInstances, CPP #-}
+{-# LANGUAGE TemplateHaskell, MultiParamTypeClasses, FlexibleInstances, ConstraintKinds, UndecidableInstances #-}
 module Language.Haskell.Names.Open.Derived where
 
 import Language.Haskell.Exts
@@ -80,11 +80,6 @@ deriveGTraversable ''GuardedRhs
 deriveGTraversable ''Type
 
 deriveGTraversable ''TyVarBind
-
-#if MIN_VERSION_haskell_src_exts(1,21,0)
-#else
-deriveGTraversable ''Kind
-#endif
 
 deriveGTraversable ''FunDep
 

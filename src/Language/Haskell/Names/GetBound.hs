@@ -1,6 +1,6 @@
 {-# LANGUAGE MultiParamTypeClasses, FunctionalDependencies,
              FlexibleInstances, UndecidableInstances, NamedFieldPuns,
-             ScopedTypeVariables, CPP #-}
+             ScopedTypeVariables #-}
 module Language.Haskell.Names.GetBound
   ( GetBound(..)
   ) where
@@ -83,11 +83,7 @@ instance (Data l) => GetBound (QualConDecl l) l where
     getBound ctx (QualConDecl _ _ _ d) = getBound ctx d
 
 instance (Data l) => GetBound (GadtDecl l) l where
-#if MIN_VERSION_haskell_src_exts(1,21,0)
     getBound _ctx (GadtDecl _l conName _ _ mbFieldDecls _ty) =
-#else
-    getBound _ctx (GadtDecl _l conName mbFieldDecls _ty) =
-#endif
       -- GADT constructor name
       [conName] ++
       -- GADT selector names

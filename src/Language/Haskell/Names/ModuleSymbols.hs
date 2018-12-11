@@ -1,4 +1,4 @@
-{-# LANGUAGE ScopedTypeVariables, ViewPatterns, CPP #-}
+{-# LANGUAGE ScopedTypeVariables, ViewPatterns #-}
 module Language.Haskell.Names.ModuleSymbols
   ( moduleSymbols
   , moduleTable
@@ -65,11 +65,7 @@ getTopDeclSymbols impTbl modulename d = (case d of
 
         cons :: [(Name l,[Name l])]
         cons = do -- list monad
-#if MIN_VERSION_haskell_src_exts(1,21,0)
           GadtDecl _ cn _ _ (fromMaybe [] -> fields) _ty <- gadtDecls
-#else
-          GadtDecl _ cn (fromMaybe [] -> fields) _ty <- gadtDecls
-#endif
           return (cn , [f | FieldDecl _ fNames _ <- fields, f <- fNames])
 
         infos = constructorsToInfos modulename dq cons          
@@ -108,11 +104,7 @@ getTopDeclSymbols impTbl modulename d = (case d of
       -- FIXME: We shouldn't create selectors for fields with existential type variables!
         cons :: [(Name l,[Name l])]
         cons = do -- list monad
-#if MIN_VERSION_haskell_src_exts(1,21,0)
           GadtDecl _ cn _ _ (fromMaybe [] -> fields) _ty <- gadtDecls
-#else
-          GadtDecl _ cn (fromMaybe [] -> fields) _ty <- gadtDecls
-#endif
           return (cn , [f | FieldDecl _ fNames _ <- fields, f <- fNames])
 
     _ -> [])
