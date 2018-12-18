@@ -1,1 +1,4 @@
 resolver: nightly-2018-12-10
+extra-deps:
+- haskell-src-exts-1.21.0
+- tasty-1.2
