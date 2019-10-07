@@ -1,4 +1,4 @@
-resolver: nightly-2018-12-10
+resolver: nightly-2019-10-06
 extra-deps:
-- haskell-src-exts-1.21.0
+- haskell-src-exts-1.21.1
 - tasty-1.2
