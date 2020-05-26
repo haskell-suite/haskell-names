@@ -1,5 +1,5 @@
 Name:                   haskell-names
-Version:                0.9.8
+Version:                0.9.9
 License:                BSD3
 Author:                 Philipp Schuster, Roman Cheplyaka, Lennart Augustsson
 Maintainer:             Philipp Schuster
@@ -242,7 +242,7 @@ Library
     , filepath >= 1.1 && < 1.5
     , containers >= 0.2 && < 0.7
     , uniplate >= 1.5.1 && < 1.7
-    , aeson >= 0.8.0.2 && < 1.5
+    , aeson >= 0.8.0.2 && < 1.6
     , bytestring >= 0.10.4.0 && < 0.11
     , data-lens-light >= 0.1.2.1 && < 0.2
     , traverse-with-class >= 1.0.0.0 && < 1.1

@@ -4,6 +4,7 @@ cabal-dev
 *.hi
 *.chi
 *.chs.h
+*.lock
 *.out
 *.tix
 .stack-work/
