@@ -1,8 +1,8 @@
-cabal-version: 1.12
+cabal-version: 3.8
 
 Name:                   haskell-names
 Version:                0.10.0
-License:                BSD3
+License:                BSD-3-Clause
 Author:                 Philipp Schuster, Roman Cheplyaka, Lennart Augustsson
 Maintainer:             Philipp Schuster
 Category:               Language
