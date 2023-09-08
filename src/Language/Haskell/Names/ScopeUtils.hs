@@ -1,7 +1,6 @@
 module Language.Haskell.Names.ScopeUtils where
 
 import Control.Arrow
-import Data.Monoid
 import Language.Haskell.Names.Types
 import Language.Haskell.Names.SyntaxUtils
 import Language.Haskell.Exts

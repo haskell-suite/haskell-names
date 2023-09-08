@@ -18,7 +18,6 @@ import Data.List
 import Data.Lens.Light
 import Data.Generics.Traversable
 import Data.Typeable
-import Data.Monoid
 import Data.Functor.Constant
 
 -- | Describes how we should treat names in the current context

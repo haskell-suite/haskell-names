@@ -4,18 +4,16 @@ module Language.Haskell.Names.Exports
   , annotateExportSpecList
   ) where
 
-import qualified Data.Map as Map
-import qualified Data.Set as Set
 import Control.Monad
-import Control.Monad.Writer
 import Data.Data
 import Language.Haskell.Exts
-import Language.Haskell.Names.Types
+import Language.Haskell.Names.GlobalSymbolTable as Global
+import Language.Haskell.Names.ModuleSymbols
 import Language.Haskell.Names.ScopeUtils
 import Language.Haskell.Names.SyntaxUtils
-import Language.Haskell.Names.ModuleSymbols
-import Language.Haskell.Names.GlobalSymbolTable as Global
-import qualified Data.Set as Set (fromList, toList)
+import Language.Haskell.Names.Types
+import qualified Data.Map as Map
+import qualified Data.Set as Set
 
 
 -- | Compute the list of symbols the given module exports using the given
