@@ -6,7 +6,6 @@ module Language.Haskell.Names.Imports
   )
   where
 
-import Data.Monoid
 import Data.Maybe
 import Data.Either
 

@@ -1,6 +1,8 @@
+cabal-version: 3.8
+
 Name:                   haskell-names
-Version:                0.9.9
-License:                BSD3
+Version:                0.10.0
+License:                BSD-3-Clause
 Author:                 Philipp Schuster, Roman Cheplyaka, Lennart Augustsson
 Maintainer:             Philipp Schuster
 Category:               Language
@@ -10,8 +12,6 @@ Description:
 Homepage:               http://documentup.com/haskell-suite/haskell-names
 Stability:              Experimental
 Build-Type:             Simple
-Cabal-Version:          >= 1.10
-Tested-With:            GHC == 8.0.1, GHC == 8.2.1
 
 extra-source-files:
   README.md
@@ -235,19 +235,17 @@ source-repository head
 Library
   Default-Language: Haskell2010
   Build-depends:
-      base >= 4 && < 5
-    , haskell-src-exts >= 1.21 && < 1.24
-    , mtl >= 2.2.1 && < 2.3
-    , transformers >=0.4.2.0 && < 0.6
-    , filepath >= 1.1 && < 1.5
-    , containers >= 0.2 && < 0.7
-    , uniplate >= 1.5.1 && < 1.7
-    , aeson >= 0.8.0.2 && < 1.6
-    , bytestring >= 0.10.4.0 && < 0.11
-    , data-lens-light >= 0.1.2.1 && < 0.2
-    , traverse-with-class >= 1.0.0.0 && < 1.1
-  if impl(ghc <= 7.8)
-    Build-depends: tagged >= 0.8.4 && < 0.9
+      base
+    , haskell-src-exts
+    , mtl
+    , transformers
+    , filepath
+    , containers
+    , uniplate
+    , aeson
+    , bytestring
+    , data-lens-light
+    , traverse-with-class
   Hs-source-dirs:       src
   Ghc-options:          -Wall -fno-warn-name-shadowing
 
@@ -281,15 +279,15 @@ Test-suite test
   Main-is:
     run.hs
   Build-depends:
-      base >= 4 && < 5
+      base
     , haskell-names
-    , haskell-src-exts >= 1.21 && < 1.24
-    , mtl >= 2.2.1 && < 2.3
-    , filepath >= 1.1 && <1.5
-    , containers >= 0.2 && < 0.7
-    , tasty >= 0.12 && < 1.3
-    , tasty-golden >= 2.2.1 && < 2.4
-    , filemanip >= 0.3.6.3 && < 0.4
-    , pretty-show >= 1.6.1 && < 1.11
-    , traverse-with-class >= 1.0.0.0 && < 1.1
+    , haskell-src-exts
+    , mtl
+    , filepath
+    , containers
+    , tasty
+    , tasty-golden
+    , filemanip
+    , pretty-show
+    , traverse-with-class
 
