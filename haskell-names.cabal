@@ -1,5 +1,5 @@
 Name:                   haskell-names
-Version:                0.9.9
+Version:                0.9.9.1
 License:                BSD3
 Author:                 Philipp Schuster, Roman Cheplyaka, Lennart Augustsson
 Maintainer:             Philipp Schuster
@@ -239,11 +239,11 @@ Library
     , haskell-src-exts >= 1.21 && < 1.24
     , mtl >= 2.2.1 && < 2.3
     , transformers >=0.4.2.0 && < 0.6
-    , filepath >= 1.1 && < 1.5
+    , filepath >= 1.1 && < 1.6
     , containers >= 0.2 && < 0.7
     , uniplate >= 1.5.1 && < 1.7
-    , aeson >= 0.8.0.2 && < 1.6
-    , bytestring >= 0.10.4.0 && < 0.11
+    , aeson >= 0.8.0.2 && < 2.3
+    , bytestring >= 0.10.4.0 && < 0.12
     , data-lens-light >= 0.1.2.1 && < 0.2
     , traverse-with-class >= 1.0.0.0 && < 1.1
   if impl(ghc <= 7.8)
@@ -285,7 +285,7 @@ Test-suite test
     , haskell-names
     , haskell-src-exts >= 1.21 && < 1.24
     , mtl >= 2.2.1 && < 2.3
-    , filepath >= 1.1 && <1.5
+    , filepath >= 1.1 && <1.6
     , containers >= 0.2 && < 0.7
     , tasty >= 0.12 && < 1.3
     , tasty-golden >= 2.2.1 && < 2.4
