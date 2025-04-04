@@ -243,7 +243,7 @@ Library
     , containers >= 0.2 && < 0.7
     , uniplate >= 1.5.1 && < 1.7
     , aeson >= 0.8.0.2 && < 2.3
-    , bytestring >= 0.10.4.0 && < 0.12
+    , bytestring >= 0.10.4.0 && < 0.13
     , data-lens-light >= 0.1.2.1 && < 0.2
     , traverse-with-class >= 1.0.0.0 && < 1.1
   if impl(ghc <= 7.8)
