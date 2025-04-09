@@ -10,6 +10,7 @@ import Data.Monoid
 import Data.Maybe
 import Data.Either
 
+import Control.Monad (guard)
 import Control.Monad.Writer
 import Data.Map as Map (lookup)
 import Language.Haskell.Exts (
